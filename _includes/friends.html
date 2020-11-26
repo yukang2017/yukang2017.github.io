@@ -1,0 +1,11 @@
+{% if site.friends %}
+<hr>
+<h5>FRIENDS</h5>
+<ul class="list-inline">
+  {% for friend in site.friends %}
+  <li><a href="{{friend.href}}">{{friend.title}}</a></li>
+  {% endfor %}
+</ul>
+<hr>
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/8.js?i=5soyr5y5lt3&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=arial&amp;l=33&amp;bv=100" async="async"></script>
+{% endif %}
