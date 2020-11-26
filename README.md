@@ -2,4 +2,4 @@
 ================================
 
 
-![](http://huangxuan.me/img/blog-desktop.jpg)
+![](https://github.com/yukang2017/yukangchen.com/blob/main/img/myhomepage.png)
