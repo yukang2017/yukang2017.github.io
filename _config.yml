@@ -94,3 +94,26 @@ service-worker: true
 
 # MathJax rendering for layout:page (e.g. post preview)
 page-mathjax: false
+
+# Friends
+ friends: [
+     {
+     #     title: "Su",
+     #     href: "http://su.gallery/"
+     # },{
+         title: "Yanwei Li",
+         href: "https://yanwei-li.com/"
+     },{
+         title: "Ruihang Chu",
+         href: "ruihangchu@link.cuhk.edu.hk"
+     },{
+       title: "Lu Qi",
+       href: "http://luqi.info/"
+     },{
+       title: "Dechao Meng",
+       href: "https://silverbulletmdc.github.io/"
+     },{
+       title: "Peizhen Zhang",
+       href: "https://github.com/zhangpzh"
+     }
+ ]
