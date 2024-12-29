@@ -1,8 +1,8 @@
 # Site settings
-title: ""
+title: " "
 SEOTitle: Yukang Chen | 陈玉康
 header-img: img/LongAI.jpg
-email: yukangchen@cse.cuhk.edu.hk
+email: chenyukang2020@gmail.com
 description: "Aim High and Down to Earth"
 keyword: ""
 url: "https://yukangchen.com"              # your host, for absolute URL
@@ -99,20 +99,4 @@ page-mathjax: false
 
 # Friends
 friends: [
-    {
-    title: "Yanwei Li",
-        href: "https://yanwei-li.com/"
-    },{
-        title: "Ruihang Chu",
-        href: "ruihangchu@link.cuhk.edu.hk"
-    },{
-      title: "Lu Qi",
-      href: "http://luqi.info/"
-    },{
-      title: "Dechao Meng",
-      href: "https://silverbulletmdc.github.io/"
-    },{
-      title: "Peizhen Zhang",
-      href: "https://github.com/zhangpzh"
-    }
 ]
