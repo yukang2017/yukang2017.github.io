@@ -10,16 +10,10 @@ main:
     url: "/#-invited-talks-and-report"
     
   - title: "Publications"
-    url: "/#-publications"
-
-  - title: "Educations"
-    url: "/#-educations"
+    url: "/#-representative-bublications"
 
   - title: "Academic Services"
     url: "/#-academic-services"
 
   - title: "Honors and Awards"
     url: "/#-honors-and-awards"
-
-  - title: "Internships and Teaching Services"
-    url: "/#-internships-and-teaching-services"
