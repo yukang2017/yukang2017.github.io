@@ -201,13 +201,6 @@ Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Mu
 </div>
 
 
-# 📋 Academic Services
-
-- Conference Reviewer: Neurips, ICLR, ICML, CVPR, ICCV, ECCV, and AAAI.
-- Journal Reviewer: T-PAMI and T-TIP. 
-- Area Chair for AAAI 2026.
-
-
 # 🎖 Honors and Awards 
 
 - 2025 World's Top 2% Scientists.
@@ -215,3 +208,10 @@ Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Mu
 - 2023 Winner of ScanNet Indoor Scene Understanding (CVPR 2023 ScanNet Workshop).
 - 2022 1st of nuScenes Lidar Multi-object Tracking Leaderboard.
 - 2019 Winner of COCO Detection Challenge (ICCV 2019 COCO Workshop).
+
+
+# 📋 Academic Services
+
+- Conference Reviewer: Neurips, ICLR, ICML, CVPR, ICCV, ECCV, and AAAI.
+- Journal Reviewer: T-PAMI and T-TIP. 
+- Area Chair for AAAI 2026.
