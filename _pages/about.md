@@ -129,7 +129,7 @@ Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Mu
 </div>
 
 
-<div class='paper-box'><div class='paper-box-image'><div><div class="badge">ICLR 2025</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/longvila-logo' alt="sym" width="100%"></div></div>
+<div class='paper-box'><div class='paper-box-image'><div><div class="badge">ICLR 2025</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/longvila-logo.png' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">
 
 [**LongVILA: Scaling Long-Context Visual Language Models for Long Videos**](https://arxiv.org/abs/2408.10188) 
@@ -153,7 +153,7 @@ Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Mu
 </div>
 
 
-<div class='paper-box'><div class='paper-box-image'><div><div class="badge">CVPR 2023</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/VoxelNeXt.png' alt="sym" width="100%"></div></div>
+<div class='paper-box'><div class='paper-box-image'><div><div class="badge">CVPR 2023</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/voxelnext-log.gif' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">
 
 [**VoxelNeXt: Fully Sparse VoxelNet for 3D Object Detection and Tracking**](https://arxiv.org/abs/2303.11301) 
