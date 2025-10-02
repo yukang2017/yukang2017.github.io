@@ -27,7 +27,7 @@ I focus on Efficient and **Long AI** - **Boosting AI's Long ability while keepin
 - 🚀 **Long-context LLMs**: Efficient fine-tuning of long-context LLMs via **sparse attention**.
 - 🎥 **Long-video VLMs**: Scaling VLMs to long videos via **sequence parallelism**.
 - 🧠 **Long-sequence Reasoning** Long-sequence RL for LLMs/VLMs via **sequence parallelism**.
-- 🎬 **Long-video Generation**: Short→Long AR with efficient FT via **sparse attention**.
+- 🎬 **Long-video Generation**: Short→Long AR with efficient fine-tuning via **sparse attention**.
 
 
 
