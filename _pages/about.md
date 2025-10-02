@@ -81,6 +81,124 @@ If you are interested in **Long AI** and seeking collaboration, please feel free
 </div>
 </div>
 
+<div class='paper-box'><div class='paper-box-image'><div><div class="badge">Arxiv 2025</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/LongLive.png' alt="sym" width="100%"></div></div>
+<div class='paper-box-text' markdown="1">
+
+[**LongLive: Real-time Interactive Long Video Generation**](https://arxiv.org/abs/2509.22622) 
+<div style="display: inline">
+    <a href="https://arxiv.org/abs/2509.22622"> <strong>[Paper]</strong></a>
+    <a href="https://github.com/NVlabs/LongLive"> <strong>[Code]</strong></a>
+    <a class="fakelink" onclick="$(this).siblings('.abstract').slideToggle()" ><strong>[Abstract]</strong></a>
+    <div class="abstract"  style="overflow: hidden; display: none;">  
+        <p> We present LongLive, a frame-level autoregressive (AR) framework for real-time and interactive long video generation. Long video generation presents challenges in both efficiency and quality. Diffusion and Diffusion-Forcing models can produce high-quality videos but suffer from low efficiency due to bidirectional attention. Causal attention AR models support KV caching for faster inference, but often degrade in quality on long videos due to memory challenges during long-video training. In addition, beyond static prompt-based generation, interactive capabilities, such as streaming prompt inputs, are critical for dynamic content creation, enabling users to guide narratives in real time. This interactive requirement significantly increases complexity, especially in ensuring visual consistency and semantic coherence during prompt transitions. To address these challenges, LongLive adopts a causal, frame-level AR design that integrates a KV-recache mechanism that refreshes cached states with new prompts for smooth, adherent switches; streaming long tuning to enable long video training and to align training and inference (train-long-test-long); and short window attention paired with a frame-level attention sink, shorten as frame sink, preserving long-range consistency while enabling faster generation. With these key designs, LongLive fine-tunes a 1.3B-parameter short-clip model to minute-long generation in just 32 GPU-days. At inference, LongLive sustains 20.7 FPS on a single NVIDIA H100, achieves strong performance on VBench in both short and long videos. LongLive supports up to 240-second videos on a single H100 GPU. LongLive further supports INT8-quantized inference with only marginal quality loss. </p>
+    </div>
+<img src='https://img.shields.io/github/stars/NVlabs/LongLive.svg?style=social&label=Star' alt="sym" height="100%">
+</div>
+
+Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Muyang Li, Enze Xie, Yingcong Chen, Yao Lu, Song Han, **Yukang Chen**
+
+- **Efficient fine-tuning** - 100k context on a single 8x A100 with 1.8x speed up. 
+- **Easy implementation** - Shifted sparse attention compatible with Flash-Attn.
+- **LongAlpaca** - The first open-sourced long instruction-following dataset.
+
+</div>
+</div>
+
+
+<div class='paper-box'><div class='paper-box-image'><div><div class="badge">NeurIPS 2025</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/Long-RL.png' alt="sym" width="100%"></div></div>
+<div class='paper-box-text' markdown="1">
+
+[**Long-RL: Scaling RL to Long Sequences**](https://arxiv.org/abs/2507.07966) 
+<div style="display: inline">
+    <a href="https://arxiv.org/abs/2507.07966"> <strong>[Paper]</strong></a>
+    <a href="https://github.com/NVlabs/Long-RL"> <strong>[Code]</strong></a>
+    <a class="fakelink" onclick="$(this).siblings('.abstract').slideToggle()" ><strong>[Abstract]</strong></a>
+    <div class="abstract"  style="overflow: hidden; display: none;">  
+        <p> We introduce a full-stack framework that scales up reasoning in vision-language models (VLMs) to long videos, leveraging reinforcement learning. We address the unique challenges of long video reasoning by integrating three critical components: (1) a large-scale dataset, LongVideo-Reason, comprising 104K long video QA pairs with high-quality reasoning annotations across diverse domains such as sports, games, and vlogs; (2) a two-stage training pipeline that extends VLMs with chain-of-thought supervised fine-tuning (CoT-SFT) and reinforcement learning (RL); and (3) a training infrastructure for long video RL, named Multi-modal Reinforcement Sequence Parallelism (MR-SP), which incorporates sequence parallelism and a vLLM-based engine tailored for long video, using cached video embeddings for efficient rollout and prefilling. In our experiments, LongVILA-R1-7B achieves strong performance on video benchmarks, reaching 65.1% and 71.1% accuracy on VideoMME without and with subtitles, respectively, and consistently outperforming LongVILA-7B across multiple benchmarks. Moreover, LongVILA-R1-7B supports processing up to 8,192 video frames per video, and configurable FPS settings. Notably, our MR-SP system achieves up to 2.1x speedup on long video RL training. In addition, we release our training system for public availability that supports RL training on various modalities (video, text, and audio), various models (VILA and Qwen series), and even image and video generation models. On a single A100 node (8 GPUs), it supports RL training on hour-long videos (e.g., 3,600 frames). </p>
+    </div>
+<img src='https://img.shields.io/github/stars/NVlabs/Long-RL.svg?style=social&label=Star' alt="sym" height="100%">
+</div>
+
+Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Muyang Li, Enze Xie, Yingcong Chen, Yao Lu, Song Han, **Yukang Chen**
+
+- **Efficient fine-tuning** - 100k context on a single 8x A100 with 1.8x speed up. 
+- **Easy implementation** - Shifted sparse attention compatible with Flash-Attn.
+- **LongAlpaca** - The first open-sourced long instruction-following dataset.
+
+</div>
+</div>
+
+
+<div class='paper-box'><div class='paper-box-image'><div><div class="badge">ICLR 2025</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/LongVILA.png' alt="sym" width="100%"></div></div>
+<div class='paper-box-text' markdown="1">
+
+[**LongVILA: Scaling Long-Context Visual Language Models for Long Videos**](https://arxiv.org/abs/2408.10188) 
+<div style="display: inline">
+    <a href="https://arxiv.org/abs/2408.10188"> <strong>[Paper]</strong></a>
+    <a href="https://github.com/NVlabs/VILA/tree/main/longvila"> <strong>[Code]</strong></a>
+    <a class="fakelink" onclick="$(this).siblings('.abstract').slideToggle()" ><strong>[Abstract]</strong></a>
+    <div class="abstract"  style="overflow: hidden; display: none;">  
+        <p> Long-context capability is critical for multi-modal foundation models, especially for long video understanding. We introduce LongVILA, a full-stack solution for long-context visual-language models by co-designing the algorithm and system. For model training, we upgrade existing VLMs to support long video understanding by incorporating two additional stages, i.e., long context extension and long video supervised fine-tuning. However, training on long video is computationally and memory intensive. We introduce the long-context Multi-Modal Sequence Parallelism (MM-SP) system that efficiently parallelizes long video training and inference, enabling 2M context length training on 256 GPUs without any gradient checkpointing. LongVILA efficiently extends the number of video frames of VILA from 8 to 2048, achieving 99.8% accuracy in 6,000-frame (more than 1 million tokens) video needle-in-a-haystack. LongVILA-7B demonstrates strong accuracy on 9 popular video benchmarks, e.g., 65.1% VideoMME with subtitle. Besides, MM-SP is 2.1x - 5.7x faster than ring style sequence parallelism and 1.1x - 1.4x faster than Megatron with a hybrid context and tensor parallelism. Moreover, it seamlessly integrates with Hugging Face Transformers. </p>
+    </div>
+<img src='https://img.shields.io/github/stars/NVlabs/VILA.svg?style=social&label=Star' alt="sym" height="100%">
+</div>
+
+**Yukang Chen**, Fuzhao Xue, Dacheng Li, Qinghao Hu, Ligeng Zhu, Xiuyu Li, Yunhao Fang, Haotian Tang, Shang Yang, Zhijian Liu, Ethan He, Hongxu Yin, Pavlo Molchanov, Jan Kautz, Linxi Fan, Yuke Zhu, Yao Lu, Song Han
+
+- **Efficient fine-tuning** - 100k context on a single 8x A100 with 1.8x speed up. 
+- **Easy implementation** - Shifted sparse attention compatible with Flash-Attn.
+- **LongAlpaca** - The first open-sourced long instruction-following dataset.
+
+</div>
+</div>
+
+
+<div class='paper-box'><div class='paper-box-image'><div><div class="badge">CVPR 2023</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/VoxelNeXt.png' alt="sym" width="100%"></div></div>
+<div class='paper-box-text' markdown="1">
+
+[**VoxelNeXt: Fully Sparse VoxelNet for 3D Object Detection and Tracking**](https://arxiv.org/abs/2303.11301) 
+<div style="display: inline">
+    <a href="https://arxiv.org/abs/2303.11301"> <strong>[Paper]</strong></a>
+    <a href="https://github.com/dvlab-research/VoxelNeXt"> <strong>[Code]</strong></a>
+    <a class="fakelink" onclick="$(this).siblings('.abstract').slideToggle()" ><strong>[Abstract]</strong></a>
+    <div class="abstract"  style="overflow: hidden; display: none;">  
+        <p> 3D object detectors usually rely on hand-crafted proxies, e.g., anchors or centers, and translate well-studied 2D frameworks to 3D. Thus, sparse voxel features need to be densified and processed by dense prediction heads, which inevitably costs extra computation. In this paper, we instead propose VoxelNext for fully sparse 3D object detection. Our core insight is to predict objects directly based on sparse voxel features, without relying on hand-crafted proxies. Our strong sparse convolutional network VoxelNeXt detects and tracks 3D objects through voxel features entirely. It is an elegant and efficient framework, with no need for sparse-to-dense conversion or NMS post-processing. Our method achieves a better speed-accuracy trade-off than other mainframe detectors on the nuScenes dataset. For the first time, we show that a fully sparse voxel-based representation works decently for LIDAR 3D object detection and tracking. Extensive experiments on nuScenes, Waymo, and Argoverse2 benchmarks validate the effectiveness of our approach. Without bells and whistles, our model outperforms all existing LIDAR methods on the nuScenes tracking test benchmark. </p>
+    </div>
+<img src='https://img.shields.io/github/stars/dvlab-research/VoxelNeXt.svg?style=social&label=Star' alt="sym" height="100%">
+</div>
+
+**Yukang Chen**, Jianhui Liu, Xiangyu Zhang, Xiaojuan Qi, Jiaya Jia
+
+- **Efficient fine-tuning** - 100k context on a single 8x A100 with 1.8x speed up. 
+- **Easy implementation** - Shifted sparse attention compatible with Flash-Attn.
+- **LongAlpaca** - The first open-sourced long instruction-following dataset.
+
+</div>
+</div>
+
+
+<div class='paper-box'><div class='paper-box-image'><div><div class="badge">CVPR 2022 Oral</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/FocalsConv.png' alt="sym" width="100%"></div></div>
+<div class='paper-box-text' markdown="1">
+
+[**Focal Sparse Convolutional Networks for 3D Object Detection**](https://arxiv.org/abs/2204.12463) 
+<div style="display: inline">
+    <a href="https://arxiv.org/abs/2204.12463"> <strong>[Paper]</strong></a>
+    <a href="https://github.com/dvlab-research/FocalsConv"> <strong>[Code]</strong></a>
+    <a class="fakelink" onclick="$(this).siblings('.abstract').slideToggle()" ><strong>[Abstract]</strong></a>
+    <div class="abstract"  style="overflow: hidden; display: none;">  
+        <p> Non-uniformed 3D sparse data, e.g., point clouds or voxels in different spatial positions, make contribution to the task of 3D object detection in different ways. Existing basic components in sparse convolutional networks (Sparse CNNs) process all sparse data, regardless of regular or submanifold sparse convolution. In this paper, we introduce two new modules to enhance the capability of Sparse CNNs, both are based on making feature sparsity learnable with position-wise importance prediction. They are focal sparse convolution (Focals Conv) and its multi-modal variant of focal sparse convolution with fusion, or Focals Conv-F for short. The new modules can readily substitute their plain counterparts in existing Sparse CNNs and be jointly trained in an end-to-end fashion. For the first time, we show that spatially learnable sparsity in sparse convolution is essential for sophisticated 3D object detection. Extensive experiments on the KITTI, nuScenes and Waymo benchmarks validate the effectiveness of our approach. Without bells and whistles, our results outperform all existing single-model entries on the nuScenes test benchmark at the paper submission time. </p>
+    </div>
+<img src='https://img.shields.io/github/stars/dvlab-research/FocalsConv.svg?style=social&label=Star' alt="sym" height="100%">
+</div>
+
+**Yukang Chen**, Yanwei Li, Xiangyu Zhang, Jian Sun, Jiaya Jia
+
+- **Efficient fine-tuning** - 100k context on a single 8x A100 with 1.8x speed up. 
+- **Easy implementation** - Shifted sparse attention compatible with Flash-Attn.
+- **LongAlpaca** - The first open-sourced long instruction-following dataset.
+
+</div>
+</div>
 
 
 # 🗒️ Academic Services
