@@ -48,12 +48,12 @@ If you are interested in **Long AI** and seeking collaboration, please feel free
 
 # 💬 Invited Talks and Report
 
-- *2025.07*: **[Long-RL](https://github.com/NVlabs/Long-RL)** was reported by **机器之心** (see **[Link](https://www.jiqizhixin.com/articles/2025-07-14-2)**).
-- *2023.10*: **[LongLoRA](https://github.com/dvlab-research/LongLoRA)** was reported by **新智源** (see [Link](https://mp.weixin.qq.com/s/8QoKHgwjxv7fG_CCqouU8w)).
-- *2023.08*: **[LISA](https://github.com/dvlab-research/LISA)** was reported by **量子位** (see **[Link](https://mp.weixin.qq.com/s/ia7_55hfI-cs2wWalmk8yA)**).
-- *2023.06*: Invited Talk by CVRP 2023 ScanNet Workshop (see **[Link](http://www.scan-net.org/cvpr2023workshop/)**).
+- *2025.07*: **[Long-RL](https://github.com/NVlabs/Long-RL)** was reported by **机器之心** (see **[link](https://www.jiqizhixin.com/articles/2025-07-14-2)**).
+- *2023.10*: **[LongLoRA](https://github.com/dvlab-research/LongLoRA)** was reported by **新智源** (see **[link](https://mp.weixin.qq.com/s/8QoKHgwjxv7fG_CCqouU8w)**).
+- *2023.08*: **[LISA](https://github.com/dvlab-research/LISA)** was reported by **量子位** (see **[link](https://mp.weixin.qq.com/s/ia7_55hfI-cs2wWalmk8yA)**).
+- *2023.06*: Invited Talk by CVRP 2023 ScanNet Workshop (see **[link](http://www.scan-net.org/cvpr2023workshop/)**).
 - *2023.06*: Invited Talk by VALSE 2023 Perception Workshop for **[VoxelNeXt](https://github.com/dvlab-research/VoxelNeXt)**.
-- *2023.04*: Invited Talk and reported by **将门创投** for **[VoxelNeXt](https://github.com/dvlab-research/VoxelNeXt)** (see **[Link](https://mp.weixin.qq.com/s/ijj9Zy81_645mqCaRbRFAg)**).
+- *2023.04*: Invited Talk and reported by **将门创投** for **[VoxelNeXt](https://github.com/dvlab-research/VoxelNeXt)** (see **[link](https://mp.weixin.qq.com/s/ijj9Zy81_645mqCaRbRFAg)**).
 - *2022.06*: Invited Talk by **深蓝学院** for **[Focal Sparse Conv](https://github.com/dvlab-research/FocalsConv)**.
 
 
