@@ -45,8 +45,15 @@ I focus on Efficient and **Long AI** - **Boosting AI's Long ability while keepin
 
 # 💬 Invited Talks and Report
 
-- *2025.07*: Our *Scaling RL to Long Videos*  was reported by **机器之心**. Please see the [link](https://www.jiqizhixin.com/articles/2025-07-14-2).
-  
+- *2025.07*: **[Long-RL](https://github.com/NVlabs/Long-RL)** was reported by **机器之心** with **[Link](https://www.jiqizhixin.com/articles/2025-07-14-2)**.
+- *2023.10*: **[LongLoRA](https://github.com/dvlab-research/LongLoRA)** was reported by **新智源** with [Link](https://mp.weixin.qq.com/s/8QoKHgwjxv7fG_CCqouU8w).
+- *2023.08*: **[LISA](https://github.com/dvlab-research/LISA)** was reported by **量子位**, **[Link](https://mp.weixin.qq.com/s/ia7_55hfI-cs2wWalmk8yA)**.
+- *2023.06*: Invited Talk by CVRP 2023 ScanNet Workshop with **[Link](http://www.scan-net.org/cvpr2023workshop/)**.
+- *2023.06*: Invited Talk by VALSE 2023 Perception Workshop for **[VoxelNeXt](https://github.com/dvlab-research/VoxelNeXt)**.
+- *2023.04*: Invited Talk by **将门创投** for **[VoxelNeXt](https://github.com/dvlab-research/VoxelNeXt)**, and reported with **[Link](https://mp.weixin.qq.com/s/ijj9Zy81_645mqCaRbRFAg)**.
+- *2022.06*: Invited Talk by **深蓝学院** for **[Focal Sparse Conv](https://github.com/dvlab-research/FocalsConv)**.
+
+
 # 📝 Publications
 
 
@@ -62,7 +69,7 @@ I focus on Efficient and **Long AI** - **Boosting AI's Long ability while keepin
 # 🎖 Honors and Awards 
 
 - 2025 World's Top 2% Scientists.
-- 2023 Winner of ScanNet Indoor Scene Understanding (CVPR 2023 ScanNet Workshop).
 - 2023 Final-list candidate of ByteDance Scholarship.
+- 2023 Winner of ScanNet Indoor Scene Understanding (CVPR 2023 ScanNet Workshop).
 - 2022 1st of nuScenes Lidar Multi-object Tracking Leaderboard.
 - 2019 Winner of COCO Detection Challenge (ICCV 2019 COCO Workshop).
