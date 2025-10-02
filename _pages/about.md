@@ -40,6 +40,7 @@ I focus on Efficient and **Long AI** - **Boosting AI's Long ability while keepin
 - *2023.04*: &nbsp;🎉🎉 **[3D-Box-Segment-Anything](https://github.com/dvlab-research/3D-Box-Segment-Anything)** is released, a combination of [VoxelNeXt](https://github.com/dvlab-research/VoxelNeXt) and [SAM](https://arxiv.org/abs/2304.02643).
 - *2023.04*: &nbsp;🎉🎉 **[VoxelNeXt](https://github.com/dvlab-research/VoxelNeXt)** is accepted by **CVPR'23**!
 - *2022.03*: &nbsp;🎉🎉 **[Focal Sparse Conv](https://github.com/dvlab-research/FocalsConv)** is accepted by **CVPR'22** as **Oral**!
+- *2022.03*: &nbsp;🎉🎉 **[Scale-aware AutoAug](https://ieeexplore.ieee.org/document/9756374)** is accepted by **T-PAMI**!
 
 
 
@@ -53,7 +54,6 @@ I focus on Efficient and **Long AI** - **Boosting AI's Long ability while keepin
 - *2023.04*: Invited Talk by **将门创投** for **[VoxelNeXt](https://github.com/dvlab-research/VoxelNeXt)**, and reported with **[Link](https://mp.weixin.qq.com/s/ijj9Zy81_645mqCaRbRFAg)**.
 - *2022.06*: Invited Talk by **深蓝学院** for **[Focal Sparse Conv](https://github.com/dvlab-research/FocalsConv)**.
 
-
 # 📝 Publications
 
 
@@ -64,7 +64,6 @@ I focus on Efficient and **Long AI** - **Boosting AI's Long ability while keepin
 - Conference Reviewer: Neurips, ICLR, ICML, CVPR, ICCV, ECCV, and AAAI.
 - Journal Reviewer: T-PAMI and T-TIP. 
 - Area Chair for AAAI 2026.
-
 
 # 🎖 Honors and Awards 
 
