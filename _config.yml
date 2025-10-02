@@ -6,9 +6,9 @@
 # `jekyll serve`. If you change this file, please restart the server process.
 
 # Site Settings
-title                    : "Wei Huang (黄炜)| Homepage"
+title                    : "Yukang Chen | Homepage"
 description              : ""
-repository               : "AaronHuang-778/AaronHuang-778.github.io"
+repository               : "yukang2017/yukang2017.github.io"
 google_scholar_stats_use_cdn : true
 
 # google analytics
@@ -21,14 +21,14 @@ baidu_site_verification  :  # get baidu_site_verification from https://ziyuan.ba
 
 # Site Author
 author:
-  name             : "Wei Huang"
+  name             : "Yukang Chen"
   avatar           : "images/android-chrome-512x512.png"
-  bio              : "PhD student in the University of Hong Kong (HKU), majoring in Efficient AI and Large Vision/Language Models."
-  location         : "Hong Kong SAR"
-  employer         : "The University of Hong Kong"
+  bio              : "Research Scientist in NVIDIA (USA), majoring in Efficient and Long AI."
+  location         : "Boston, USA"
+  employer         : "NVIDIA Research"
   pubmed           : 
-  googlescholar    : "https://scholar.google.com/citations?user=rZVUlPAAAAAJ&hl=zh-CN"
-  email            : "aaron.weihuang@gmail.com"
+  googlescholar    : "https://scholar.google.com/citations?user=6p0ygKUAAAAJ"
+  email            : "chenyukang2020@gmail.com"
   researchgate     :  # e.g., "https://www.researchgate.net/profile/yourprofile"
   uri              :
   bitbucket        :
@@ -37,13 +37,13 @@ author:
   flickr           :
   facebook         :
   foursquare       :
-  github           : "Aaronhuang-778"
+  github           : "yukang2017"
   google_plus      :
   keybase          :
   instagram        :
   impactstory      : # e.g., "https://profiles.impactstory.org/u/xxxx-xxxx-xxxx-xxxx"
   lastfm           :
-  linkedin         : "linkedin.com/in/wei-huang-b945a829a"
+  linkedin         : "linkedin.com/in/yukang-chen-35aaa2151"
   dblp             : # e.g., "https://dblp.org/pid/xx/xxxx.html"
   orcid            : # e.g., "https://orcid.org/xxxx"
   pinterest        :
@@ -51,7 +51,7 @@ author:
   stackoverflow    : # http://stackoverflow.com/users/123456/username
   steam            :
   tumblr           :
-  twitter          : "AaronWeiHuang"
+  twitter          : "yukangchen_"
   vine             :
   weibo            :
   xing             :
