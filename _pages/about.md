@@ -201,7 +201,7 @@ Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Mu
 </div>
 
 
-# 🗒️ Academic Services
+# 📋 Academic Services
 
 - Conference Reviewer: Neurips, ICLR, ICML, CVPR, ICCV, ECCV, and AAAI.
 - Journal Reviewer: T-PAMI and T-TIP. 
