@@ -119,7 +119,7 @@ Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Mu
 <img src='https://img.shields.io/github/stars/NVlabs/Long-RL.svg?style=social&label=Star' alt="sym" height="100%">
 </div>
 
-Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Muyang Li, Enze Xie, Yingcong Chen, Yao Lu, Song Han, **Yukang Chen**
+**Yukang Chen**, Wei Huang, Baifeng Shi, Qinghao Hu, Hanrong Ye, Ligeng Zhu, Zhijian Liu, Pavlo Molchanov, Jan Kautz, Xiaojuan Qi, Sifei Liu, Hongxu Yin, Yao Lu, Song Han
 
 - **Efficient fine-tuning** - 100k context on a single 8x A100 with 1.8x speed up. 
 - **Easy implementation** - Shifted sparse attention compatible with Flash-Attn.
