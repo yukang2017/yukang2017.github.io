@@ -121,9 +121,9 @@ Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Mu
 
 **Yukang Chen**, Wei Huang, Baifeng Shi, Qinghao Hu, Hanrong Ye, Ligeng Zhu, Zhijian Liu, Pavlo Molchanov, Jan Kautz, Xiaojuan Qi, Sifei Liu, Hongxu Yin, Yao Lu, Song Han
 
-- **MR-SP System** - RL on hour-long videos (3,600 frames) with up to **2.1x** speedup. 
+- **MR-SP System** - RL on hour-long videos (3,600 frames), up to **2.1x** speedup. 
 - **LongVILA-7B Model** - **8,192 frames**/video and **71.1%** on VideoMME with sub.
-- **LongVideo-Reason Dataset** - **104K** long-video QA pairs with reasoning annotations.
+- **LongVideo-Reason Dataset** - **104K** long-video QA-reasoning pairs.
 
 </div>
 </div>
