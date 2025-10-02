@@ -1,0 +1,25 @@
+# main links links
+main:
+  - title: "About Me"
+    url: "/#about-me"
+
+  - title: "News"
+    url: "/#-news"
+    
+  - title: "Invited Talks and Report"
+    url: "/#-invited-talks-and-report"
+    
+  - title: "Publications"
+    url: "/#-publications"
+
+  - title: "Educations"
+    url: "/#-educations"
+
+  - title: "Academic Services"
+    url: "/#-academic-services"
+
+  - title: "Honors and Awards"
+    url: "/#-honors-and-awards"
+
+  - title: "Internships and Teaching Services"
+    url: "/#-internships-and-teaching-services"
