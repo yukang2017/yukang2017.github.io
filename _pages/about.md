@@ -19,7 +19,8 @@ redirect_from:
 
 Hi, this is Yukang Chen (陈玉康)’s website!   
 I am a Research Scientist in NVIDIA, working with [Prof. Song Han](https://hanlab.mit.edu/songhan).  
-I got my Ph.D. degree in CUHK, supervised by [Prof. Jiaya Jia](https://jiaya.me).During my Ph.D. study, I worked closely with [Dr. Xiangyu Zhang](https://scholar.google.com/citations?user=yuB-cfoAAAAJ&hl=en) and [Prof. Xiaojuan Qi](https://scholar.google.com/citations?user=bGn0uacAAAAJ&hl=en).
+I got my Ph.D. degree in CUHK, supervised by [Prof. Jiaya Jia](https://jiaya.me).  
+During my Ph.D. study, I worked closely with [Prof. Xiaojuan Qi](https://scholar.google.com/citations?user=bGn0uacAAAAJ&hl=en) and [Dr. Xiangyu Zhang](https://scholar.google.com/citations?user=yuB-cfoAAAAJ&hl=en).
 
 I focus on Efficient and **Long AI** - **Boosting AI's Long ability while keeping Efficiency**, which covers:
 - 🚗 **Long-range AD**: Long-range 3D perception via **sparse convolution**.
