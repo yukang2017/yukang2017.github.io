@@ -177,7 +177,7 @@ Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Mu
 </div>
 
 
-<div class='paper-box'><div class='paper-box-image'><div><div class="badge">CVPR 2022 Oral</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/FocalsConv.png' alt="sym" width="100%"></div></div>
+<div class='paper-box'><div class='paper-box-image'><div><div class="badge">CVPR 2022 Oral</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/focalsconv-logo.png' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">
 
 [**Focal Sparse Convolutional Networks for 3D Object Detection**](https://arxiv.org/abs/2204.12463) 
