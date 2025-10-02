@@ -74,9 +74,9 @@ If you are interested in **Long AI** and seeking collaboration, please feel free
 
 **Yukang Chen**, Shengju Qian, Haotian Tang, Xin Lai, Zhijian Liu, Song Han, Jiaya Jia
 
-- **Efficient fine-tuning** - 100k context on a single 8x A100 with 1.8x speed up. 
-- **Easy implementation** - Shifted sparse attention compatible with Flash-Attn.
-- **LongAlpaca** - The first open-sourced long instruction-following dataset.
+- **Efficient fine-tuning** - 100k context on a single 8x A100, **1.8x** speed up. 
+- **Easy implementation** - Shifted sparse attention, compatible with Flash-Attn.
+- **LongAlpaca** - The first open-source long instruction-following dataset.
 
 </div>
 </div>
@@ -97,9 +97,9 @@ If you are interested in **Long AI** and seeking collaboration, please feel free
 
 Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Muyang Li, Enze Xie, Yingcong Chen, Yao Lu, Song Han, **Yukang Chen**
 
-- **Efficient fine-tuning** - 100k context on a single 8x A100 with 1.8x speed up. 
-- **Easy implementation** - Shifted sparse attention compatible with Flash-Attn.
-- **LongAlpaca** - The first open-sourced long instruction-following dataset.
+- **Real-time Inference** - **20.7 FPS** generation on a single H100 GPU.
+- **Long Video Gen** - Up to **240-second** generation with interactive prompts. 
+- **Efficient Fine-tuning** - Extend short-clip models to minute-long in 32 H100 GPU-days.
 
 </div>
 </div>
@@ -121,9 +121,9 @@ Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Mu
 
 **Yukang Chen**, Wei Huang, Baifeng Shi, Qinghao Hu, Hanrong Ye, Ligeng Zhu, Zhijian Liu, Pavlo Molchanov, Jan Kautz, Xiaojuan Qi, Sifei Liu, Hongxu Yin, Yao Lu, Song Han
 
-- **Efficient fine-tuning** - 100k context on a single 8x A100 with 1.8x speed up. 
-- **Easy implementation** - Shifted sparse attention compatible with Flash-Attn.
-- **LongAlpaca** - The first open-sourced long instruction-following dataset.
+- **MR-SP System** - RL training on hour-long video (3,600 frames) with up to **2.1x** speedup. 
+- **LongVILA-7B Model** - Up to **8,192 frames**/video and **71.1%** on VideoMME (with subtitle).
+- **LongVideo-Reason Dataset** - **104K** long-video QA pairs with high-quality reasoning annotations.
 
 </div>
 </div>
@@ -145,9 +145,9 @@ Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Mu
 
 **Yukang Chen**, Fuzhao Xue, Dacheng Li, Qinghao Hu, Ligeng Zhu, Xiuyu Li, Yunhao Fang, Haotian Tang, Shang Yang, Zhijian Liu, Ethan He, Hongxu Yin, Pavlo Molchanov, Jan Kautz, Linxi Fan, Yuke Zhu, Yao Lu, Song Han
 
-- **Efficient fine-tuning** - 100k context on a single 8x A100 with 1.8x speed up. 
-- **Easy implementation** - Shifted sparse attention compatible with Flash-Attn.
-- **LongAlpaca** - The first open-sourced long instruction-following dataset.
+- **MM-SP System** - **2M-tokens** training on 256 GPUs, **1.4x** faster than Megatron. 
+- **LongVILA-7B** - **99.8%** accuracy on 6,000-frame (>1M tokens) needle-in-a-haystack.
+- **LongVILA-SFT Dataset** - **54K** high-quality long video QA pairs.
 
 </div>
 </div>
@@ -169,9 +169,9 @@ Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Mu
 
 **Yukang Chen**, Jianhui Liu, Xiangyu Zhang, Xiaojuan Qi, Jiaya Jia
 
-- **Efficient fine-tuning** - 100k context on a single 8x A100 with 1.8x speed up. 
-- **Easy implementation** - Shifted sparse attention compatible with Flash-Attn.
-- **LongAlpaca** - The first open-sourced long instruction-following dataset.
+- **Long-range Perception** - Extend range from **50m → 200m** with minimal latency overhead. 
+- **Compatible to Tracking** - **1st** on nuScenes LiDAR Multi-Object Tracking leaderboard (2022).
+- **Compatible to SAM** - VoxelNeXt x Segment Anything (<a href="https://github.com/dvlab-research/3D-Box-Segment-Anything"> <strong>3D-Box-Segment-Anything</strong></a>)
 
 </div>
 </div>
@@ -193,9 +193,8 @@ Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Mu
 
 **Yukang Chen**, Yanwei Li, Xiangyu Zhang, Jian Sun, Jiaya Jia
 
-- **Efficient fine-tuning** - 100k context on a single 8x A100 with 1.8x speed up. 
-- **Easy implementation** - Shifted sparse attention compatible with Flash-Attn.
-- **LongAlpaca** - The first open-sourced long instruction-following dataset.
+- **Learnable 3D Conv Shape** - Deformable sparse kernels guided by cubic importance maps.
+- **Multi-modal Extension** - Fuse important sparse features with RGB features.
 
 </div>
 </div>
@@ -213,5 +212,5 @@ Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Mu
 - 2025 World's Top 2% Scientists.
 - 2023 Final-list candidate of ByteDance Scholarship.
 - 2023 Winner of ScanNet Indoor Scene Understanding (CVPR 2023 ScanNet Workshop).
-- 2022 1st of nuScenes Lidar Multi-object Tracking Leaderboard.
+- 2022 1st of nuScenes LiDAR Multi-Object Tracking leaderboard.
 - 2019 Winner of COCO Detection Challenge (ICCV 2019 COCO Workshop).
