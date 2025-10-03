@@ -24,11 +24,11 @@ During my Ph.D. study, I worked closely with [Prof. Xiaojuan Qi](https://scholar
 
 I focus on **Long AI** - **Efficiently scaling AI to long horizons**.  
 This direction covers, but is not limited to, the following topics:
-- 📚 **Long-context LLMs**: Efficient FT of long-context LLMs via **sparse attention**.
+- 📚 **Long-context LLMs**: Efficient long-context LLMs via **sparse attention**.
 - 🎥 **Long-video VLMs**: Scaling VLMs to long videos via **sequence parallelism**.
 - 🧠 **Long-sequence Reasoning**: Long-sequence RL for LLMs/VLMs via **sequence parallelism**.
 - 🎬 **Long-video Generation**: Short→Long AR with efficient fine-tuning via **sparse attention**.
-- 🚗 **Long-range Autonomous Driving**: Long-range 3D perception via **sparse convolution**.
+- 🚗 **Long-range Autonomous Driving**: Long-range 3D perception in AD aut via **sparse convolution**.
 
 If you are interested in **Long AI** and seeking collaboration, please feel free to contact me via [Email](chenyukang2020@gmail.com).
 
