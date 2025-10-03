@@ -31,6 +31,9 @@ This direction covers, but is not limited to, the following topics:
 - 🚗 **Long-range Autonomous Driving**: Long-range 3D perception in AD via **sparse convolution**.
 
 If you are interested in **Long AI** and seeking collaboration, please feel free to contact me via [Email](chenyukang2020@gmail.com).
+<p align="center" style="border-radius: 10px">
+  <img src="https://github.com/yukang2017/yukang2017.github.io/raw/main/images/LongAI.png" width="100%" alt="logo"/>
+</p>
 
 
 # 🔥 News
