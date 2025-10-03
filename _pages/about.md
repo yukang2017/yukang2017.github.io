@@ -26,7 +26,7 @@ I focus on **Long AI** - **Efficiently scaling AI to long horizons**.
 This direction covers, but is not limited to, the following topics:
 - 🚗 **Long-range AD**: Long-range 3D perception via **sparse convolution**.
 - 🎥 **Long-video VLMs**: Scaling VLMs to long videos via **sequence parallelism**.
-- 🚀 **Long-context LLMs**: Efficient fine-tuning of long-context LLMs via **sparse attention**.
+- 📚 **Long-context LLMs**: Efficient fine-tuning of long-context LLMs via **sparse attention**.
 - 🧠 **Long-sequence Reasoning**: Long-sequence RL for LLMs/VLMs via **sequence parallelism**.
 - 🎬 **Long-video Generation**: Short→Long AR with efficient fine-tuning via **sparse attention**.
 
