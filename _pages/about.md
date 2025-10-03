@@ -28,7 +28,7 @@ This direction covers, but is not limited to, the following topics:
 - 🎥 **Long-video VLMs**: Scaling VLMs to long videos via **sequence parallelism**.
 - 🧠 **Long-sequence Reasoning**: Long-sequence RL for LLMs/VLMs via **sequence parallelism**.
 - 🎬 **Long-video Generation**: Short→Long AR with efficient fine-tuning via **sparse attention**.
-- 🚗 **Long-range Autonomous Driving**: Long-range 3D perception in AD aut via **sparse convolution**.
+- 🚗 **Long-range Autonomous Driving**: Long-range 3D perception in AD via **sparse convolution**.
 
 If you are interested in **Long AI** and seeking collaboration, please feel free to contact me via [Email](chenyukang2020@gmail.com).
 
