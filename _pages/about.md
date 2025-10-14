@@ -65,13 +65,16 @@ If you are interested in **Long AI** and seeking collaboration, please feel free
 <div class='paper-box'><div class='paper-box-image'><div><div class="badge">Arxiv 2025</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/Qerl-32B.png' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">
 
-[**QeRL: Beyond Efficiency, Quantization-enhanced Reinforcement Learning for LLMs**](https://arxiv.org/abs/xxx) 
+[**QeRL: Quantization-enhanced Reinforcement Learning for LLMs**](https://arxiv.org/abs/xxx) 
 <div style="display: inline">
     <a href="https://arxiv.org/abs/xxx"> <strong>[Paper]</strong></a>
     <a href="https://github.com/NVlabs/QeRL"> <strong>[Code]</strong></a>
     <a class="fakelink" onclick="$(this).siblings('.abstract').slideToggle()" ><strong>[Abstract]</strong></a>
     <div class="abstract"  style="overflow: hidden; display: none;">  
         <p> We propose QeRL, a Quantization-enhanced Reinforcement Learning framework for large language models (LLMs). While RL is essential for LLMs' reasoning capabilities, it is resource-intensive, requiring substantial GPU memory and long rollout durations. QeRL addresses these issues by combining NVFP4 quantization with Low-Rank Adaptation (LoRA), accelerating rollout phase of RL while reducing memory overhead. Beyond efficiency, our findings show that quantization noise increases policy entropy, enhancing exploration, and enabling the discovery of better strategies during RL. To further optimize exploration, QeRL introduces an Adaptive Quantization Noise (AQN) mechanism, which dynamically adjusts noise during training. Experiments demonstrate that QeRL delivers over 1.5× speedup in the rollout phase. Moreover, this is the first framework to enable RL training of a 32B LLM on a single H100 80GB GPU, while delivering overall speedups for RL training. It also achieves faster reward growth and higher final accuracy than 16-bit LoRA and QLoRA, while matching the performance of full-parameter fine-tuning on mathematical benchmarks such as GSM8K (90.8%) and MATH 500 (77.4%) in the 7B model. These results establish QeRL as an efficient and effective framework for RL training in LLMs. </p>
+    </div>
+<img src='https://img.shields.io/github/stars/NVlabs/QeRL.svg?style=social&label=Star' alt="QeRL" height="100%">
+</div>
 
 Wei Huang, Yi Ge, Shuai Yang, Yicheng Xiao, Huizi Mao, Yujun Lin, Hanrong Ye, Sifei Liu, Ka Chun Cheung, Hongxu Yin, Yao Lu, Xiaojuan Qi, Song Han, **Yukang Chen**
 
