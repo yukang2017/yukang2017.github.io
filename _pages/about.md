@@ -65,9 +65,9 @@ If you are interested in **Long AI** and seeking collaboration, please feel free
 <div class='paper-box'><div class='paper-box-image'><div><div class="badge">Arxiv 2025</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/Qerl-32B.png' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">
 
-[**QeRL: Quantization-enhanced Reinforcement Learning for LLMs**](https://arxiv.org/abs/xxx) 
+[**QeRL: Quantization-enhanced Reinforcement Learning for LLMs**](https://arxiv.org/abs/2510.11696) 
 <div style="display: inline">
-    <a href="https://arxiv.org/abs/xxx"> <strong>[Paper]</strong></a>
+    <a href="https://arxiv.org/abs/2510.11696"> <strong>[Paper]</strong></a>
     <a href="https://github.com/NVlabs/QeRL"> <strong>[Code]</strong></a>
     <a class="fakelink" onclick="$(this).siblings('.abstract').slideToggle()" ><strong>[Abstract]</strong></a>
     <div class="abstract"  style="overflow: hidden; display: none;">  
