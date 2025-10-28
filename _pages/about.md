@@ -50,6 +50,7 @@ If you are interested in **Long AI** and seeking collaboration, please feel free
 
 
 # 💬 Invited Talks and Report
+- *2025.10*: Invited Talk by ICCV 2025 HiGen Workshop (see **[link](https://higen-2025.github.io)**).
 - *2025.10*: **[LongLive](https://github.com/NVlabs/LongLive)** was reported by **新智元** (see **[link](https://mp.weixin.qq.com/s/318DMk2thfpoSFT1oOzBXg)**).
 - *2025.07*: **[Long-RL](https://github.com/NVlabs/Long-RL)** was reported by **机器之心** (see **[link](https://www.jiqizhixin.com/articles/2025-07-14-2)**).
 - *2023.10*: **[LongLoRA](https://github.com/dvlab-research/LongLoRA)** was reported by **新智元** (see **[link](https://mp.weixin.qq.com/s/8QoKHgwjxv7fG_CCqouU8w)**).
