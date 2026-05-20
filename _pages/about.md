@@ -37,6 +37,7 @@ If you are interested in **Long AI** and seeking collaboration, please feel free
 
 
 # 🔥 News
+- *2026.04*: &nbsp;🎉🎉 **[TriAttention](https://github.com/WeianMao/triattention)** is accepted by **ICML'26**!
 - *2026.01*: &nbsp;🎉🎉 **[LongLive](https://github.com/NVlabs/LongLive)** and **[QeRL](https://github.com/NVlabs/QeRL)** are accepted by **ICLR'26**!
 - *2025.09*: &nbsp;🎉🎉 **[Long-RL](https://github.com/NVlabs/Long-RL)** is accepted by **Neurips'25**!
 - *2025.01*: &nbsp;🎉🎉 **[LongVILA](https://arxiv.org/pdf/2408.10188)** is accepted by **ICLR'25**!
@@ -51,6 +52,7 @@ If you are interested in **Long AI** and seeking collaboration, please feel free
 
 
 # 💬 Invited Talks and Report
+- *2026.05*: **[TriAttention](https://github.com/WeianMao/triattention)** was reported by **新智元** (see **[link](https://mp.weixin.qq.com/s/iUQyNUnphYiJAacVKwViAg)**).
 - *2025.10*: Invited Talk by ICCV 2025 HiGen Workshop (see **[link](https://higen-2025.github.io)**).
 - *2025.10*: **[LongLive](https://github.com/NVlabs/LongLive)** was reported by **新智元** (see **[link](https://mp.weixin.qq.com/s/318DMk2thfpoSFT1oOzBXg)**).
 - *2025.07*: **[Long-RL](https://github.com/NVlabs/Long-RL)** was reported by **机器之心** (see **[link](https://www.jiqizhixin.com/articles/2025-07-14-2)**).
@@ -63,6 +65,31 @@ If you are interested in **Long AI** and seeking collaboration, please feel free
 
 
 # 📝 Representative Publications ([Full List](https://scholar.google.com/citations?user=6p0ygKUAAAAJ))
+
+<div class='paper-box'><div class='paper-box-image'><div><div class="badge">ICLR 2026</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/longlive-logo.png' alt="sym" width="100%"></div></div>
+<div class='paper-box-text' markdown="1">
+
+[**LongLive 2.0: An NVFP4 Parallel Infrastructure for Long Video Generation**](https://arxiv.org/abs/2509.22622) 
+<div style="display: inline">
+    <a href="https://arxiv.org/abs/2605.18739"> <strong>[Paper]</strong></a>
+    <a href="https://github.com/NVlabs/LongLive"> <strong>[Code]</strong></a>
+    <a href="https://nvlabs.github.io/LongLive/LongLive2"> <strong>[Demo]</strong></a>
+    <a class="fakelink" onclick="$(this).siblings('.abstract').slideToggle()" ><strong>[Abstract]</strong></a>
+    <div class="abstract"  style="overflow: hidden; display: none;">  
+        <p> We present LongLive-2.0, an NVFP4-based parallel infrastructure throughout the full training and inference workflow of long video generation, addressing speed and memory bottlenecks. For training, we introduce sequence-parallel autoregressive (AR) training, instantiated as Balanced SP, which co-designs the efficient teacher-forcing layout with SP execution by pairing clean-history and noisy-target temporal chunks on each rank, enabling a natural teacher-forcing mask with SP-aware chunked VAE encoding. Combined with NVFP4 precision, it reduces GPU memory cost and accelerates GEMM computation during training, the proportion of which increases as video length grows. Moreover, we show that a high-quality infrastructure and dataset enable a remarkably clean training pipeline. Unlike existing Self-Forcing series methods that rely on ODE initialization and subsequent distribution matching distillation (DMD), LongLive-2.0 directly tunes a diffusion model into a long, multi-shot, interactive auto-regressive (AR) diffusion model. It can be further converted to real-time generation (4 to 2 denoising steps) with standalone LoRA weights. For inference on Blackwell GPUs, we enable W4A4 NVFP4 inference, quantize KV cache into NVFP4 for memory savings, and boost end-to-end throughput with asynchronous streaming VAE decoding. On non-Blackwell GPU architectures, we deploy SP inference to match the speed on Blackwell GPUs, while the quantized KV cache can lower inter-GPU communication of SP. Experiments show up to 2.15x speedup in training, and 1.84x in inference. LongLive-2.0-5B achieves 45.7 FPS inference while attaining strong performance on benchmarks. To our knowledge, LongLive-2.0 is the first NVFP4 training and inference system for long video generation. </p>
+    </div>
+<img src='https://img.shields.io/github/stars/NVlabs/LongLive.svg?style=social&label=Star' alt="LongLive" height="100%">
+</div>
+
+**Yukang Chen** *, Luozhou Wang*, Wei Huang*, Shuai Yang*, Bohan Zhang, Yicheng Xiao, Ruihang Chu, Weian Mao, Qixin Hu, Shaoteng Liu, Yuyang Zhao, Huizi Mao, Ying-Cong Chen, Enze Xie, Xiaojuan Qi, Song Han
+
+- **The first open-source FP4 Infra for Long Video Gen**.
+- Support real-video training, few-step distillation, multi-shot, sequence-parallel, NVFP4 KV cache, and async VAE decoding. 
+- **Real-time Inference** - 45.7 FPS on 5B model.
+
+</div>
+</div>
+
 
 <div class='paper-box'><div class='paper-box-image'><div><div class="badge">ICLR 2026</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/longlive-logo.png' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">
