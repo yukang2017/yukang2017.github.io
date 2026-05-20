@@ -66,7 +66,7 @@ If you are interested in **Long AI** and seeking collaboration, please feel free
 
 # 📝 Representative Publications ([Full List](https://scholar.google.com/citations?user=6p0ygKUAAAAJ))
 
-<div class='paper-box'><div class='paper-box-image'><div><div class="badge">ICLR 2026</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/longlive-logo.png' alt="sym" width="100%"></div></div>
+<div class='paper-box'><div class='paper-box-image'><div><div class="badge">ICLR 2026</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/LongLive2.0-logo.png' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">
 
 [**LongLive 2.0: An NVFP4 Parallel Infrastructure for Long Video Generation**](https://arxiv.org/abs/2509.22622) 
@@ -211,54 +211,6 @@ Wei Huang, Yi Ge, Shuai Yang, Yicheng Xiao, Huizi Mao, Yujun Lin, Hanrong Ye, Si
 
 </div>
 </div>
-
-
-<div class='paper-box'><div class='paper-box-image'><div><div class="badge">CVPR 2023</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/voxelnext-log.gif' alt="sym" width="100%"></div></div>
-<div class='paper-box-text' markdown="1">
-
-[**VoxelNeXt: Fully Sparse VoxelNet for 3D Object Detection and Tracking**](https://arxiv.org/abs/2303.11301) 
-<div style="display: inline">
-    <a href="https://arxiv.org/abs/2303.11301"> <strong>[Paper]</strong></a>
-    <a href="https://github.com/dvlab-research/VoxelNeXt"> <strong>[Code]</strong></a>
-    <a class="fakelink" onclick="$(this).siblings('.abstract').slideToggle()" ><strong>[Abstract]</strong></a>
-    <div class="abstract"  style="overflow: hidden; display: none;">  
-        <p> 3D object detectors usually rely on hand-crafted proxies, e.g., anchors or centers, and translate well-studied 2D frameworks to 3D. Thus, sparse voxel features need to be densified and processed by dense prediction heads, which inevitably costs extra computation. In this paper, we instead propose VoxelNext for fully sparse 3D object detection. Our core insight is to predict objects directly based on sparse voxel features, without relying on hand-crafted proxies. Our strong sparse convolutional network VoxelNeXt detects and tracks 3D objects through voxel features entirely. It is an elegant and efficient framework, with no need for sparse-to-dense conversion or NMS post-processing. Our method achieves a better speed-accuracy trade-off than other mainframe detectors on the nuScenes dataset. For the first time, we show that a fully sparse voxel-based representation works decently for LIDAR 3D object detection and tracking. Extensive experiments on nuScenes, Waymo, and Argoverse2 benchmarks validate the effectiveness of our approach. Without bells and whistles, our model outperforms all existing LIDAR methods on the nuScenes tracking test benchmark. </p>
-    </div>
-<img src='https://img.shields.io/github/stars/dvlab-research/VoxelNeXt.svg?style=social&label=Star' alt="VoxelNeXt" height="100%">
-</div>
-
-**Yukang Chen**, Jianhui Liu, Xiangyu Zhang, Xiaojuan Qi, Jiaya Jia
-
-- **Long-range Perception** - **50m → 200m** with minimal latency overhead. 
-- **Compatible to Tracking** - **1st** on nuScenes LiDAR Tracking leaderboard (2022).
-- **VoxelNeXt x Segment Anything** - <a href="https://github.com/dvlab-research/3D-Box-Segment-Anything"> <strong>3D-Box-Segment-Anything</strong></a>
-
-</div>
-</div>
-
-
-<div class='paper-box'><div class='paper-box-image'><div><div class="badge">CVPR 2022 Oral</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/focalsconv-logo.png' alt="sym" width="100%"></div></div>
-<div class='paper-box-text' markdown="1">
-
-[**Focal Sparse Convolutional Networks for 3D Object Detection**](https://arxiv.org/abs/2204.12463) 
-<div style="display: inline">
-    <a href="https://arxiv.org/abs/2204.12463"> <strong>[Paper]</strong></a>
-    <a href="https://github.com/dvlab-research/FocalsConv"> <strong>[Code]</strong></a>
-    <a class="fakelink" onclick="$(this).siblings('.abstract').slideToggle()" ><strong>[Abstract]</strong></a>
-    <div class="abstract"  style="overflow: hidden; display: none;">  
-        <p> Non-uniformed 3D sparse data, e.g., point clouds or voxels in different spatial positions, make contribution to the task of 3D object detection in different ways. Existing basic components in sparse convolutional networks (Sparse CNNs) process all sparse data, regardless of regular or submanifold sparse convolution. In this paper, we introduce two new modules to enhance the capability of Sparse CNNs, both are based on making feature sparsity learnable with position-wise importance prediction. They are focal sparse convolution (Focals Conv) and its multi-modal variant of focal sparse convolution with fusion, or Focals Conv-F for short. The new modules can readily substitute their plain counterparts in existing Sparse CNNs and be jointly trained in an end-to-end fashion. For the first time, we show that spatially learnable sparsity in sparse convolution is essential for sophisticated 3D object detection. Extensive experiments on the KITTI, nuScenes and Waymo benchmarks validate the effectiveness of our approach. Without bells and whistles, our results outperform all existing single-model entries on the nuScenes test benchmark at the paper submission time. </p>
-    </div>
-<img src='https://img.shields.io/github/stars/dvlab-research/FocalsConv.svg?style=social&label=Star' alt="Focal Sparse Conv" height="100%">
-</div>
-
-**Yukang Chen**, Yanwei Li, Xiangyu Zhang, Jian Sun, Jiaya Jia
-
-- **Learnable Conv Shape** - Deformable kernels by cubic importance maps.
-- **Multi-modal Extension** - Fuse important sparse features with RGB features.
-
-</div>
-</div>
-
 
 # 📋 Academic Services
 
