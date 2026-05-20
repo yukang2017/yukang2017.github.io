@@ -84,8 +84,9 @@ If you are interested in **Long AI** and seeking collaboration, please feel free
 **Yukang Chen** *, Luozhou Wang*, Wei Huang*, Shuai Yang*, Bohan Zhang, Yicheng Xiao, Ruihang Chu, Weian Mao, Qixin Hu, Shaoteng Liu, Yuyang Zhao, Huizi Mao, Ying-Cong Chen, Enze Xie, Xiaojuan Qi, Song Han
 
 - **The first open-source FP4 Infra for Long Video Gen**.
-- Support real-video training, few-step distillation, multi-shot, sequence-parallel, NVFP4 KV cache, and async VAE decoding. 
 - **Real-time Inference** - 45.7 FPS on 5B model.
+- **Support real-video training, few-step distillation, multi-shot, sequence-parallel, NVFP4 KV cache, and async VAE decoding**. 
+
 
 </div>
 </div>
