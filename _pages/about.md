@@ -133,7 +133,7 @@ Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Mu
 
 Weian Mao, Xi Lin, Wei Huang, Yuxin Xie, Tianfu Fu, Bohan Zhuang, Song Han, **Yukang Chen**
 
-- **High Efficiency** - 2.5x higher throughput and 10.7x KV memory reduction.
+- **High Efficiency** - 2.5x higher FPS and 10.7x KV memory reduction in LLMs.
 - **OpenClaw** - 32B LLM on a 24GB GPU. 
 - **Long Video Gen** - Reducing 50% KV Cache in AR Long Video Generation.
 
