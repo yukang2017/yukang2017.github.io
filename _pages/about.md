@@ -120,22 +120,22 @@ Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Mu
 <div class='paper-box'><div class='paper-box-image'><div><div class="badge">ICLR 2026</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/Qerl-32B.png' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">
 
-[**QeRL: Quantization-enhanced Reinforcement Learning for LLMs**](https://arxiv.org/abs/2510.11696) 
+[**TriAttention: Efficient Long Reasoning with Trigonometric KV Compression**](https://arxiv.org/abs/2510.11696) 
 <div style="display: inline">
-    <a href="https://arxiv.org/abs/2510.11696"> <strong>[Paper]</strong></a>
-    <a href="https://github.com/NVlabs/QeRL"> <strong>[Code]</strong></a>
+    <a href="https://arxiv.org/abs/2604.04921"> <strong>[Paper]</strong></a>
+    <a href="https://github.com/WeianMao/triattention"> <strong>[Code]</strong></a>
     <a class="fakelink" onclick="$(this).siblings('.abstract').slideToggle()" ><strong>[Abstract]</strong></a>
     <div class="abstract"  style="overflow: hidden; display: none;">  
-        <p> We propose QeRL, a Quantization-enhanced Reinforcement Learning framework for large language models (LLMs). While RL is essential for LLMs' reasoning capabilities, it is resource-intensive, requiring substantial GPU memory and long rollout durations. QeRL addresses these issues by combining NVFP4 quantization with Low-Rank Adaptation (LoRA), accelerating rollout phase of RL while reducing memory overhead. Beyond efficiency, our findings show that quantization noise increases policy entropy, enhancing exploration, and enabling the discovery of better strategies during RL. To further optimize exploration, QeRL introduces an Adaptive Quantization Noise (AQN) mechanism, which dynamically adjusts noise during training. Experiments demonstrate that QeRL delivers over 1.5× speedup in the rollout phase. Moreover, this is the first framework to enable RL training of a 32B LLM on a single H100 80GB GPU, while delivering overall speedups for RL training. It also achieves faster reward growth and higher final accuracy than 16-bit LoRA and QLoRA, while matching the performance of full-parameter fine-tuning on mathematical benchmarks such as GSM8K (90.8%) and MATH 500 (77.4%) in the 7B model. These results establish QeRL as an efficient and effective framework for RL training in LLMs. </p>
+        <p> Extended reasoning in large language models (LLMs) creates severe KV cache memory bottlenecks. Leading KV cache compression methods estimate KV importance using attention scores from recent post-RoPE queries. However, queries rotate with position during RoPE, making representative queries very few, leading to poor top-key selection and unstable reasoning. To avoid this issue, we turn to the pre-RoPE space, where we observe that Q and K vectors are highly concentrated around fixed non-zero centers and remain stable across positions -- Q/K concentration. We show that this concentration causes queries to preferentially attend to keys at specific distances (e.g., nearest keys), with the centers determining which distances are preferred via a trigonometric series. Based on this, we propose TriAttention to estimate key importance by leveraging these centers. Via the trigonometric series, we use the distance preference characterized by these centers to score keys according to their positions, and also leverage Q/K norms as an additional signal for importance estimation. On AIME25 with 32K-token generation, TriAttention matches Full Attention reasoning accuracy while achieving 2.5x higher throughput or 10.7x KV memory reduction, whereas leading baselines achieve only about half the accuracy at the same efficiency. TriAttention enables OpenClaw deployment on a single consumer GPU, where long context would otherwise cause out-of-memory with Full Attention. </p>
     </div>
 <img src='https://img.shields.io/github/stars/NVlabs/QeRL.svg?style=social&label=Star' alt="QeRL" height="100%">
 </div>
 
-Wei Huang, Yi Ge, Shuai Yang, Yicheng Xiao, Huizi Mao, Yujun Lin, Hanrong Ye, Sifei Liu, Ka Chun Cheung, Hongxu Yin, Yao Lu, Xiaojuan Qi, Song Han, **Yukang Chen**
+Weian Mao, Xi Lin, Wei Huang, Yuxin Xie, Tianfu Fu, Bohan Zhuang, Song Han, **Yukang Chen**
 
-- **Memory Saving** - **33B** LLMs RL on a single H100 GPU.
-- **Training Speedup** - **1.7x** end-to-end training speedup. 
-- **High Performance** - Comparable accuracy to full training.
+- **High Efficiency** - 2.5x higher throughput and 10.7x KV memory reduction.
+- **OpenClaw** - 32B LLM on a 24GB GPU. 
+- **Long Video Gen** - Reducing 50% KV Cache in AR Long Video Generation.
 
 </div>
 </div>
