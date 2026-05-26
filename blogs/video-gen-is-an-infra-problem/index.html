@@ -1,8 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>Why Video Gen Is an Infra Problem</title>
 <style>
 
@@ -199,54 +200,125 @@ td:first-child { font-weight: 700; color: #111827; }
   .post-meta span { display: inline-block; margin-right: 0.6rem; }
 }
 
+
+.upcoming-posts {
+  margin-top: 0.35rem;
+}
+.upcoming-posts li {
+  margin: 0.28rem 0;
+}
+
+
+/* Compact memory-failure example: first/last frames + video */
+.memory-example {
+  margin: 1.75rem 0 2.1rem;
+}
+.frame-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  align-items: start;
+}
+.frame-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.065);
+}
+.frame-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.frame-label {
+  position: absolute;
+  top: 0.55rem;
+  left: 0.55rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(8, 12, 20, 0.72);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  backdrop-filter: blur(4px);
+}
+.frame-label.warning {
+  background: rgba(184, 34, 23, 0.84);
+}
+figure.compact-video {
+  margin-top: 1.05rem;
+}
+figure.compact-video video {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.memory-example figcaption {
+  max-width: 840px;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (max-width: 760px) {
+  .frame-pair { grid-template-columns: 1fr; }
+  .frame-label { font-size: 0.75rem; }
+}
 </style>
 </head>
 <body>
-
 <main>
 <h1 id="why-video-gen-is-an-infra-problem">Why Video Gen Is an Infra Problem</h1>
 <div aria-label="Article metadata" class="post-meta">
-<p><span>📝 <a href="https://yukangchen.com" target="_blank" rel="noopener noreferrer">Yukang Chen</a>, <a href="https://wileewang.github.io" target="_blank" rel="noopener noreferrer">Luozhou Wang</a>, <a href="https://aaron-weihuang.com" target="_blank" rel="noopener noreferrer">Wei Huang</a>, <a href="https://andysonys.github.io" target="_blank" rel="noopener noreferrer">Shuai Yang</a>, <a href="https://weianmao.github.io" target="_blank" rel="noopener noreferrer">Weian Mao</a>, <a href="https://hanlab.mit.edu/songhan" target="_blank" rel="noopener noreferrer">Song Han</a></span><br/> <span>📅 May 26, 2026</span> <span>⏱️ 8 min read</span></p>
+<p><span>📝 <a href="https://yukangchen.com" rel="noopener noreferrer" target="_blank">Yukang Chen</a>, <a href="https://wileewang.github.io" rel="noopener noreferrer" target="_blank">Luozhou Wang</a>, <a href="https://aaron-weihuang.com" rel="noopener noreferrer" target="_blank">Wei Huang</a>, <a href="https://andysonys.github.io" rel="noopener noreferrer" target="_blank">Shuai Yang</a>, <a href="https://weianmao.github.io" rel="noopener noreferrer" target="_blank">Weian Mao</a>, <a href="https://hanlab.mit.edu/songhan" rel="noopener noreferrer" target="_blank">Song Han</a></span><br/> <span>📅 May 26, 2026</span> <span>⏱️ 10 min read</span></p>
 </div>
 <p class="lead">The first wave of modern video generation was about capability: Sora changed how people thought about the field by showing that scaled video models could move beyond short clips toward minute-long, high-fidelity videos across variable durations, resolutions, and aspect ratios <a href="#ref-1">[1]</a>. The next wave is about complexity: models such as Seedance 2.0 suggest that video generation is becoming multimodal, controllable, editable, audio-video synchronized, and low-latency <a href="#ref-2">[2]</a>.</p>
-<p>This shift changes the question.</p>
+<p>Now, this shift changes the question.</p>
 <blockquote><p>Can the model generate a beautiful video? → Can the system generate a long, consistent, controllable video under real memory, latency, and deployment constraints?</p></blockquote>
 <p>That is why I think video generation is becoming an infrastructure problem. A good video model is still essential, but it is no longer the whole story. The user does not experience a model in isolation. The user experiences a system that has to remember, decode, schedule, compress, parallelize, and deliver pixels.</p>
 <p class="thesis">A beautiful demo proves capability. Infrastructure turns that capability into something long, fast, stable, affordable, and deployable.</p>
-<nav class="toc" aria-label="Contents">
-<div class="toc-title">Contents</div>
-<ol>
-<li><a href="#sec-1">A beautiful demo is not a usable video system</a></li>
-<li><a href="#sec-2">The longer the video, the more memory matters</a></li>
-<li><a href="#sec-3">Real-time means system, not just model FPS</a></li>
-<li><a href="#sec-4">Consistency is a memory problem</a></li>
-<li><a href="#sec-5">Efficiency is a deployment problem</a></li>
-<li><a href="#sec-6">Training and serving must be designed together</a></li>
-<li><a href="#sec-7">LongLive 2.0 as a case study</a></li>
-<li><a href="#closing-video-gen-is-an-infra-problem">Closing: Video Gen Is an Infra Problem</a></li>
-</ol>
-</nav>
-
+<nav aria-label="Contents" class="toc"><div class="toc-title">Contents</div><ol><li><a href="#sec-1">A beautiful demo is not a usable video system</a></li><li><a href="#sec-2">The longer the video, the more memory matters</a></li><li><a href="#sec-3">Real-time means system, not just FPS of DiT</a></li><li><a href="#sec-4">Efficiency is a deployment problem</a></li><li><a href="#sec-5">Training and serving must be designed together</a></li><li><a href="#sec-6">LongLive 2.0 as a case study</a></li><li><a href="#closing-video-gen-is-an-infra-problem">Closing: Video Gen Is an Infra Problem</a></li></ol></nav>
 <h2 id="sec-1">1. A beautiful demo is not a usable video system</h2>
 <p>A beautiful sample is the starting point, not the finish line. It shows that the model has learned motion, appearance, and some notion of physical or semantic structure. But a usable video system has to answer harder questions: can it keep a character consistent for a minute? Can it generate the next shot without forgetting the previous one? Can it return pixels fast enough for users to feel it is responsive? Can it run within a realistic memory and cost budget?</p>
 <p>This is the difference between a <em>demo</em> and an <em>infrastructure</em>. A demo can be judged by one impressive output. Infrastructure is judged by what happens across many prompts, long durations, multiple shots, limited hardware, and real deployment constraints.</p>
-<div class="problem-box"><strong>Capability asks:</strong> “Can we generate this video?”<br/><strong>Infrastructure asks:</strong> “Can we generate it long, fast, stable, affordable, and repeatedly?”</div>
+<div class="problem-box"><strong>Capability asks:</strong> “Can we generate this video?”<br/><strong>Infrastructure asks:</strong> “Can we generate it long, fast, stable, and affordable?”</div>
 <p>This distinction matters because video generation is moving from isolated clips to systems that need memory, scheduling, compression, and serving logic. Once we care about real usage, the bottleneck is no longer only the denoising model.</p>
 <figure class="video">
-<video controls muted playsinline loop preload="metadata" poster="blog_assets/cozy_red_room_poster.jpg">
-<source src="blog_assets/cozy_red_room.mp4" type="video/mp4">
+<video controls="" loop="" muted="" playsinline="" poster="blog_assets/video1_poster.jpg" preload="metadata">
+<source src="blog_assets/video1_long_video_demo.mp4" type="video/mp4"/>
 </video>
-<figcaption><strong>Video 1.</strong> A generated long video example. A demo like this shows capability, but turning it into a practical system requires memory, end-to-end latency optimization, and deployment-aware design.</figcaption>
+<figcaption><strong>Video 1.</strong> A 60-second long video example generated by LongLive 2.0. A demo like this shows capability, and turning it into a practical system requires memory, end-to-end latency optimization, and deployment-aware design.</figcaption>
 </figure>
-
 <h2 id="sec-2">2. The longer the video, the more memory matters</h2>
 <p>A tempting mental model is:</p>
 <blockquote><p>If a model can generate a good 10-second video, then a 60-second video should just be six 10-second videos stitched together.</p></blockquote>
 <p>This is wrong. A 60-second video is not only longer; it changes the nature of the problem. Later parts of the video depend on earlier parts. A character should remain the same person. A room should preserve its layout. A camera motion should continue naturally. A shot transition should change what needs to change, but preserve what should remain global.</p>
 <p>In other words, long video generation needs memory. The system has to decide what to remember, what to refresh, what to compress, and what to forget. Theoretical duration is not the same as effective duration: a model may technically produce 60 seconds of video, but useful memory, visual consistency, and deployment efficiency across those 60 seconds are separate questions.</p>
 <p>Long video generation is not short video generation repeated over time. It is an online process with memory, scheduling, synchronization, and error accumulation.</p>
-
-<h2 id="sec-3">3. Real-time means system, not just model FPS</h2>
+<p>One visible failure mode is that the video can carry the wrong memory forward. In the example below, the first frame contains an empty room, but the last frame still shows a residual ghost of that early frame. The red box highlights this leftover visual memory.</p>
+<figure class="memory-example" id="memory-failure-example">
+<div class="frame-pair">
+<div class="frame-card">
+<span class="frame-label">First frame</span>
+<img alt="First frame of the long video: an empty room with a chair and windows." src="blog_assets/memory_first_frame.jpg"/>
+</div>
+<div class="frame-card">
+<span class="frame-label warning">Last frame · residual ghost</span>
+<img alt="Last frame of the long video with a red box showing residual ghosting from the first frame." src="blog_assets/memory_last_frame_residual_ghost.jpg"/>
+</div>
+</div>
+<figcaption><strong>Figure 1.</strong> A memory failure in long video generation. The first frame should no longer dominate later content, but a residual ghost from the initial room remains visible in the last frame.</figcaption>
+</figure>
+<figure class="video compact-video">
+<video controls="" muted="" playsinline="" poster="blog_assets/video2_memory_failure_poster.jpg" preload="metadata">
+<source src="blog_assets/video2_memory_failure.mp4" type="video/mp4"/>
+</video>
+<figcaption><strong>Video 2.</strong> The corresponding generated video. This example illustrates why long video generation needs a clean memory mechanism, not just the ability to produce more frames.</figcaption>
+</figure>
+<h2 id="sec-3">3. Real-time means system, not just FPS of DiT</h2>
 <p>In many-step diffusion pipelines, the DiT denoiser dominates latency, so it is natural to focus on reducing sampling steps or accelerating transformer throughput. But as video generation moves toward fewer steps, autoregressive decoding, KV caching, and low-precision inference, hidden system costs start to surface: VAE decoding, KV-cache updates, synchronization, memory transfer, and runtime scheduling.</p>
 <p>CausVid illustrates this shift by turning bidirectional video diffusion into an autoregressive few-step generator, enabling streaming generation at 9.4 FPS on a single GPU with KV caching <a href="#ref-4">[4]</a>. LTX-Video shows a similar trend from another angle: it co-designs the Video-VAE and denoising transformer with a highly compressed latent space, reporting faster-than-real-time generation <a href="#ref-5">[5]</a>.</p>
 <p>The key point is simple: users do not experience model-only FPS. Users experience end-to-end latency.</p>
@@ -260,45 +332,27 @@ td:first-child { font-weight: 700; color: #111827; }
 <p>Most discussions focus on the denoising engine. But in long video generation, VAE decoding, KV-cache movement, GPU synchronization, CPU-GPU transfer, and multi-shot scheduling can become large enough to change the architecture of the system.</p>
 <blockquote><p>A video model is not truly fast unless the user receives pixels fast.</p></blockquote>
 <figure>
-<img src="blog_assets/longlive_framework.gif" alt="Animated LongLive 2.0 framework overview showing training infrastructure and inference infrastructure.">
-<figcaption><strong>Figure 1.</strong> LongLive 2.0 as an end-to-end infrastructure. Training, few-step distillation, NVFP4 execution, KV-cache management, parallel dequantization, and asynchronous decoding are optimized together instead of being treated as separate components.</figcaption>
+<img alt="Animated LongLive 2.0 framework overview showing training infrastructure and inference infrastructure." src="blog_assets/fig1_longlive_framework.gif"/>
+<figcaption><strong>Figure 2.</strong> LongLive 2.0 as an end-to-end infrastructure. Training, few-step distillation, NVFP4 execution, KV-cache management, parallel dequantization, and asynchronous decoding are optimized together instead of being treated as separate components.</figcaption>
 </figure>
-
-<h2 id="sec-4">4. Consistency is a memory problem</h2>
-<p>Long-video consistency is often described as a quality problem, but it is also a memory problem. If the system cannot store, compress, retrieve, and update history properly, the model does not merely become slower; it forgets who the character is, where the scene is, and how the motion should evolve.</p>
-<p>For multi-shot generation, memory is not uniform. Some memory should persist across the whole video, such as identity and long-horizon anchors. Some memory should be refreshed when the scene changes, such as local layout and current-shot context. This is why LongLive 2.0 uses both a global-level sink and a shot-level sink for streaming multi-shot inference.</p>
-<figure>
-<img src="blog_assets/multishot_attention_sink.gif" alt="Animated multi-shot attention sink diagram showing Shot 1, Shot 2, and Shot 3 with global-level and shot-level sinks.">
-<figcaption><strong>Figure 2.</strong> Multi-shot attention sink for streaming multi-shot inference. The global-level sink remains across shots, while the shot-level sink is refreshed as the scene changes.</figcaption>
-</figure>
-<p>This also reframes KV-cache compression. It is not only about saving memory; it is about preserving enough useful working memory for the video to remain coherent. Quant VideoGen similarly identifies KV-cache memory as a key bottleneck for autoregressive video diffusion, where constrained KV-cache budgets can hurt long-horizon consistency in identity, layout, and motion <a href="#ref-6">[6]</a>.</p>
-<blockquote><p>Memory efficiency and temporal consistency are the same problem viewed from two layers of the stack.</p></blockquote>
-
-<h2 id="sec-5">5. Efficiency is a deployment problem</h2>
+<h2 id="sec-4">4. Efficiency is a deployment problem</h2>
 <p>Efficiency is not just about making one kernel faster. In deployment, every hidden cost becomes visible: decoding latents into pixels, moving data between devices, synchronizing workers, storing history, and serving multiple requests under a fixed hardware budget.</p>
 <p>A common benchmarking mistake is to report denoising speed and treat VAE decoding as a fixed tax. For short videos, this approximation may be acceptable. For long videos, it becomes misleading. VAE decoding affects end-to-end latency, peak memory, streaming behavior, and the shape of the runtime pipeline.</p>
 <figure>
-<img src="blog_assets/async_vae_decoding.gif" alt="Animated chunk-by-chunk asynchronous VAE decoding pipeline.">
+<img alt="Animated chunk-by-chunk asynchronous VAE decoding pipeline." src="blog_assets/fig2_async_vae_decoding.gif"/>
 <figcaption><strong>Figure 3.</strong> Chunk-by-chunk asynchronous VAE decoding. The model can continue generating later latent chunks while the VAE decodes earlier chunks into video.</figcaption>
 </figure>
 <p>The same principle applies to low precision and KV-cache compression. These techniques only help deployment if their overhead does not create a new bottleneck. A compressed KV cache is useful only if dequantization is fast enough. A faster DiT is useful only if the VAE and data transfers do not dominate the tail latency.</p>
 <blockquote><p>Efficiency is a system property, not a single-module benchmark.</p></blockquote>
-
-<h2 id="sec-6">6. Training and serving must be designed together</h2>
+<h2 id="sec-5">5. Training and serving must be designed together</h2>
 <p>Another trap is to train in one world and serve in another. Low precision is often described as compression, but for long video generation it is also an alignment problem. In autoregressive video, quantization errors are not isolated: they can enter the generated history, be stored in the KV cache, and condition future chunks.</p>
 <figure>
-<img src="blog_assets/training_aware_nvfp4.png" alt="Qualitative comparison between post-training NVFP4 and training-aware NVFP4 across three shots.">
+<img alt="Qualitative comparison between post-training NVFP4 and training-aware NVFP4 across three shots." src="blog_assets/fig3_training_aware_nvfp4.png"/>
 <figcaption><strong>Figure 4.</strong> Training-aware NVFP4 versus post-training NVFP4. Training-inference alignment helps preserve visual details across multiple shots.</figcaption>
 </figure>
-<p>The same co-design principle also appears in distributed training. Adding more GPUs does not automatically make long-video training efficient. Under teacher forcing, a naive sequence-parallel layout can place clean history on many ranks while concentrating the noisy target and loss on one rank, creating computation imbalance.</p>
-<figure>
-<img src="blog_assets/traditional_sp.gif" alt="Animated traditional sequence parallelism under teacher forcing showing computation imbalance.">
-<figcaption><strong>Figure 5.</strong> Teacher forcing plus traditional sequence parallelism can create computation imbalance: clean chunks are distributed across ranks, while the noisy target and loss concentrate on one rank.</figcaption>
-</figure>
-<p>This is why training and serving should be treated as one design problem. The numerical format, KV cache, LoRA handling, dequantization kernels, teacher-forcing layout, and distributed partitioning all affect whether the final system is stable and efficient <a href="#ref-3">[3]</a>.</p>
+<p>This is why training and serving should be treated as one design problem. The numerical format, KV cache, LoRA handling, and dequantization kernels all affect whether the deployed system remains stable and efficient <a href="#ref-3">[3]</a>.</p>
 <blockquote><p>Good infrastructure reduces the gap between how a model is trained and how it is actually used.</p></blockquote>
-
-<h2 id="sec-7">7. LongLive 2.0 as a case study</h2>
+<h2 id="sec-6">6. LongLive 2.0 as a case study</h2>
 <p>LongLive 2.0 is our attempt to treat long video generation as an end-to-end infrastructure problem rather than a collection of isolated optimizations. The goal is not only to generate longer videos, but to make the full pipeline faster, lighter, more stable, and more practical.</p>
 <div class="table-wrap">
 <table>
@@ -312,27 +366,26 @@ td:first-child { font-weight: 700; color: #111827; }
 <tr><td>Few-step generation</td><td>Standalone DMD LoRA for distillation and deployment flexibility</td></tr>
 </tbody>
 </table>
-</div>
+</div><p>The same system-design issue appears in distributed training. Adding more GPUs does not automatically make long-video training efficient. Under teacher forcing, a naive sequence-parallel layout can place clean history on many ranks while concentrating the noisy target and loss on one rank, creating computation imbalance.</p><figure>
+<img alt="Animated traditional sequence parallelism under teacher forcing showing computation imbalance." src="blog_assets/fig4_traditional_sp.gif"/>
+<figcaption><strong>Figure 5.</strong> Teacher forcing plus traditional sequence parallelism can create computation imbalance: clean chunks are distributed across ranks, while the noisy target and loss concentrate on one rank.</figcaption>
+</figure>
 <p>The broader lesson is that each component solves a different systems bottleneck, but the components only matter when they work together. Memory without fast dequantization is slow. Low precision without training-inference alignment is unstable. More GPUs without a balanced layout can waste computation. Fast denoising without asynchronous decoding may still fail to deliver pixels quickly.</p>
 <p>This is why LongLive 2.0 targets training and inference together: Balanced sequence-parallel training, NVFP4 training and inference, W4A4 execution, NVFP4 KV cache, parallel dequantization, and asynchronous VAE decoding are part of the same system <a href="#ref-3">[3]</a>.</p>
-
 <h2 id="closing-video-gen-is-an-infra-problem">Closing: Video Gen Is an Infra Problem</h2>
 <p>The Sora moment showed that video generation could scale into long, high-fidelity visual worlds. The Seedance moment points toward controllable, multimodal, interactive video systems. The next step is infrastructure.</p>
 <p>The next generation of video models will not be defined only by better denoisers. It will be defined by systems that can remember longer, decode faster, quantize safely, parallelize naturally, and deliver pixels under real latency and memory budgets.</p>
-<p class="thesis">Video generation is becoming an infrastructure problem.</p>
-
+<p>Over the next few weeks, I will unpack this thesis through a short series of follow-up posts:</p><ul class="upcoming-posts"><li>Why End-to-End Latency Matters More Than Model FPS</li><li>SP: Scaling Training for Long Videos (Understanding &amp; Generation)</li><li>Making 4-bit Video Generation Work: NVFP4 Training and Inference</li><li>Few-Step Long Video Generation with Standalone DMD LoRA</li><li>Engineering &amp; Dirty Work Behind 45.7 FPS</li></ul><p class="thesis">Video generation is becoming an infrastructure problem.</p>
 <section class="references" id="references">
 <h2>References</h2>
 <ol>
-<li id="ref-1"><strong>Video generation models as world simulators.</strong> OpenAI. <em>OpenAI Blog</em>, 2024. <a href="https://openai.com/index/video-generation-models-as-world-simulators/" target="_blank" rel="noopener noreferrer">OpenAI Blog</a></li>
-<li id="ref-2"><strong>Seedance 2.0: Advancing Video Generation for World Complexity.</strong> Team Seedance, De Chen, Liyang Chen, Xin Chen, Ying Chen, Zhuo Chen, et al. <em>arXiv preprint</em>, 2026. <a href="https://arxiv.org/abs/2604.14148" target="_blank" rel="noopener noreferrer">arXiv:2604.14148</a></li>
-<li id="ref-3"><strong>LongLive-2.0: An NVFP4 Parallel Infrastructure for Long Video Generation.</strong> Yukang Chen, Luozhou Wang, Wei Huang, Shuai Yang, Bohan Zhang, Yicheng Xiao, Ruihang Chu, Weian Mao, Qixin Hu, Shaoteng Liu, Yuyang Zhao, Huizi Mao, Ying-Cong Chen, Enze Xie, Xiaojuan Qi, Song Han. <em>arXiv preprint</em>, 2026. <a href="https://arxiv.org/abs/2605.18739" target="_blank" rel="noopener noreferrer">arXiv:2605.18739</a></li>
-<li id="ref-4"><strong>From Slow Bidirectional to Fast Autoregressive Video Diffusion Models.</strong> Tianwei Yin, Qiang Zhang, Richard Zhang, William T. Freeman, Frédo Durand, Eli Shechtman, Xun Huang. <em>IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)</em>, 2025. <a href="https://arxiv.org/abs/2412.07772" target="_blank" rel="noopener noreferrer">arXiv:2412.07772</a></li>
-<li id="ref-5"><strong>LTX-Video: Realtime Video Latent Diffusion.</strong> Yoav HaCohen, Nisan Chiprut, Benny Brazowski, Daniel Shalem, Dudu Moshe, Eitan Richardson, Eran Levin, Guy Shiran, Nir Zabari, Ori Gordon, Poriya Panet, Sapir Weissbuch, Victor Kulikov, Yaki Bitterman, Zeev Melumian, Ofir Bibi. <em>arXiv preprint</em>, 2025. <a href="https://arxiv.org/abs/2501.00103" target="_blank" rel="noopener noreferrer">arXiv:2501.00103</a></li>
-<li id="ref-6"><strong>Quant VideoGen: Auto-Regressive Long Video Generation via 2-Bit KV-Cache Quantization.</strong> Haocheng Xi, Shuo Yang, Yilong Zhao, Muyang Li, Han Cai, Xingyang Li, Yujun Lin, Zhuoyang Zhang, Jintao Zhang, Xiuyu Li, Zhiying Xu, Jun Wu, Chenfeng Xu, Ion Stoica, Song Han, Kurt Keutzer. <em>arXiv preprint</em>, 2026. <a href="https://arxiv.org/abs/2602.02958" target="_blank" rel="noopener noreferrer">arXiv:2602.02958</a></li>
+<li id="ref-1"><strong>Video generation models as world simulators.</strong> OpenAI. <em>OpenAI Blog</em>, 2024. <a href="https://openai.com/index/video-generation-models-as-world-simulators/" rel="noopener noreferrer" target="_blank">OpenAI Blog</a></li>
+<li id="ref-2"><strong>Seedance 2.0: Advancing Video Generation for World Complexity.</strong> Team Seedance, De Chen, Liyang Chen, Xin Chen, Ying Chen, Zhuo Chen, et al. <em>arXiv preprint</em>, 2026. <a href="https://arxiv.org/abs/2604.14148" rel="noopener noreferrer" target="_blank">arXiv:2604.14148</a></li>
+<li id="ref-3"><strong>LongLive-2.0: An NVFP4 Parallel Infrastructure for Long Video Generation.</strong> Yukang Chen, Luozhou Wang, Wei Huang, Shuai Yang, Bohan Zhang, Yicheng Xiao, Ruihang Chu, Weian Mao, Qixin Hu, Shaoteng Liu, Yuyang Zhao, Huizi Mao, Ying-Cong Chen, Enze Xie, Xiaojuan Qi, Song Han. <em>arXiv preprint</em>, 2026. <a href="https://arxiv.org/abs/2605.18739" rel="noopener noreferrer" target="_blank">arXiv:2605.18739</a></li>
+<li id="ref-4"><strong>From Slow Bidirectional to Fast Autoregressive Video Diffusion Models.</strong> Tianwei Yin, Qiang Zhang, Richard Zhang, William T. Freeman, Frédo Durand, Eli Shechtman, Xun Huang. <em>IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)</em>, 2025. <a href="https://arxiv.org/abs/2412.07772" rel="noopener noreferrer" target="_blank">arXiv:2412.07772</a></li>
+<li id="ref-5"><strong>LTX-Video: Realtime Video Latent Diffusion.</strong> Yoav HaCohen, Nisan Chiprut, Benny Brazowski, Daniel Shalem, Dudu Moshe, Eitan Richardson, Eran Levin, Guy Shiran, Nir Zabari, Ori Gordon, Poriya Panet, Sapir Weissbuch, Victor Kulikov, Yaki Bitterman, Zeev Melumian, Ofir Bibi. <em>arXiv preprint</em>, 2025. <a href="https://arxiv.org/abs/2501.00103" rel="noopener noreferrer" target="_blank">arXiv:2501.00103</a></li>
 </ol>
 </section>
 </main>
-
 </body>
 </html>
