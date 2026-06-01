@@ -17,24 +17,202 @@ redirect_from:
 
 <span class='anchor' id='about-me'></span>
 
-Hi, this is Yukang Chen (陈玉康)’s website!   
-I am a Research Scientist in NVIDIA, working with [Prof. Song Han](https://hanlab.mit.edu/songhan).  
-I got my Ph.D. degree in CUHK, supervised by [Prof. Jiaya Jia](https://jiaya.me).  
-During my Ph.D. study, I worked closely with [Prof. Xiaojuan Qi](https://scholar.google.com/citations?user=bGn0uacAAAAJ&hl=en) and [Dr. Xiangyu Zhang](https://scholar.google.com/citations?user=yuB-cfoAAAAJ&hl=en).
+<style>
+.yc-nv-hero {
+  border-top: 4px solid #76B900;
+  border-radius: 14px;
+  border: 1px solid #e4eadf;
+  background: linear-gradient(180deg, #fbfdf8 0%, #ffffff 78%);
+  padding: 22px 24px 20px 24px;
+  margin: 8px 0 18px 0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.045);
+}
+.yc-nv-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  background: #76B900;
+  color: #ffffff;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.yc-nv-name {
+  margin: 0 0 4px 0;
+  font-size: 2.05rem;
+  line-height: 1.08;
+  color: #111111;
+}
+.yc-nv-cn { font-weight: 500; color: #333333; }
+.yc-nv-subtitle {
+  margin: 0 0 12px 0;
+  font-size: 1.05rem;
+  color: #4f4f4f;
+  font-weight: 600;
+}
+.yc-nv-links a { font-weight: 600; }
+.yc-nv-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0 8px 0;
+  color: #2f5000;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+.yc-nv-section-title:before {
+  content: "";
+  width: 5px;
+  height: 22px;
+  border-radius: 3px;
+  background: #76B900;
+}
+.yc-nv-lead {
+  font-size: 0.98rem;
+  line-height: 1.55;
+  margin-bottom: 8px;
+}
+.yc-nv-list {
+  margin-top: 6px;
+  margin-bottom: 10px;
+}
+.yc-nv-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(240px, 1fr));
+  gap: 12px;
+  margin: 12px 0 18px 0;
+}
+.yc-nv-card {
+  border: 1px solid #e5e8e0;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 13px 14px 12px 14px;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.032);
+}
+.yc-nv-card h3 {
+  margin: 0 0 6px 0;
+  font-size: 1.00rem;
+  line-height: 1.28;
+  color: #111111;
+}
+.yc-nv-card p {
+  margin: 0;
+  font-size: 0.91rem;
+  line-height: 1.45;
+  color: #4c4c4c;
+}
+.yc-nv-tag {
+  display: inline-block;
+  margin-bottom: 7px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #edf6e3;
+  color: #2f5000;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.yc-nv-background {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 10px;
+  margin: 12px 0 14px 0;
+}
+.yc-nv-mini {
+  border-left: 3px solid #76B900;
+  padding: 8px 12px;
+  background: #fafbf8;
+  border-radius: 8px;
+}
+.yc-nv-mini strong {
+  display: block;
+  color: #111111;
+}
+.yc-nv-mini span {
+  color: #666666;
+  font-size: 0.88rem;
+}
+.yc-longai-img {
+  border-radius: 12px;
+  border: 1px solid #e5e8e0;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.04);
+}
+@media (max-width: 760px) {
+  .yc-nv-grid, .yc-nv-background { grid-template-columns: 1fr; }
+  .yc-nv-hero { padding: 18px 18px; }
+  .yc-nv-name { font-size: 1.7rem; }
+}
+</style>
 
-I focus on **Long AI** - **Efficiently scaling AI to long horizons**.  
-This direction covers, but is not limited to, the following topics:
-- 📚 **Long-context LLMs**: Efficient long-context LLMs via **sparse attention**.
-- 🎥 **Long-video VLMs**: Scaling VLMs to long videos via **sequence parallelism**.
-- 🧠 **Long-sequence Reasoning**: Long-sequence RL for LLMs/VLMs via **sequence parallelism**.
-- 🎬 **Long-video Generation**: Short→Long AR with efficient fine-tuning via **sparse attention**.
-- 🚗 **Long-range Autonomous Driving**: Long-range 3D perception in AD via **sparse convolution**.
+<div class="yc-nv-hero" markdown="1">
+<span class="yc-nv-badge">NVIDIA Research</span>
 
-If you are interested in **Long AI** and seeking collaboration, please feel free to contact me via [Email](chenyukang2020@gmail.com).
-<p align="center" style="border-radius: 10px">
-  <img src="https://github.com/yukang2017/yukang2017.github.io/raw/main/images/LongAI.png" width="100%" alt="LongAI"/>
+<h1 class="yc-nv-name">Yukang Chen <span class="yc-nv-cn">陈玉康</span></h1>
+<p class="yc-nv-subtitle">Research Scientist | Long AI Systems</p>
+
+<p class="yc-nv-links">
+<a href="mailto:chenyukang2020@gmail.com">Email</a> ·
+<a href="https://scholar.google.com/citations?user=6p0ygKUAAAAJ">Google Scholar</a> ·
+<a href="https://github.com/yukang2017">GitHub</a> ·
+<a href="https://yukangchen.com">Homepage</a>
 </p>
 
+I am a Research Scientist at NVIDIA Research, working with [Prof. Song Han](https://hanlab.mit.edu/songhan). I received my Ph.D. in Computer Science from The Chinese University of Hong Kong, supervised by [Prof. Jiaya Jia](https://jiaya.me). During my Ph.D. study, I worked closely with [Prof. Xiaojuan Qi](https://scholar.google.com/citations?user=bGn0uacAAAAJ&hl=en) and [Dr. Xiangyu Zhang](https://scholar.google.com/citations?user=yuB-cfoAAAAJ&hl=en).
+
+</div>
+
+<h2 class="yc-nv-section-title">Research Focus</h2>
+
+<p class="yc-nv-lead">
+My research focuses on <strong>Long AI Systems</strong> through <strong>algorithm-system co-design</strong>: co-designing model algorithms, data/training recipes, distributed training systems, memory-efficient inference, and low-precision deployment to scale AI to long horizons efficiently.
+</p>
+
+<ul class="yc-nv-list">
+  <li>My work spans <strong>long-video generation systems</strong>, <strong>long reasoning acceleration inference systems</strong>, <strong>long-video reinforcement learning systems</strong>, <strong>long-video understanding training systems</strong>, and <strong>long-context large language models</strong>.</li>
+  <li>Recent systems include <strong>LongLive-2.0</strong> for FP4 long-video generation infrastructure, <strong>TriAttention</strong> for long-reasoning inference acceleration across vLLM/SGLang/TensorRT/OpenClaw, <strong>Long-RL/MR-SP</strong> for hour-level long-video RL, and <strong>LongVILA/MM-SP</strong> for 2M-token VLM training.</li>
+  <li>If you are interested in Long AI Systems and collaboration, please feel free to contact me via <a href="mailto:chenyukang2020@gmail.com">Email</a>.</li>
+</ul>
+
+<h2 class="yc-nv-section-title">Representative Systems & Algorithms</h2>
+
+<div class="yc-nv-grid">
+  <div class="yc-nv-card">
+    <span class="yc-nv-tag">Long-video Generation System</span>
+    <h3><a href="https://github.com/NVlabs/LongLive">LongLive-2.0 / LongLive</a></h3>
+    <p>FP4/NVFP4 long-video generation infrastructure with Balanced SP, teacher-forcing layout co-design, W4A4 inference, KV cache compression, parallel dequantization, and asynchronous streaming VAE decoding.</p>
+  </div>
+  <div class="yc-nv-card">
+    <span class="yc-nv-tag">Long Reasoning Acceleration Inference System</span>
+    <h3><a href="https://github.com/WeianMao/triattention">TriAttention</a></h3>
+    <p>Training-free KV cache compression for long reasoning, integrated with vLLM, SGLang, TensorRT deployment path, LongLive KV-compressed video generation, and OpenClaw custom-provider deployment.</p>
+  </div>
+  <div class="yc-nv-card">
+    <span class="yc-nv-tag">Long-video Reinforcement Learning System</span>
+    <h3><a href="https://github.com/NVlabs/Long-RL">Long-RL / MR-SP</a></h3>
+    <p>A full-stack long-video RL system combining LongVideo-Reason, CoT-SFT/RL, sequence parallelism, vLLM-based rollout/prefill, and cached video embeddings for hour-level video reasoning.</p>
+  </div>
+  <div class="yc-nv-card">
+    <span class="yc-nv-tag">Long-video Understanding Training System</span>
+    <h3><a href="https://github.com/NVlabs/VILA/blob/main/longvila/README.md">LongVILA / MM-SP</a></h3>
+    <p>Algorithm-system co-design for long-video VLMs, enabling 2M-token context training on 256 GPUs without gradient checkpointing through Multi-Modal Sequence Parallelism.</p>
+  </div>
+  <div class="yc-nv-card">
+    <span class="yc-nv-tag">Long-context Large Language Model</span>
+    <h3><a href="https://github.com/JIA-Lab-research/LongLoRA">LongLoRA</a></h3>
+    <p>Efficient long-context fine-tuning via shifted sparse attention and improved LoRA, extending Llama2-7B to 100k context and Llama2-70B to 32k context on a single 8x A100 machine.</p>
+  </div>
+</div>
+
+<h2 class="yc-nv-section-title">Background</h2>
+
+<div class="yc-nv-background">
+  <div class="yc-nv-mini"><strong>NVIDIA Research</strong><span>Research Scientist, Efficient AI / Long AI Systems, Sep 2024 - Present</span></div>
+  <div class="yc-nv-mini"><strong>The Chinese University of Hong Kong</strong><span>Ph.D., Computer Science, Aug 2020 - Jul 2024</span></div>
+</div>
+
+<p align="center">
+  <img class="yc-longai-img" src="https://github.com/yukang2017/yukang2017.github.io/raw/main/images/LongAI.png" width="100%" alt="Long AI Systems"/>
+</p>
 
 # 🔥 News
 - *2026.04*: &nbsp;🎉🎉 **[TriAttention](https://github.com/WeianMao/triattention)** is accepted by **ICML'26**!
