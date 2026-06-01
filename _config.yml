@@ -23,7 +23,7 @@ baidu_site_verification  :  # get baidu_site_verification from https://ziyuan.ba
 author:
   name             : "Yukang Chen"
   avatar           : "images/Photo-Square.png"
-  bio              : "Research Scientist in NVIDIA<br>Efficient and Long AI"
+  bio              : "Research Scientist in NVIDIA<br>Long AI System"
   location         : "Boston MA"
   employer         : "NVIDIA Research"
   pubmed           : 
