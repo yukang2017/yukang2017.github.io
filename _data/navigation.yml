@@ -2,18 +2,13 @@
 main:
   - title: "About Me"
     url: "/#about-me"
-
   - title: "News"
-    url: "/#-news"
-    
-  - title: "Invited Talks and Report"
-    url: "/#-invited-talks-and-report"
-    
+    url: "/#news"
+  - title: "Invited Talks and Reports"
+    url: "/#invited-talks-and-reports"
   - title: "Publications"
-    url: "/#-representative-publications-full-list"
-
+    url: "/#publications"
   - title: "Academic Services"
-    url: "/#-academic-services"
-
+    url: "/#academic-services"
   - title: "Honors and Awards"
-    url: "/#-honors-and-awards"
+    url: "/#honors-and-awards"
