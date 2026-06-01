@@ -112,6 +112,19 @@ redirect_from:
   font-size: 0.72rem;
   font-weight: 700;
 }
+
+.yc-nv-blog-card {
+  margin: 10px 0 18px 0;
+  border-left: 4px solid #76B900;
+}
+.yc-nv-blog-card h3 {
+  margin-bottom: 4px;
+}
+.yc-nv-blog-meta {
+  color: #5f5f5f;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
 .yc-nv-background {
   display: grid;
   grid-template-columns: repeat(2, minmax(220px, 1fr));
@@ -310,6 +323,14 @@ My research focuses on <strong>Long AI Systems</strong> through <strong>algorith
   <li>Recent systems include <strong>LongLive-2.0</strong> for FP4 long-video generation infrastructure, <strong>TriAttention</strong> for long-reasoning inference acceleration across vLLM/SGLang/TensorRT/OpenClaw, <strong>Long-RL/MR-SP</strong> for hour-level long-video RL, <strong>LongVILA/MM-SP</strong> for 2M-token VLM training.</li>
   <li>If you are interested in Long AI Systems and collaboration, please feel free to contact me via <a href="mailto:chenyukang2020@gmail.com">Email</a>.</li>
 </ul>
+
+<h2 class="yc-nv-section-title">✍️ Blogs</h2>
+
+<div class="yc-nv-card yc-nv-blog-card">
+  <span class="yc-nv-tag">Research Blog</span>
+  <h3><a href="https://research.nvidia.com/labs/eai/blogs/video-gen-is-an-infra-problem/">Why Video Gen Is an Infra Problem</a></h3>
+  <p class="yc-nv-blog-meta">A systems-oriented perspective on long video generation infrastructure, efficiency, and deployment.</p>
+</div>
 
 <h2 class="yc-nv-section-title">🚀 Representative Systems & Algorithms</h2>
 
