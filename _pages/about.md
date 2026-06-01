@@ -155,13 +155,14 @@ redirect_from:
   font-weight: 700;
   white-space: nowrap;
 }
-.yc-nv-timeline {
+.yc-nv-timeline-list {
+  list-style: none;
   position: relative;
   margin: 10px 0 22px 0;
   padding-left: 18px;
   border-left: 2px solid #76B900;
 }
-.yc-nv-timeline-item {
+.yc-nv-timeline-list li {
   position: relative;
   margin: 0 0 9px 0;
   padding: 10px 13px 10px 14px;
@@ -170,8 +171,9 @@ redirect_from:
   background: linear-gradient(180deg, #ffffff 0%, #fbfdf8 100%);
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.03);
   line-height: 1.42;
+  list-style: none;
 }
-.yc-nv-timeline-item:before {
+.yc-nv-timeline-list li:before {
   content: "";
   position: absolute;
   left: -24px;
@@ -280,7 +282,7 @@ redirect_from:
 }
 </style>
 
-<div class="yc-nv-hero" markdown="1">
+<div class="yc-nv-hero">
 <span class="yc-nv-badge">NVIDIA Research</span>
 
 <h1 class="yc-nv-name">Yukang Chen <span class="yc-nv-cn">陈玉康</span></h1>
@@ -293,23 +295,23 @@ redirect_from:
 <a href="https://yukangchen.com">Homepage</a>
 </p>
 
-I am a Research Scientist at NVIDIA Research, working with [Prof. Song Han](https://hanlab.mit.edu/songhan). I received my Ph.D. in Computer Science from The Chinese University of Hong Kong, supervised by [Prof. Jiaya Jia](https://jiaya.me). During my Ph.D. study, I worked closely with [Prof. Xiaojuan Qi](https://scholar.google.com/citations?user=bGn0uacAAAAJ&hl=en) and [Dr. Xiangyu Zhang](https://scholar.google.com/citations?user=yuB-cfoAAAAJ&hl=en).
+I am a Research Scientist at NVIDIA Research, working with <a href="https://hanlab.mit.edu/songhan">Prof. Song Han</a>. I received my Ph.D. in Computer Science from The Chinese University of Hong Kong, supervised by <a href="https://jiaya.me">Prof. Jiaya Jia</a>. During my Ph.D. study, I worked closely with <a href="https://scholar.google.com/citations?user=bGn0uacAAAAJ&hl=en">Prof. Xiaojuan Qi</a> and <a href="https://scholar.google.com/citations?user=yuB-cfoAAAAJ&hl=en">Dr. Xiangyu Zhang</a>.
 
 </div>
 
-<h2 class="yc-nv-section-title">Research Focus</h2>
+<h2 class="yc-nv-section-title">🔬 Research Focus</h2>
 
 <p class="yc-nv-lead">
 My research focuses on <strong>Long AI Systems</strong> through <strong>algorithm-system co-design</strong>: co-designing model algorithms, data/training recipes, distributed training systems, memory-efficient inference, and low-precision deployment to scale AI to long horizons efficiently.
 </p>
 
 <ul class="yc-nv-list">
-  <li>My work spans <strong>long-video generation systems</strong>, <strong>long reasoning acceleration inference systems</strong>, <strong>long-video reinforcement learning systems</strong>, <strong>long-video understanding training systems</strong>, <strong>long-context large language models</strong>, and <strong>long-range autonomous driving perception systems</strong>.</li>
+  <li>My work spans <strong>long-video generation systems</strong>, <strong>long reasoning acceleration inference systems</strong>, <strong>long-video reinforcement learning systems</strong>, <strong>long-video understanding training systems</strong>, <strong>long-context large language models</strong>, and <strong>long-range autonomous driving perception</strong>.</li>
   <li>Recent systems include <strong>LongLive-2.0</strong> for FP4 long-video generation infrastructure, <strong>TriAttention</strong> for long-reasoning inference acceleration across vLLM/SGLang/TensorRT/OpenClaw, <strong>Long-RL/MR-SP</strong> for hour-level long-video RL, <strong>LongVILA/MM-SP</strong> for 2M-token VLM training, and <strong>VoxelNeXt</strong> for long-range 3D object detection and tracking.</li>
   <li>If you are interested in Long AI Systems and collaboration, please feel free to contact me via <a href="mailto:chenyukang2020@gmail.com">Email</a>.</li>
 </ul>
 
-<h2 class="yc-nv-section-title">Representative Systems & Algorithms</h2>
+<h2 class="yc-nv-section-title">🚀 Representative Systems & Algorithms</h2>
 
 <div class="yc-nv-grid">
   <div class="yc-nv-card">
@@ -338,13 +340,13 @@ My research focuses on <strong>Long AI Systems</strong> through <strong>algorith
     <p>Efficient long-context fine-tuning via shifted sparse attention and improved LoRA, extending Llama2-7B to 100k context and Llama2-70B to 32k context on a single 8x A100 machine.</p>
   </div>
   <div class="yc-nv-card">
-    <span class="yc-nv-tag">Long-range Autonomous Driving Perception System</span>
+    <span class="yc-nv-tag">Long-range Autonomous Driving Perception</span>
     <h3><a href="https://github.com/dvlab-research/VoxelNeXt">VoxelNeXt</a></h3>
     <p>Fully sparse VoxelNet for 3D object detection and tracking; extends perception range by 4x without inference overhead and ranked 1st on nuScenes LiDAR 3D detection and tracking leaderboards.</p>
   </div>
 </div>
 
-<h2 class="yc-nv-section-title">Background</h2>
+<h2 class="yc-nv-section-title">🎓 Background</h2>
 
 <div class="yc-nv-background">
   <div class="yc-nv-mini"><strong>NVIDIA Research</strong><span>Research Scientist, Efficient AI / Long AI Systems, Sep 2024 - Present</span></div>
@@ -355,46 +357,46 @@ My research focuses on <strong>Long AI Systems</strong> through <strong>algorith
   <img class="yc-longai-img" src="https://github.com/yukang2017/yukang2017.github.io/raw/main/images/LongAI.png" width="100%" alt="Long AI Systems"/>
 </p>
 
-<h2 class="yc-nv-section-title">News</h2>
+<h2 class="yc-nv-section-title">🔥 News</h2>
 
-<div class="yc-nv-timeline" markdown="1">
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2026.04</span><span class="yc-nv-news-label">Paper</span> <strong><a href="https://github.com/WeianMao/triattention">TriAttention</a></strong> is accepted by <strong>ICML'26</strong>!</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2026.01</span><span class="yc-nv-news-label">Paper</span> <strong><a href="https://github.com/NVlabs/LongLive">LongLive</a></strong> and <strong><a href="https://github.com/NVlabs/QeRL">QeRL</a></strong> are accepted by <strong>ICLR'26</strong>!</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2025.09</span><span class="yc-nv-news-label">Paper</span> <strong><a href="https://github.com/NVlabs/Long-RL">Long-RL</a></strong> is accepted by <strong>NeurIPS'25</strong>!</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2025.01</span><span class="yc-nv-news-label">Paper</span> <strong><a href="https://arxiv.org/pdf/2408.10188">LongVILA</a></strong> is accepted by <strong>ICLR'25</strong>!</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2024.09</span><span class="yc-nv-news-label">Oral</span> <strong><a href="https://proceedings.neurips.cc/paper_files/paper/2024/file/31f119089f702e48ecfd138c1bc82c4a-Paper-Conference.pdf">RL-GPT</a></strong> is accepted by <strong>NeurIPS'24</strong> as <strong>Oral</strong>!</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2024.02</span><span class="yc-nv-news-label">Oral</span> <strong><a href="https://github.com/dvlab-research/LISA">LISA</a></strong> is accepted by <strong>CVPR'24</strong> as <strong>Oral</strong>!</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2024.01</span><span class="yc-nv-news-label">Oral</span> <strong><a href="https://github.com/dvlab-research/LongLoRA">LongLoRA</a></strong> is accepted by <strong>ICLR'24</strong> as <strong>Oral</strong>!</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2023.04</span><span class="yc-nv-news-label">Release</span> <strong><a href="https://github.com/dvlab-research/3D-Box-Segment-Anything">3D-Box-Segment-Anything</a></strong> is released, combining <strong><a href="https://github.com/dvlab-research/VoxelNeXt">VoxelNeXt</a></strong> and <strong><a href="https://arxiv.org/abs/2304.02643">SAM</a></strong>.</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2023.04</span><span class="yc-nv-news-label">Paper</span> <strong><a href="https://github.com/dvlab-research/VoxelNeXt">VoxelNeXt</a></strong> is accepted by <strong>CVPR'23</strong>!</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2022.03</span><span class="yc-nv-news-label">Oral</span> <strong><a href="https://github.com/dvlab-research/FocalsConv">Focal Sparse Conv</a></strong> is accepted by <strong>CVPR'22</strong> as <strong>Oral</strong>!</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2022.03</span><span class="yc-nv-news-label">Journal</span> <strong><a href="https://ieeexplore.ieee.org/document/9756374">Scale-aware AutoAug</a></strong> is accepted by <strong>T-PAMI</strong>!</div>
-</div>
+<ul class="yc-nv-timeline-list">
+  <li><span class="yc-nv-date">2026.04</span><span class="yc-nv-news-label">Paper</span> <strong><a href="https://github.com/WeianMao/triattention">TriAttention</a></strong> is accepted by <strong>ICML'26</strong>!</li>
+  <li><span class="yc-nv-date">2026.01</span><span class="yc-nv-news-label">Paper</span> <strong><a href="https://github.com/NVlabs/LongLive">LongLive</a></strong> and <strong><a href="https://github.com/NVlabs/QeRL">QeRL</a></strong> are accepted by <strong>ICLR'26</strong>!</li>
+  <li><span class="yc-nv-date">2025.09</span><span class="yc-nv-news-label">Paper</span> <strong><a href="https://github.com/NVlabs/Long-RL">Long-RL</a></strong> is accepted by <strong>NeurIPS'25</strong>!</li>
+  <li><span class="yc-nv-date">2025.01</span><span class="yc-nv-news-label">Paper</span> <strong><a href="https://arxiv.org/pdf/2408.10188">LongVILA</a></strong> is accepted by <strong>ICLR'25</strong>!</li>
+  <li><span class="yc-nv-date">2024.09</span><span class="yc-nv-news-label">Oral</span> <strong><a href="https://proceedings.neurips.cc/paper_files/paper/2024/file/31f119089f702e48ecfd138c1bc82c4a-Paper-Conference.pdf">RL-GPT</a></strong> is accepted by <strong>NeurIPS'24</strong> as <strong>Oral</strong>!</li>
+  <li><span class="yc-nv-date">2024.02</span><span class="yc-nv-news-label">Oral</span> <strong><a href="https://github.com/dvlab-research/LISA">LISA</a></strong> is accepted by <strong>CVPR'24</strong> as <strong>Oral</strong>!</li>
+  <li><span class="yc-nv-date">2024.01</span><span class="yc-nv-news-label">Oral</span> <strong><a href="https://github.com/dvlab-research/LongLoRA">LongLoRA</a></strong> is accepted by <strong>ICLR'24</strong> as <strong>Oral</strong>!</li>
+  <li><span class="yc-nv-date">2023.04</span><span class="yc-nv-news-label">Release</span> <strong><a href="https://github.com/dvlab-research/3D-Box-Segment-Anything">3D-Box-Segment-Anything</a></strong> is released, combining <strong><a href="https://github.com/dvlab-research/VoxelNeXt">VoxelNeXt</a></strong> and <strong><a href="https://arxiv.org/abs/2304.02643">SAM</a></strong>.</li>
+  <li><span class="yc-nv-date">2023.04</span><span class="yc-nv-news-label">Paper</span> <strong><a href="https://github.com/dvlab-research/VoxelNeXt">VoxelNeXt</a></strong> is accepted by <strong>CVPR'23</strong>!</li>
+  <li><span class="yc-nv-date">2022.03</span><span class="yc-nv-news-label">Oral</span> <strong><a href="https://github.com/dvlab-research/FocalsConv">Focal Sparse Conv</a></strong> is accepted by <strong>CVPR'22</strong> as <strong>Oral</strong>!</li>
+  <li><span class="yc-nv-date">2022.03</span><span class="yc-nv-news-label">Journal</span> <strong><a href="https://ieeexplore.ieee.org/document/9756374">Scale-aware AutoAug</a></strong> is accepted by <strong>T-PAMI</strong>!</li>
+</ul>
 
 
 
-<h2 class="yc-nv-section-title">Invited Talks and Reports</h2>
+<h2 class="yc-nv-section-title">💬 Invited Talks and Reports</h2>
 
-<div class="yc-nv-timeline" markdown="1">
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2026.05</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/WeianMao/triattention">TriAttention</a></strong> was reported by <strong>新智元</strong> (see <strong><a href="https://mp.weixin.qq.com/s/iUQyNUnphYiJAacVKwViAg">link</a></strong>).</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2025.10</span><span class="yc-nv-news-label">Talk</span> Invited Talk at <strong><a href="https://higen-2025.github.io">ICCV 2025 HiGen Workshop</a></strong>.</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2025.10</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/NVlabs/LongLive">LongLive</a></strong> was reported by <strong>新智元</strong> (see <strong><a href="https://mp.weixin.qq.com/s/318DMk2thfpoSFT1oOzBXg">link</a></strong>).</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2025.07</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/NVlabs/Long-RL">Long-RL</a></strong> was reported by <strong>机器之心</strong> (see <strong><a href="https://www.jiqizhixin.com/articles/2025-07-14-2">link</a></strong>).</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2023.10</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/dvlab-research/LongLoRA">LongLoRA</a></strong> was reported by <strong>新智元</strong> (see <strong><a href="https://mp.weixin.qq.com/s/8QoKHgwjxv7fG_CCqouU8w">link</a></strong>).</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2023.08</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/dvlab-research/LISA">LISA</a></strong> was reported by <strong>量子位</strong> (see <strong><a href="https://mp.weixin.qq.com/s/ia7_55hfI-cs2wWalmk8yA">link</a></strong>).</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2023.06</span><span class="yc-nv-news-label">Talk</span> Invited Talk at <strong><a href="http://www.scan-net.org/cvpr2023workshop/">CVPR 2023 ScanNet Workshop</a></strong>.</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2023.06</span><span class="yc-nv-news-label">Talk</span> Invited Talk at <strong>VALSE 2023 Perception Workshop</strong> for <strong><a href="https://github.com/dvlab-research/VoxelNeXt">VoxelNeXt</a></strong>.</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2023.04</span><span class="yc-nv-news-label">Talk</span> Invited Talk and report by <strong>将门创投</strong> for <strong><a href="https://github.com/dvlab-research/VoxelNeXt">VoxelNeXt</a></strong> (see <strong><a href="https://mp.weixin.qq.com/s/ijj9Zy81_645mqCaRbRFAg">link</a></strong>).</div>
-  <div class="yc-nv-timeline-item"><span class="yc-nv-date">2022.06</span><span class="yc-nv-news-label">Talk</span> Invited Talk by <strong>深蓝学院</strong> for <strong><a href="https://github.com/dvlab-research/FocalsConv">Focal Sparse Conv</a></strong>.</div>
-</div>
+<ul class="yc-nv-timeline-list">
+  <li><span class="yc-nv-date">2026.05</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/WeianMao/triattention">TriAttention</a></strong> was reported by <strong>新智元</strong> (see <strong><a href="https://mp.weixin.qq.com/s/iUQyNUnphYiJAacVKwViAg">link</a></strong>).</li>
+  <li><span class="yc-nv-date">2025.10</span><span class="yc-nv-news-label">Talk</span> Invited Talk at <strong><a href="https://higen-2025.github.io">ICCV 2025 HiGen Workshop</a></strong>.</li>
+  <li><span class="yc-nv-date">2025.10</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/NVlabs/LongLive">LongLive</a></strong> was reported by <strong>新智元</strong> (see <strong><a href="https://mp.weixin.qq.com/s/318DMk2thfpoSFT1oOzBXg">link</a></strong>).</li>
+  <li><span class="yc-nv-date">2025.07</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/NVlabs/Long-RL">Long-RL</a></strong> was reported by <strong>机器之心</strong> (see <strong><a href="https://www.jiqizhixin.com/articles/2025-07-14-2">link</a></strong>).</li>
+  <li><span class="yc-nv-date">2023.10</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/dvlab-research/LongLoRA">LongLoRA</a></strong> was reported by <strong>新智元</strong> (see <strong><a href="https://mp.weixin.qq.com/s/8QoKHgwjxv7fG_CCqouU8w">link</a></strong>).</li>
+  <li><span class="yc-nv-date">2023.08</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/dvlab-research/LISA">LISA</a></strong> was reported by <strong>量子位</strong> (see <strong><a href="https://mp.weixin.qq.com/s/ia7_55hfI-cs2wWalmk8yA">link</a></strong>).</li>
+  <li><span class="yc-nv-date">2023.06</span><span class="yc-nv-news-label">Talk</span> Invited Talk at <strong><a href="http://www.scan-net.org/cvpr2023workshop/">CVPR 2023 ScanNet Workshop</a></strong>.</li>
+  <li><span class="yc-nv-date">2023.06</span><span class="yc-nv-news-label">Talk</span> Invited Talk at <strong>VALSE 2023 Perception Workshop</strong> for <strong><a href="https://github.com/dvlab-research/VoxelNeXt">VoxelNeXt</a></strong>.</li>
+  <li><span class="yc-nv-date">2023.04</span><span class="yc-nv-news-label">Talk</span> Invited Talk and report by <strong>将门创投</strong> for <strong><a href="https://github.com/dvlab-research/VoxelNeXt">VoxelNeXt</a></strong> (see <strong><a href="https://mp.weixin.qq.com/s/ijj9Zy81_645mqCaRbRFAg">link</a></strong>).</li>
+  <li><span class="yc-nv-date">2022.06</span><span class="yc-nv-news-label">Talk</span> Invited Talk by <strong>深蓝学院</strong> for <strong><a href="https://github.com/dvlab-research/FocalsConv">Focal Sparse Conv</a></strong>.</li>
+</ul>
 
 
 <div class="yc-nv-section-head">
-  <h2 class="yc-nv-section-title">Representative Publications</h2>
+  <h2 class="yc-nv-section-title">📝 Representative Publications</h2>
   <a class="yc-nv-section-link" href="https://scholar.google.com/citations?user=6p0ygKUAAAAJ">Full List</a>
 </div>
 
-<div class="yc-nv-publication-stack" markdown="1">
+<div class="yc-nv-publication-stack">
 
 <div class='paper-box'><div class='paper-box-image'><div><div class="badge">Arxiv 2026</div><img src='https://github.com/yukang2017/yukang2017.github.io/raw/main/images/LongLive2.0-logo.png' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">
@@ -545,7 +547,7 @@ Weian Mao, Xi Lin, Wei Huang, Yuxin Xie, Tianfu Fu, Bohan Zhuang, Song Han, **Yu
 </div>
 </div>
 
-<h2 class="yc-nv-section-title">Academic Services</h2>
+<h2 class="yc-nv-section-title">📋 Academic Services</h2>
 
 <div class="yc-nv-service-grid">
   <div class="yc-nv-service-card"><strong>Area Chair</strong><span>AAAI 2026</span></div>
@@ -554,7 +556,7 @@ Weian Mao, Xi Lin, Wei Huang, Yuxin Xie, Tianfu Fu, Bohan Zhuang, Song Han, **Yu
 </div>
 
 
-<h2 class="yc-nv-section-title">Honors and Awards</h2>
+<h2 class="yc-nv-section-title">🎖 Honors and Awards</h2>
 
 <div class="yc-nv-awards">
   <div class="yc-nv-award"><span class="yc-nv-award-year">2025</span>World's Top 2% Scientists.</div>
