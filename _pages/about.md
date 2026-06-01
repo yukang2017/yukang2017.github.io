@@ -561,7 +561,8 @@ Weian Mao, Xi Lin, Wei Huang, Yuxin Xie, Tianfu Fu, Bohan Zhuang, Song Han, **Yu
 <div class="yc-nv-awards">
   <div class="yc-nv-award"><span class="yc-nv-award-year">2025</span>World's Top 2% Scientists.</div>
   <div class="yc-nv-award"><span class="yc-nv-award-year">2023</span>Final-list candidate of ByteDance Scholarship.</div>
+  <div class="yc-nv-award"><span class="yc-nv-award-year">2022</span>1st on nuScenes LiDAR 3D Object Detection leaderboard.</div>
   <div class="yc-nv-award"><span class="yc-nv-award-year">2022</span>1st on nuScenes LiDAR Multi-Object Tracking leaderboard.</div>
-  <div class="yc-nv-award"><span class="yc-nv-award-year">2019</span>Winner of COCO Detection Challenge (ICCV 2019 COCO Workshop).</div>
   <div class="yc-nv-award"><span class="yc-nv-award-year">2023</span>Winner of ScanNet Indoor Scene Understanding (CVPR 2023 ScanNet Workshop).</div>
+  <div class="yc-nv-award"><span class="yc-nv-award-year">2019</span>Winner of COCO Detection Challenge (ICCV 2019 COCO Workshop).</div>
 </div>
