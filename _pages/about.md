@@ -307,7 +307,7 @@ My research focuses on <strong>Long AI Systems</strong> through <strong>algorith
 
 <ul class="yc-nv-list">
   <li>My work spans <strong>long-video generation systems</strong>, <strong>long reasoning acceleration inference systems</strong>, <strong>long-video reinforcement learning systems</strong>, <strong>long-video understanding training systems</strong>, <strong>long-context large language models</strong>, and <strong>long-range autonomous driving perception</strong>.</li>
-  <li>Recent systems include <strong>LongLive-2.0</strong> for FP4 long-video generation infrastructure, <strong>TriAttention</strong> for long-reasoning inference acceleration across vLLM/SGLang/TensorRT/OpenClaw, <strong>Long-RL/MR-SP</strong> for hour-level long-video RL, <strong>LongVILA/MM-SP</strong> for 2M-token VLM training, and <strong>VoxelNeXt</strong> for long-range 3D object detection and tracking.</li>
+  <li>Recent systems include <strong>LongLive-2.0</strong> for FP4 long-video generation infrastructure, <strong>TriAttention</strong> for long-reasoning inference acceleration across vLLM/SGLang/TensorRT/OpenClaw, <strong>Long-RL/MR-SP</strong> for hour-level long-video RL, <strong>LongVILA/MM-SP</strong> for 2M-token VLM training.</li>
   <li>If you are interested in Long AI Systems and collaboration, please feel free to contact me via <a href="mailto:chenyukang2020@gmail.com">Email</a>.</li>
 </ul>
 
