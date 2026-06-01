@@ -295,7 +295,7 @@ redirect_from:
 <a href="https://yukangchen.com">Homepage</a>
 </p>
 
-I am a Research Scientist at NVIDIA Research, working with <a href="https://hanlab.mit.edu/songhan">Prof. Song Han</a>. I received my Ph.D. in Computer Science from The Chinese University of Hong Kong, supervised by <a href="https://jiaya.me">Prof. Jiaya Jia</a>. During my Ph.D. study, I worked closely with <a href="https://scholar.google.com/citations?user=bGn0uacAAAAJ&hl=en">Prof. Xiaojuan Qi</a> and <a href="https://scholar.google.com/citations?user=yuB-cfoAAAAJ&hl=en">Dr. Xiangyu Zhang</a>.
+I am a Research Scientist at NVIDIA Research, working with <a href="https://hanlab.mit.edu/songhan">Prof. Song Han</a>. I received my Ph.D. in Computer Science from CUHK.
 
 </div>
 
