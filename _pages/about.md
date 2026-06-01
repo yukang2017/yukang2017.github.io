@@ -18,6 +18,7 @@ redirect_from:
 <span class='anchor' id='about-me'></span>
 
 <style>
+html { scroll-behavior: smooth; }
 .yc-nv-hero {
   border-top: 4px solid #76B900;
   border-radius: 14px;
@@ -53,6 +54,7 @@ redirect_from:
 }
 .yc-nv-links a { font-weight: 600; }
 .yc-nv-section-title {
+  scroll-margin-top: 92px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -312,7 +314,7 @@ I am a Research Scientist at NVIDIA Research, working with <a href="https://hanl
 
 </div>
 
-<h2 class="yc-nv-section-title">🔬 Research Focus</h2>
+<h2 id="research-focus" class="yc-nv-section-title">🔬 Research Focus</h2>
 
 <p class="yc-nv-lead">
 My research focuses on <strong>Long AI Systems</strong> through <strong>algorithm-system co-design</strong>: co-designing model algorithms, data/training recipes, distributed training systems, memory-efficient inference, and low-precision deployment to scale AI to long horizons efficiently.
@@ -324,7 +326,7 @@ My research focuses on <strong>Long AI Systems</strong> through <strong>algorith
   <li>If you are interested in Long AI Systems and collaboration, please feel free to contact me via <a href="mailto:chenyukang2020@gmail.com">Email</a>.</li>
 </ul>
 
-<h2 class="yc-nv-section-title">✍️ Blogs</h2>
+<h2 id="blogs" class="yc-nv-section-title">✍️ Blogs</h2>
 
 <div class="yc-nv-card yc-nv-blog-card">
   <span class="yc-nv-tag">Research Blog</span>
@@ -332,7 +334,7 @@ My research focuses on <strong>Long AI Systems</strong> through <strong>algorith
   <p class="yc-nv-blog-meta">A systems-oriented perspective on long video generation infrastructure, efficiency, and deployment.</p>
 </div>
 
-<h2 class="yc-nv-section-title">🚀 Representative Systems & Algorithms</h2>
+<h2 id="representative-systems-and-algorithms" class="yc-nv-section-title">🚀 Representative Systems & Algorithms</h2>
 
 <div class="yc-nv-grid">
   <div class="yc-nv-card">
@@ -367,7 +369,7 @@ My research focuses on <strong>Long AI Systems</strong> through <strong>algorith
   </div>
 </div>
 
-<h2 class="yc-nv-section-title">🎓 Background</h2>
+<h2 id="background" class="yc-nv-section-title">🎓 Background</h2>
 
 <div class="yc-nv-background">
   <div class="yc-nv-mini"><strong>NVIDIA Research</strong><span>Research Scientist, Efficient AI / Long AI Systems, Sep 2024 - Present</span></div>
@@ -378,7 +380,7 @@ My research focuses on <strong>Long AI Systems</strong> through <strong>algorith
   <img class="yc-longai-img" src="https://github.com/yukang2017/yukang2017.github.io/raw/main/images/LongAI.png" width="100%" alt="Long AI Systems"/>
 </p>
 
-<h2 class="yc-nv-section-title">🔥 News</h2>
+<h2 id="news" class="yc-nv-section-title">🔥 News</h2>
 
 <ul class="yc-nv-timeline-list">
   <li><span class="yc-nv-date">2026.04</span><span class="yc-nv-news-label">Paper</span> <strong><a href="https://github.com/WeianMao/triattention">TriAttention</a></strong> is accepted by <strong>ICML'26</strong>!</li>
@@ -396,7 +398,7 @@ My research focuses on <strong>Long AI Systems</strong> through <strong>algorith
 
 
 
-<h2 class="yc-nv-section-title">💬 Invited Talks and Reports</h2>
+<h2 id="invited-talks-and-reports" class="yc-nv-section-title">💬 Invited Talks and Reports</h2>
 
 <ul class="yc-nv-timeline-list">
   <li><span class="yc-nv-date">2026.05</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/WeianMao/triattention">TriAttention</a></strong> was reported by <strong>新智元</strong> (see <strong><a href="https://mp.weixin.qq.com/s/iUQyNUnphYiJAacVKwViAg">link</a></strong>).</li>
@@ -413,7 +415,7 @@ My research focuses on <strong>Long AI Systems</strong> through <strong>algorith
 
 
 <div class="yc-nv-section-head">
-  <h2 class="yc-nv-section-title">📝 Representative Publications</h2>
+  <h2 id="publications" class="yc-nv-section-title">📝 Representative Publications</h2>
   <a class="yc-nv-section-link" href="https://scholar.google.com/citations?user=6p0ygKUAAAAJ">Full List</a>
 </div>
 
@@ -568,7 +570,7 @@ Weian Mao, Xi Lin, Wei Huang, Yuxin Xie, Tianfu Fu, Bohan Zhuang, Song Han, **Yu
 </div>
 </div>
 
-<h2 class="yc-nv-section-title">📋 Academic Services</h2>
+<h2 id="academic-services" class="yc-nv-section-title">📋 Academic Services</h2>
 
 <div class="yc-nv-service-grid">
   <div class="yc-nv-service-card"><strong>Area Chair</strong><span>AAAI 2026</span></div>
@@ -577,7 +579,7 @@ Weian Mao, Xi Lin, Wei Huang, Yuxin Xie, Tianfu Fu, Bohan Zhuang, Song Han, **Yu
 </div>
 
 
-<h2 class="yc-nv-section-title">🎖 Honors and Awards</h2>
+<h2 id="honors-and-awards" class="yc-nv-section-title">🎖 Honors and Awards</h2>
 
 <div class="yc-nv-awards">
   <div class="yc-nv-award"><span class="yc-nv-award-year">2025</span>World's Top 2% Scientists.</div>
