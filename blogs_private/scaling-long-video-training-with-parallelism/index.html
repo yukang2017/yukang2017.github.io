@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Scaling Video Training with Parallelism</title>
+<style>
+
+
+:root {
+  --nv-green: #76b900;
+  --nv-green-dark: #4f8f00;
+  --nv-green-soft: #e9f6d8;
+  --ink: #111827;
+  --ink-2: #22252a;
+  --muted: #667085;
+  --muted-2: #8a93a3;
+  --bg: #f7f9f5;
+  --paper: #ffffff;
+  --paper-2: #fbfcfa;
+  --border: #e3e8dc;
+  --border-strong: #cfd8c2;
+  --code-bg: #111827;
+  --code-text: #eef2f7;
+  --quote-bg: #f4faec;
+  --shadow: 0 18px 45px rgba(17, 24, 39, 0.07);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 16% 0%, rgba(118, 185, 0, 0.10), transparent 28rem),
+    linear-gradient(180deg, #fcfdfb 0%, var(--bg) 42rem, #ffffff 100%);
+  color: var(--ink-2);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans", sans-serif;
+  font-size: 17px;
+  line-height: 1.72;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #111827 0%, #111827 18%, var(--nv-green) 18%, var(--nv-green) 100%);
+  z-index: 10;
+}
+main {
+  max-width: 920px;
+  margin: 42px auto 72px;
+  padding: 54px 44px 76px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+}
+main::before {
+  content: "";
+  display: block;
+  width: 72px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--nv-green);
+  margin: 0 0 1.2rem;
+}
+h1, h2, h3 {
+  color: var(--ink);
+  line-height: 1.22;
+  letter-spacing: -0.03em;
+}
+h1 {
+  font-size: 2.5rem;
+  margin: 0 0 1.35rem;
+  font-weight: 750;
+}
+h2 {
+  font-size: 1.68rem;
+  margin: 3.2rem 0 1rem;
+  padding-top: 0.45rem;
+  font-weight: 780;
+}
+h2::before {
+  content: "";
+  display: block;
+  width: 38px;
+  height: 3px;
+  margin: 0 0 0.75rem;
+  border-radius: 999px;
+  background: var(--nv-green);
+}
+h3 { font-size: 1.18rem; margin: 2rem 0 0.75rem; font-weight: 720; }
+p { margin: 1rem 0; }
+p.lead { font-size: 1.06rem; color: #20242a; }
+.thesis {
+  margin: 1.4rem 0 2.1rem;
+  padding: 1.05rem 1.15rem;
+  border: 1px solid var(--border-strong);
+  border-left: 5px solid var(--nv-green);
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgba(118,185,0,0.08), rgba(255,255,255,0.92));
+  color: var(--ink);
+  font-weight: 650;
+}
+.problem-box {
+  margin: 1.35rem 0;
+  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fbfcfa;
+}
+.problem-box strong { color: #111827; }
+.question-callout {
+  margin: 2.2rem 0 1.1rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--border-strong);
+  border-left: 6px solid var(--nv-green);
+  border-radius: 14px;
+  background: linear-gradient(90deg, rgba(118,185,0,0.10), #fff);
+  color: var(--ink);
+  font-size: 1.32rem;
+  line-height: 1.28;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+strong { font-weight: 750; color: #101418; }
+a {
+  color: #3f7f00;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(118, 185, 0, 0.35);
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+a:hover { color: #285700; border-bottom-color: currentColor; background: rgba(118,185,0,0.08); }
+ul, ol { padding-left: 1.45rem; margin: 0.72rem 0 1.25rem; }
+li { margin: 0.32rem 0; }
+blockquote {
+  margin: 1.45rem 0;
+  padding: 0.95rem 1.1rem 0.95rem 1.2rem;
+  border-left: 5px solid var(--nv-green);
+  background: var(--quote-bg);
+  color: #26312b;
+  border-radius: 0 10px 10px 0;
+}
+blockquote p { margin: 0.35rem 0; }
+pre, code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+code { background: #eef5e8; color: #1d2a16; padding: 0.13rem 0.34rem; border-radius: 5px; font-size: 0.92em; }
+pre {
+  background: var(--code-bg);
+  color: var(--code-text);
+  border: 1px solid #1f2937;
+  border-left: 4px solid var(--nv-green);
+  border-radius: 12px;
+  padding: 1rem 1.05rem;
+  overflow-x: auto;
+  line-height: 1.45;
+  font-size: 0.9rem;
+}
+pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+.post-meta {
+  margin: -0.55rem 0 1.7rem;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.65;
+}
+.post-meta p { margin: 0; }
+.post-meta span { margin-right: 1rem; }
+.toc {
+  margin: 2rem 0 2.55rem;
+  padding: 1rem 1.15rem;
+  background: #fbfcfa;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.toc-title { color: var(--ink); font-weight: 800; margin-bottom: 0.4rem; }
+.toc ol { margin: 0; }
+figure {
+  margin: 2rem 0 2.25rem;
+  padding: 0;
+}
+figure img, figure video {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(17, 24, 39, 0.075);
+}
+figure.video video { background: #000; }
+figcaption {
+  margin-top: 0.72rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  text-align: center;
+}
+.table-wrap { overflow-x: auto; margin: 1.3rem 0; }
+table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+th, td { border: 1px solid var(--border); padding: 0.68rem 0.75rem; vertical-align: top; }
+th { background: var(--nv-green-soft); color: #14220d; text-align: left; }
+td:first-child { font-weight: 700; color: #111827; }
+.references { margin-top: 3.3rem; padding-top: 1.3rem; border-top: 1px solid var(--border); }
+.references ol { padding-left: 1.35rem; }
+.references li { margin: 0.75rem 0; color: #333842; }
+@media (max-width: 760px) {
+  body { font-size: 16px; }
+  main { margin: 0; border-radius: 0; padding: 34px 20px 58px; border-left: 0; border-right: 0; }
+  h1 { font-size: 2.05rem; }
+  h2 { font-size: 1.42rem; }
+  .post-meta span { display: inline-block; margin-right: 0.6rem; }
+}
+
+
+.upcoming-posts {
+  margin-top: 0.35rem;
+}
+.upcoming-posts li {
+  margin: 0.28rem 0;
+}
+
+
+/* Compact memory-failure example: first/last frames + video */
+.memory-example {
+  margin: 1.75rem 0 2.1rem;
+}
+.frame-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  align-items: start;
+}
+.frame-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.065);
+}
+.frame-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.frame-label {
+  position: absolute;
+  top: 0.55rem;
+  left: 0.55rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(8, 12, 20, 0.72);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  backdrop-filter: blur(4px);
+}
+.frame-label.warning {
+  background: rgba(184, 34, 23, 0.84);
+}
+figure.compact-video {
+  margin-top: 1.05rem;
+}
+figure.compact-video video {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.memory-example figcaption {
+  max-width: 840px;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (max-width: 760px) {
+  .frame-pair { grid-template-columns: 1fr; }
+  .frame-label { font-size: 0.75rem; }
+}
+
+.problem-box .capability-ask {
+  display: block;
+}
+.problem-box .infra-ask {
+  display: block;
+  margin-top: 0.55rem;
+  padding: 0.62rem 0.72rem;
+  border-left: 4px solid var(--nv-green);
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(118, 185, 0, 0.16), rgba(255, 255, 255, 0.94));
+  color: var(--ink);
+  font-weight: 800;
+}
+.problem-box .infra-ask strong {
+  color: var(--ink);
+}
+
+
+
+.intro-figure {
+  margin: 1.75rem 0 2.25rem;
+}
+.intro-figure img {
+  border-radius: 14px;
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 14px 38px rgba(17, 24, 39, 0.08);
+}
+.intro-figure figcaption {
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (max-width: 720px) {
+  .intro-figure { margin: 1.25rem -0.2rem 1.85rem; }
+  .intro-figure figcaption { font-size: 0.84rem; }
+}
+
+
+
+/* Inline animated SVG figure used for the parallelism-axis diagram. */
+figure.animated-parallelism-figure svg.parallelism-animation {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(17, 24, 39, 0.075);
+}
+
+figure.longvila-mmsp-figure svg.longvila-mmsp-animation {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(17, 24, 39, 0.075);
+}
+
+
+.generated-visual {
+  margin: 2.15rem 0 2.5rem;
+}
+.generated-visual img {
+  object-fit: contain;
+}
+
+.generated-visual svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(17, 24, 39, 0.075);
+}
+</style>
+</head>
+<body>
+<main>
+<h1 id="scaling-video-training-with-parallelism">Scaling Video Training with Parallelism</h1>
+<div aria-label="Article metadata" class="post-meta">
+<p><span>📝 <a href="https://yukangchen.com" rel="noopener noreferrer" target="_blank">Yukang Chen</a>, <a href="https://wileewang.github.io" rel="noopener noreferrer" target="_blank">Luozhou Wang</a>, <a href="https://aaron-weihuang.com" rel="noopener noreferrer" target="_blank">Wei Huang</a>, <a href="https://andysonys.github.io" rel="noopener noreferrer" target="_blank">Shuai Yang</a>, <a href="https://weianmao.github.io" rel="noopener noreferrer" target="_blank">Weian Mao</a>, <a href="https://hanlab.mit.edu/songhan" rel="noopener noreferrer" target="_blank">Song Han</a></span><br/> <span>📅 June 3, 2026</span> <span>⏱️ 12 min read</span></p>
+</div>
+<p class="lead">Long-video training changes the unit of distributed computation. A short video sample can belong to one GPU. A long video sample may already be too large, too irregular, or too objective-dependent for a single worker to own.</p>
+<p>The previous post argued that video generation is becoming an infrastructure problem. This post zooms in on one specific infrastructure question: how do we train on a single video sequence that is too long for a single GPU, without breaking the semantics of the model, the modality, or the training objective?</p>
+<p>The answer is not simply “use more GPUs.” Data parallelism gives more samples to more workers. Tensor parallelism splits matrix dimensions. Model parallelism, including pipeline-style layer splits, splits the model itself. For long videos, the painful dimension is often inside one sample: time, context length, visual tokens, latent chunks, masks, and loss-bearing targets.</p>
+
+<p>Two recent systems make the idea concrete. LongVILA scales long-video understanding with <strong>Multi-Modal Sequence Parallelism</strong> (MM-SP), where the system first balances vision work over frames/images and then balances tokens for the LLM <a href="#ref-1">[1]</a>. LongLive-2.0 scales long-video generation with <strong>Balanced SP</strong>, where the system assigns each GPU a temporally meaningful chunk that owns clean history, noisy target, VAE work, attention mask, and loss <a href="#ref-2">[2]</a>.</p>
+
+<figure class="generated-visual intro-generated-visual"><svg aria-labelledby="intro-longvideo-title intro-longvideo-desc" class="intro-longvideo-svg" height="430" role="img" viewBox="0 0 2000 430" width="2000" xmlns="http://www.w3.org/2000/svg">
+<title id="intro-longvideo-title">Longer videos need sequence parallelism</title>
+<desc id="intro-longvideo-desc">Short videos fit on one GPU. Longer videos create more tokens. Very long videos create too many tokens for one GPU, so sequence parallelism splits the sequence across GPUs.</desc>
+<style><![CDATA[
+.iv-root { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; }
+.iv-h { font-size:32px; font-weight:850; fill:#111827; text-anchor:middle; } .iv-sub { font-size:25px; font-weight:520; fill:#17345f; text-anchor:middle; } .iv-blue { fill:#075ec8; }
+.iv-card { fill:#f8fbff; stroke:#3f8ee8; stroke-width:2.5; } .iv-chip { fill:#fff; stroke:#075ec8; stroke-width:3; } .iv-card-text { font-size:29px; font-weight:850; fill:#111827; text-anchor:middle; } .iv-card-sub { font-size:24px; font-weight:520; fill:#17345f; text-anchor:middle; }
+]]></style>
+<g class="iv-root">
+<rect fill="#fff" height="430" rx="24" width="2000" x="0" y="0"></rect>
+<text class="iv-h" x="170" y="55">Short video</text><g transform="translate(38,92)">
+<rect fill="#111827" height="88" rx="4" width="270" x="0" y="0"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="8" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="8" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="28" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="28" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="48" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="48" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="68" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="68" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="88" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="88" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="108" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="108" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="128" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="128" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="148" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="148" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="168" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="168" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="188" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="188" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="208" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="208" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="228" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="228" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="248" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="248" y="78"></rect>
+<rect fill="#8fd8ff" height="56" width="80.7" x="10.0" y="16"></rect>
+<rect fill="#2f7d39" height="25.2" opacity=".9" width="80.7" x="10.0" y="46.8"></rect>
+<path d="M14.0,50.7 L39.0,30.0 L60.0,50.7 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="76.1" cy="30.6" fill="#f5fbff" opacity=".9" r="7.3"></circle>
+<rect fill="none" height="56" stroke="#111827" stroke-width="2" width="80.7" x="10.0" y="16"></rect>
+<rect fill="#93d5f2" height="56" width="80.7" x="94.7" y="16"></rect>
+<rect fill="#2f7d39" height="25.2" opacity=".9" width="80.7" x="94.7" y="46.8"></rect>
+<path d="M98.7,50.7 L123.7,30.0 L144.7,50.7 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="160.8" cy="30.6" fill="#f5fbff" opacity=".9" r="7.3"></circle>
+<rect fill="none" height="56" stroke="#111827" stroke-width="2" width="80.7" x="94.7" y="16"></rect>
+<rect fill="#ffc979" height="56" width="80.7" x="179.3" y="16"></rect>
+<rect fill="#2f7d39" height="25.2" opacity=".9" width="80.7" x="179.3" y="46.8"></rect>
+<path d="M183.3,50.7 L208.4,30.0 L229.3,50.7 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="245.5" cy="30.6" fill="#f5fbff" opacity=".9" r="7.3"></circle>
+<rect fill="none" height="56" stroke="#111827" stroke-width="2" width="80.7" x="179.3" y="16"></rect>
+</g><text class="iv-h" x="325" y="140">...</text><path d="M156,205 h28 v28 h20 l-34,40 l-34,-40 h20 z" fill="#98a2b3" opacity=".82"></path><rect fill="#e3f5d8" height="22" rx="4" stroke="#4f9a36" stroke-width="2" width="22" x="42" y="305"></rect>
+<rect fill="#e3f5d8" height="22" rx="4" stroke="#4f9a36" stroke-width="2" width="22" x="72" y="305"></rect>
+<rect fill="#e3f5d8" height="22" rx="4" stroke="#4f9a36" stroke-width="2" width="22" x="102" y="305"></rect>
+<rect fill="#e3f5d8" height="22" rx="4" stroke="#4f9a36" stroke-width="2" width="22" x="132" y="305"></rect>
+<rect fill="#e3f5d8" height="22" rx="4" stroke="#4f9a36" stroke-width="2" width="22" x="162" y="305"></rect>
+<rect fill="#e3f5d8" height="22" rx="4" stroke="#4f9a36" stroke-width="2" width="22" x="192" y="305"></rect>
+<rect fill="#e3f5d8" height="22" rx="4" stroke="#4f9a36" stroke-width="2" width="22" x="222" y="305"></rect>
+<rect fill="#e3f5d8" height="22" rx="4" stroke="#4f9a36" stroke-width="2" width="22" x="252" y="305"></rect><text class="iv-h" x="170" y="370">Few tokens</text><text class="iv-sub" x="170" y="405">Fits on one GPU</text>
+<path d="M360,200 h50 v-18 l42,36 l-42,36 v-18 h-50 z" fill="#98a2b3" opacity=".82"></path>
+<text class="iv-h" x="640" y="55">Longer video</text><g transform="translate(480,92)">
+<rect fill="#111827" height="88" rx="4" width="420" x="0" y="0"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="8" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="8" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="28" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="28" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="48" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="48" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="68" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="68" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="88" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="88" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="108" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="108" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="128" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="128" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="148" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="148" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="168" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="168" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="188" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="188" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="208" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="208" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="228" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="228" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="248" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="248" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="268" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="268" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="288" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="288" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="308" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="308" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="328" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="328" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="348" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="348" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="368" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="368" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="388" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="388" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="408" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="408" y="78"></rect>
+<rect fill="#8fd8ff" height="56" width="76.8" x="10.0" y="16"></rect>
+<rect fill="#2f7d39" height="25.2" opacity=".9" width="76.8" x="10.0" y="46.8"></rect>
+<path d="M14.0,50.7 L37.6,30.0 L57.6,50.7 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="73.0" cy="30.6" fill="#f5fbff" opacity=".9" r="6.9"></circle>
+<rect fill="none" height="56" stroke="#111827" stroke-width="2" width="76.8" x="10.0" y="16"></rect>
+<rect fill="#93d5f2" height="56" width="76.8" x="90.8" y="16"></rect>
+<rect fill="#2f7d39" height="25.2" opacity=".9" width="76.8" x="90.8" y="46.8"></rect>
+<path d="M94.8,50.7 L118.4,30.0 L138.4,50.7 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="153.8" cy="30.6" fill="#f5fbff" opacity=".9" r="6.9"></circle>
+<rect fill="none" height="56" stroke="#111827" stroke-width="2" width="76.8" x="90.8" y="16"></rect>
+<rect fill="#ffc979" height="56" width="76.8" x="171.6" y="16"></rect>
+<rect fill="#2f7d39" height="25.2" opacity=".9" width="76.8" x="171.6" y="46.8"></rect>
+<path d="M175.6,50.7 L199.2,30.0 L219.2,50.7 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="234.6" cy="30.6" fill="#f5fbff" opacity=".9" r="6.9"></circle>
+<rect fill="none" height="56" stroke="#111827" stroke-width="2" width="76.8" x="171.6" y="16"></rect>
+<rect fill="#83d2ef" height="56" width="76.8" x="252.4" y="16"></rect>
+<rect fill="#2f7d39" height="25.2" opacity=".9" width="76.8" x="252.4" y="46.8"></rect>
+<path d="M256.4,50.7 L280.0,30.0 L300.0,50.7 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="315.4" cy="30.6" fill="#f5fbff" opacity=".9" r="6.9"></circle>
+<rect fill="none" height="56" stroke="#111827" stroke-width="2" width="76.8" x="252.4" y="16"></rect>
+<rect fill="#17335c" height="56" width="76.8" x="333.2" y="16"></rect>
+<rect fill="#2f7d39" height="25.2" opacity=".9" width="76.8" x="333.2" y="46.8"></rect>
+<path d="M337.2,50.7 L360.8,30.0 L380.8,50.7 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="396.2" cy="30.6" fill="#f5fbff" opacity=".9" r="6.9"></circle>
+<rect fill="none" height="56" stroke="#111827" stroke-width="2" width="76.8" x="333.2" y="16"></rect>
+</g><text class="iv-h" x="920" y="140">...</text><path d="M626,205 h28 v28 h20 l-34,40 l-34,-40 h20 z" fill="#98a2b3" opacity=".82"></path><rect fill="#e3f5d8" height="22" rx="4" stroke="#4f9a36" stroke-width="2" width="22" x="485" y="305"></rect>
+<rect fill="#e3f5d8" height="22" rx="4" stroke="#4f9a36" stroke-width="2" width="22" x="515" y="305"></rect>
+<rect fill="#e3f5d8" height="22" rx="4" stroke="#4f9a36" stroke-width="2" width="22" x="545" y="305"></rect>
+<rect fill="#e3f5d8" height="22" rx="4" stroke="#4f9a36" stroke-width="2" width="22" x="575" y="305"></rect>
+<rect fill="#fff1c7" height="22" rx="4" stroke="#e59b17" stroke-width="2" width="22" x="605" y="305"></rect>
+<rect fill="#fff1c7" height="22" rx="4" stroke="#e59b17" stroke-width="2" width="22" x="635" y="305"></rect>
+<rect fill="#fff1c7" height="22" rx="4" stroke="#e59b17" stroke-width="2" width="22" x="665" y="305"></rect>
+<rect fill="#fff1c7" height="22" rx="4" stroke="#e59b17" stroke-width="2" width="22" x="695" y="305"></rect>
+<rect fill="#fff1c7" height="22" rx="4" stroke="#e59b17" stroke-width="2" width="22" x="725" y="305"></rect>
+<rect fill="#eee2ff" height="22" rx="4" stroke="#8b6fe8" stroke-width="2" width="22" x="755" y="305"></rect>
+<rect fill="#eee2ff" height="22" rx="4" stroke="#8b6fe8" stroke-width="2" width="22" x="785" y="305"></rect>
+<rect fill="#eee2ff" height="22" rx="4" stroke="#8b6fe8" stroke-width="2" width="22" x="815" y="305"></rect>
+<rect fill="#eee2ff" height="22" rx="4" stroke="#8b6fe8" stroke-width="2" width="22" x="845" y="305"></rect><text fill="#111827" font-size="28" font-weight="850" x="883" y="323">...</text><text class="iv-h" x="640" y="370">More tokens</text><text class="iv-sub" x="640" y="405">Higher memory and compute</text>
+<path d="M950,200 h50 v-18 l42,36 l-42,36 v-18 h-50 z" fill="#98a2b3" opacity=".82"></path>
+<text class="iv-h" x="1180" y="55">Very long video</text><g transform="translate(965,92)">
+<rect fill="#111827" height="88" rx="4" width="520" x="0" y="0"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="8" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="8" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="28" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="28" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="48" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="48" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="68" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="68" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="88" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="88" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="108" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="108" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="128" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="128" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="148" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="148" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="168" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="168" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="188" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="188" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="208" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="208" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="228" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="228" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="248" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="248" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="268" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="268" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="288" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="288" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="308" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="308" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="328" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="328" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="348" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="348" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="368" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="368" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="388" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="388" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="408" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="408" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="428" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="428" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="448" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="448" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="468" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="468" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="488" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="488" y="78"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="508" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="508" y="78"></rect>
+<rect fill="#8fd8ff" height="56" width="68.0" x="10.0" y="16"></rect>
+<rect fill="#2f7d39" height="25.2" opacity=".9" width="68.0" x="10.0" y="46.8"></rect>
+<path d="M14.0,50.7 L34.5,30.0 L52.2,50.7 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="65.8" cy="30.6" fill="#f5fbff" opacity=".9" r="6.1"></circle>
+<rect fill="none" height="56" stroke="#111827" stroke-width="2" width="68.0" x="10.0" y="16"></rect>
+<rect fill="#93d5f2" height="56" width="68.0" x="82.0" y="16"></rect>
+<rect fill="#2f7d39" height="25.2" opacity=".9" width="68.0" x="82.0" y="46.8"></rect>
+<path d="M86.0,50.7 L106.5,30.0 L124.2,50.7 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="137.8" cy="30.6" fill="#f5fbff" opacity=".9" r="6.1"></circle>
+<rect fill="none" height="56" stroke="#111827" stroke-width="2" width="68.0" x="82.0" y="16"></rect>
+<rect fill="#ffc979" height="56" width="68.0" x="154.0" y="16"></rect>
+<rect fill="#2f7d39" height="25.2" opacity=".9" width="68.0" x="154.0" y="46.8"></rect>
+<path d="M158.0,50.7 L178.5,30.0 L196.2,50.7 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="209.8" cy="30.6" fill="#f5fbff" opacity=".9" r="6.1"></circle>
+<rect fill="none" height="56" stroke="#111827" stroke-width="2" width="68.0" x="154.0" y="16"></rect>
+<rect fill="#83d2ef" height="56" width="68.0" x="226.0" y="16"></rect>
+<rect fill="#2f7d39" height="25.2" opacity=".9" width="68.0" x="226.0" y="46.8"></rect>
+<path d="M230.0,50.7 L250.5,30.0 L268.2,50.7 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="281.8" cy="30.6" fill="#f5fbff" opacity=".9" r="6.1"></circle>
+<rect fill="none" height="56" stroke="#111827" stroke-width="2" width="68.0" x="226.0" y="16"></rect>
+<rect fill="#17335c" height="56" width="68.0" x="298.0" y="16"></rect>
+<rect fill="#2f7d39" height="25.2" opacity=".9" width="68.0" x="298.0" y="46.8"></rect>
+<path d="M302.0,50.7 L322.5,30.0 L340.2,50.7 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="353.8" cy="30.6" fill="#f5fbff" opacity=".9" r="6.1"></circle>
+<rect fill="none" height="56" stroke="#111827" stroke-width="2" width="68.0" x="298.0" y="16"></rect>
+<rect fill="#17335c" height="56" width="68.0" x="370.0" y="16"></rect>
+<rect fill="#2f7d39" height="25.2" opacity=".9" width="68.0" x="370.0" y="46.8"></rect>
+<path d="M374.0,50.7 L394.5,30.0 L412.2,50.7 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="425.8" cy="30.6" fill="#f5fbff" opacity=".9" r="6.1"></circle>
+<rect fill="none" height="56" stroke="#111827" stroke-width="2" width="68.0" x="370.0" y="16"></rect>
+<rect fill="#d6eeff" height="56" width="68.0" x="442.0" y="16"></rect>
+<rect fill="#2f7d39" height="25.2" opacity=".9" width="68.0" x="442.0" y="46.8"></rect>
+<path d="M446.0,50.7 L466.5,30.0 L484.2,50.7 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="497.8" cy="30.6" fill="#f5fbff" opacity=".9" r="6.1"></circle>
+<rect fill="none" height="56" stroke="#111827" stroke-width="2" width="68.0" x="442.0" y="16"></rect>
+</g><text class="iv-h" x="1508" y="140">...</text><path d="M1166,205 h28 v28 h20 l-34,40 l-34,-40 h20 z" fill="#98a2b3" opacity=".82"></path><rect fill="#e3f5d8" height="22" rx="4" stroke="#4f9a36" stroke-width="2" width="22" x="975" y="305"></rect>
+<rect fill="#e3f5d8" height="22" rx="4" stroke="#4f9a36" stroke-width="2" width="22" x="1005" y="305"></rect>
+<rect fill="#e3f5d8" height="22" rx="4" stroke="#4f9a36" stroke-width="2" width="22" x="1035" y="305"></rect>
+<rect fill="#e3f5d8" height="22" rx="4" stroke="#4f9a36" stroke-width="2" width="22" x="1065" y="305"></rect>
+<rect fill="#e3f5d8" height="22" rx="4" stroke="#4f9a36" stroke-width="2" width="22" x="1095" y="305"></rect>
+<rect fill="#fff1c7" height="22" rx="4" stroke="#e59b17" stroke-width="2" width="22" x="1125" y="305"></rect>
+<rect fill="#fff1c7" height="22" rx="4" stroke="#e59b17" stroke-width="2" width="22" x="1155" y="305"></rect>
+<rect fill="#fff1c7" height="22" rx="4" stroke="#e59b17" stroke-width="2" width="22" x="1185" y="305"></rect>
+<rect fill="#fff1c7" height="22" rx="4" stroke="#e59b17" stroke-width="2" width="22" x="1215" y="305"></rect>
+<rect fill="#fff1c7" height="22" rx="4" stroke="#e59b17" stroke-width="2" width="22" x="1245" y="305"></rect>
+<rect fill="#fff1c7" height="22" rx="4" stroke="#e59b17" stroke-width="2" width="22" x="1275" y="305"></rect>
+<rect fill="#eee2ff" height="22" rx="4" stroke="#8b6fe8" stroke-width="2" width="22" x="1305" y="305"></rect>
+<rect fill="#eee2ff" height="22" rx="4" stroke="#8b6fe8" stroke-width="2" width="22" x="1335" y="305"></rect>
+<rect fill="#eee2ff" height="22" rx="4" stroke="#8b6fe8" stroke-width="2" width="22" x="1365" y="305"></rect>
+<rect fill="#eee2ff" height="22" rx="4" stroke="#8b6fe8" stroke-width="2" width="22" x="1395" y="305"></rect>
+<rect fill="#d9efff" height="22" rx="4" stroke="#2f99d9" stroke-width="2" width="22" x="1425" y="305"></rect>
+<rect fill="#d9efff" height="22" rx="4" stroke="#2f99d9" stroke-width="2" width="22" x="1455" y="305"></rect>
+<rect fill="#d9efff" height="22" rx="4" stroke="#2f99d9" stroke-width="2" width="22" x="1485" y="305"></rect>
+<rect fill="#d9efff" height="22" rx="4" stroke="#2f99d9" stroke-width="2" width="22" x="1515" y="305"></rect><text fill="#111827" font-size="28" font-weight="850" x="1545" y="323">...</text><text class="iv-h" x="1180" y="370">Too many tokens</text><text class="iv-sub" x="1180" y="405">Does not fit on one GPU</text>
+<path d="M1545,200 h50 v-18 l42,36 l-42,36 v-18 h-50 z" fill="#98a2b3" opacity=".82"></path>
+<text class="iv-h iv-blue" x="1803" y="48">Sequence Parallelism</text><text class="iv-h iv-blue" x="1803" y="82">(SP)</text><rect class="iv-card" height="290" rx="20" width="330" x="1638" y="92"></rect>
+<g transform="translate(1688,135)"><rect class="iv-chip" height="40" rx="5" width="36" x="0" y="0"></rect><text fill="#075ec8" font-size="36" font-weight="850" x="58" y="31">+</text><rect class="iv-chip" height="40" rx="5" width="36" x="96" y="0"></rect><text fill="#075ec8" font-size="36" font-weight="850" x="154" y="31">+</text><rect class="iv-chip" height="40" rx="5" width="36" x="192" y="0"></rect><text fill="#075ec8" font-size="32" font-weight="850" x="242" y="30">...</text></g>
+<line stroke="#d5e5fb" stroke-width="2" x1="1680" x2="1930" y1="215" y2="215"></line><text class="iv-card-text" x="1803" y="265">Split the sequence</text><text class="iv-card-text" x="1803" y="302">across GPUs</text><text class="iv-card-sub" x="1803" y="340">Balance memory, compute,</text><text class="iv-card-sub" x="1803" y="370">and workload</text>
+</g>
+</svg></figure>
+<h2 id="sec-1">1. What sequence parallelism actually parallelizes</h2><p>SP is the parallelism axis for the inside of one sample. Data parallelism splits samples; tensor and model parallelism split model computation. Sequence/context parallelism splits the time or context dimension itself.</p><p>This matters once a single video becomes hundreds or thousands of frames. LongVILA reports 1400-frame sequences at about 274K tokens and 2M-context training; LongLive-2.0 adds clean/noisy latents, VAE halos, masks, and target loss to the same long-sample problem <a href="#ref-1">[1]</a> <a href="#ref-2">[2]</a>.</p><pre><code>Short video training: many samples  -&gt; split the batch
+Long video training:  one sample    -&gt; split inside the sample</code></pre><p>The mental model is:</p><figure class="animated-parallelism-figure"><svg aria-labelledby="parallelism-title parallelism-desc" class="parallelism-animation" role="img" viewBox="0 0 1200 350" xmlns="http://www.w3.org/2000/svg">
+<title id="parallelism-title">Parallelism axes: what does each GPU own?</title>
+<desc id="parallelism-desc">An animated comparison of data parallelism, tensor parallelism, model/pipeline parallelism, and sequence parallelism. The cards appear one by one.</desc>
+<style>
+    .label { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; }
+    .card-outer { opacity: 1; transform: translateY(0); }
+    .c1 { animation: reveal1 9s ease-out infinite; }
+    .c2 { animation: reveal2 9s ease-out infinite; }
+    .c3 { animation: reveal3 9s ease-out infinite; }
+    .c4 { animation: reveal4 9s ease-out infinite; }
+    @keyframes reveal1 { 0%,4% { opacity: 0; transform: translateY(14px); } 11%,92% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(0); } }
+    @keyframes reveal2 { 0%,18% { opacity: 0; transform: translateY(14px); } 25%,92% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(0); } }
+    @keyframes reveal3 { 0%,32% { opacity: 0; transform: translateY(14px); } 39%,92% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(0); } }
+    @keyframes reveal4 { 0%,46% { opacity: 0; transform: translateY(14px); } 53%,92% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(0); } }
+    @media (prefers-reduced-motion: reduce) {
+      .card-outer { opacity: 1; transform: none; animation: none; }
+    }
+  </style>
+<rect fill="#fbfcfa" height="350" width="1200"></rect>
+<text class="label" fill="#111827" font-size="32" font-weight="800" x="54" y="62">Parallelism axes: what does each GPU own?</text>
+<text class="label" fill="#667085" font-size="17" x="54" y="100">The usual axes split batches, parameters, hidden dimensions, or layers. SP splits inside one sample.</text>
+<g class="card-outer c1">
+<g transform="translate(38,140)">
+<rect fill="#fff" height="180" rx="18" stroke="#cfd8c2" stroke-width="2" width="265" x="0" y="0"></rect>
+<text class="label" fill="#111827" font-size="21" font-weight="800" x="24" y="38">Data Parallelism</text>
+<rect fill="#e9f6d8" height="54" rx="10" stroke="#76b900" stroke-width="2" width="96" x="26" y="72"></rect>
+<rect fill="#e9f6d8" height="54" rx="10" stroke="#76b900" stroke-width="2" width="96" x="143" y="72"></rect>
+<text class="label" fill="#22252a" font-size="14" text-anchor="middle" x="74" y="106">sample A</text>
+<text class="label" fill="#22252a" font-size="14" text-anchor="middle" x="191" y="106">sample B</text>
+<text class="label" fill="#667085" font-size="14" x="24" y="156">Split the batch.</text>
+</g>
+</g>
+<g class="card-outer c2">
+<g transform="translate(323,140)">
+<rect fill="#fff" height="180" rx="18" stroke="#cfd8c2" stroke-width="2" width="265" x="0" y="0"></rect>
+<text class="label" fill="#111827" font-size="21" font-weight="800" x="24" y="38">Tensor Parallelism</text>
+<rect fill="#eef5e8" height="54" rx="10" stroke="#4f8f00" stroke-width="2" width="82" x="38" y="72"></rect>
+<rect fill="#eef5e8" height="54" rx="10" stroke="#4f8f00" stroke-width="2" width="82" x="145" y="72"></rect>
+<text class="label" fill="#22252a" font-size="15" text-anchor="middle" x="79" y="106">H/2</text>
+<text class="label" fill="#22252a" font-size="15" text-anchor="middle" x="186" y="106">H/2</text>
+<text class="label" fill="#667085" font-size="14" x="24" y="156">Split heads or hidden dims.</text>
+</g>
+</g>
+<g class="card-outer c3">
+<g transform="translate(608,140)">
+<rect fill="#fff" height="180" rx="18" stroke="#cfd8c2" stroke-width="2" width="265" x="0" y="0"></rect>
+<text class="label" fill="#111827" font-size="21" font-weight="800" x="24" y="36">Model Parallelism</text>
+<text class="label" fill="#667085" font-size="13" font-weight="650" x="24" y="59">pipeline-style layer split</text>
+<rect fill="#f4faec" height="52" rx="10" stroke="#76b900" stroke-width="2" width="54" x="31" y="80"></rect>
+<rect fill="#f4faec" height="52" rx="10" stroke="#76b900" stroke-width="2" width="54" x="105" y="80"></rect>
+<rect fill="#f4faec" height="52" rx="10" stroke="#76b900" stroke-width="2" width="54" x="179" y="80"></rect>
+<text class="label" fill="#22252a" font-size="15" text-anchor="middle" x="58" y="112">L1</text>
+<text class="label" fill="#22252a" font-size="15" text-anchor="middle" x="132" y="112">L2</text>
+<text class="label" fill="#22252a" font-size="15" text-anchor="middle" x="206" y="112">L3</text>
+<text class="label" fill="#667085" font-size="14" x="24" y="156">Split model depth.</text>
+</g>
+</g>
+<g class="card-outer c4">
+<g transform="translate(893,140)">
+<rect fill="#fff" height="180" rx="18" stroke="#76b900" stroke-width="3" width="265" x="0" y="0"></rect>
+<text class="label" fill="#111827" font-size="20" font-weight="800" x="24" y="38">Sequence Parallelism</text>
+<rect fill="#111827" height="44" rx="9" width="44" x="28" y="76"></rect>
+<rect fill="#76b900" height="44" rx="9" width="44" x="82" y="76"></rect>
+<rect fill="#111827" height="44" rx="9" width="44" x="136" y="76"></rect>
+<rect fill="#76b900" height="44" rx="9" width="44" x="190" y="76"></rect>
+<text class="label" fill="#fff" font-size="14" font-weight="700" text-anchor="middle" x="50" y="104">t0</text>
+<text class="label" fill="#fff" font-size="14" font-weight="700" text-anchor="middle" x="104" y="104">t1</text>
+<text class="label" fill="#fff" font-size="14" font-weight="700" text-anchor="middle" x="158" y="104">t2</text>
+<text class="label" fill="#fff" font-size="14" font-weight="700" text-anchor="middle" x="212" y="104">t3</text>
+<text class="label" fill="#667085" font-size="14" x="24" y="156">Split context / time.</text>
+</g>
+</g>
+</svg><figcaption>Figure 1. Generated animated diagram. Data parallelism splits samples, tensor parallelism splits hidden dimensions, model/pipeline parallelism splits model depth, and sequence/context parallelism splits inside a single sample.</figcaption></figure><div class="table-wrap"><table>
+<thead><tr><th>Parallelism</th><th>What it splits</th><th>What it solves</th><th>Why it is not enough alone for long videos</th></tr></thead>
+<tbody>
+<tr><td>Data parallelism / FSDP / ZeRO</td><td>Batch, parameters, gradients, optimizer state</td><td>Parameter and optimizer memory; throughput across samples</td><td>A single video sample can still be too long for one rank.</td></tr>
+<tr><td>Tensor parallelism</td><td>Hidden dimensions, attention heads, MLP dimensions</td><td>Large matrix operations inside a layer</td><td>The sequence activation may still be too large.</td></tr>
+<tr><td>Model / pipeline parallelism</td><td>Transformer layers or other model partitions</td><td>Deep models that do not fit on one device</td><td>Each stage or partition may still see the full sequence.</td></tr>
+<tr><td>Sequence / context parallelism</td><td>Sequence, context, or time dimension</td><td>Long sequences whose activations and attention do not fit on one device</td><td>The shard must match modality, objective, masks, and hardware.</td></tr>
+</tbody>
+</table></div><p>In this post, <em>SP</em> means the broad form of sequence/context parallelism: partitioning the context, time, or token dimension of one sample across ranks. For long video, that partition must also respect modality, objective, masks, and hardware topology <a href="#ref-4">[4]</a> <a href="#ref-9">[9]</a>.</p><h2 id="sec-2">2. A short map of SP systems</h2>
+<p>Before looking at video, it helps to place LongVILA and LongLive-2.0 on the SP map.</p>
+<p><strong>Sequence Parallelism from a system perspective.</strong> Li et al. framed sequence parallelism as a way to break the input sequence length limitation by splitting a long sequence into chunks and distributing those chunks across devices <a href="#ref-3">[3]</a>.</p>
+<p><strong>Megatron sequence parallelism and context parallelism.</strong> Megatron-style SP reduces activation memory and interacts naturally with tensor parallelism. Megatron Core’s later context parallelism generalizes the idea by partitioning the sequence dimension for network inputs and activations <a href="#ref-4">[4]</a> <a href="#ref-9">[9]</a>.</p>
+<p><strong>DeepSpeed-Ulysses.</strong> Ulysses partitions input data along the sequence dimension and uses all-to-all communication during attention, which can be efficient when the number of attention heads supports the required partitioning <a href="#ref-5">[5]</a>.</p>
+<p><strong>Ring Attention.</strong> Ring Attention uses blockwise attention and ring communication of key-value blocks, letting devices stream KV chunks while computing local attention <a href="#ref-6">[6]</a>. This makes context length scale naturally with the number of devices.</p>
+<p><strong>USP and LoongTrain.</strong> USP unifies Ulysses-style and Ring-style approaches into a broader sequence-parallel design space <a href="#ref-7">[7]</a>. LoongTrain pushes the same direction toward 2D-Attention and head-context parallelism for long-sequence LLM training <a href="#ref-8">[8]</a>.</p>
+<div class="problem-box"><strong>The map gives us vocabulary, not the final answer.</strong> These systems answer how to distribute long transformer sequences. Long videos add another layer: the sequence is produced by a multimodal pipeline or by a structured generation objective.</div>
+
+
+
+
+
+
+
+<figure class="generated-visual section-generated-visual"><svg aria-labelledby="video-not-text-title video-not-text-desc" class="video-not-text-svg" height="650" role="img" viewBox="0 0 1600 650" width="1600" xmlns="http://www.w3.org/2000/svg">
+<title id="video-not-text-title">Why video is not just longer text</title><desc id="video-not-text-desc">Video understanding produces tokens through a vision encoder. Video generation makes sequence layout part of the objective.</desc>
+<defs><lineargradient id="wv-grad" x1="0" x2="1"><stop offset="0" stop-color="#f1fae8"></stop><stop offset="1" stop-color="#fff"></stop></lineargradient><marker id="wv-arrow" markerheight="8" markerunits="strokeWidth" markerwidth="8" orient="auto" refx="7" refy="3"><path d="M0,0 L7,3 L0,6 Z" fill="#111827"></path></marker></defs>
+<style><![CDATA[
+.wv-root { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; } .wv-title { font-size:45px; font-weight:860; fill:#0b3d0b; } .wv-card { fill:#fff; stroke:#e0e6d9; stroke-width:1.4; } .wv-panel-g { font-size:30px; font-weight:850; fill:#0b3d0b; } .wv-panel-o { font-size:30px; font-weight:850; fill:#9a3b00; } .wv-label { font-size:22px; font-weight:780; fill:#111827; text-anchor:middle; } .wv-note { font-size:22px; font-weight:760; fill:#2f6f10; text-anchor:middle; } .wv-note-o { font-size:22px; font-weight:760; fill:#b54800; text-anchor:middle; } .wv-final { font-size:28px; font-weight:850; fill:#0b3d0b; } .wv-film { fill:#111827; } .wv-frame { fill:#8fd8ff; } .wv-llm { fill:#f8fbff; stroke:#111827; stroke-width:1.8; } .wv-llm-t { font-size:24px; font-weight:850; fill:#111827; text-anchor:middle; dominant-baseline:middle; } .wv-enc { fill:#fbfdf8; stroke:#b9caa9; stroke-width:1.4; } .wv-enc-page { fill:#fafff4; stroke:#4d8c25; stroke-width:1.6; } .wv-brace { fill:none; stroke:#4d8c25; stroke-width:2.3; } .wv-brace-o { fill:none; stroke:#ef8f00; stroke-width:2.3; } .wv-dash { stroke:#667085; stroke-width:2.2; stroke-dasharray:8 8; }
+]]></style><g class="wv-root"><rect fill="#fff" height="650" rx="22" width="1600" x="0" y="0"></rect><rect fill="url(#wv-grad)" height="86" rx="18" stroke="#cfd8c2" width="1544" x="28" y="24"></rect><rect fill="#76b900" height="86" rx="4" width="9" x="28" y="24"></rect><circle cx="92" cy="67" fill="#4f8f00" r="31"></circle><text fill="#fff" font-size="50" font-weight="900" text-anchor="middle" x="92" y="80">?</text><text class="wv-title" x="154" y="82">Why video is not just longer text?</text>
+<rect class="wv-card" height="200" rx="18" width="1544" x="28" y="140"></rect><circle cx="110" cy="240" fill="#eaf5de" r="52"></circle><circle cx="96" cy="231" fill="#4f8f00" r="10"></circle><circle cx="121" cy="231" fill="#4f8f00" r="10"></circle><rect fill="#4f8f00" height="30" rx="5" width="54" x="80" y="246"></rect><path d="M134 252 L160 238 V282 L134 268 Z" fill="#4f8f00"></path><text class="wv-panel-g" x="210" y="224">Video understanding:</text><text class="wv-panel-g" x="210" y="260">tokens are produced</text><text class="wv-label" x="720" y="190">Video frames</text><g transform="translate(610,207)">
+<rect fill="#111827" height="74" rx="4" width="260" x="0" y="0"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="8" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="8" y="64"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="28" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="28" y="64"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="48" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="48" y="64"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="68" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="68" y="64"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="88" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="88" y="64"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="108" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="108" y="64"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="128" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="128" y="64"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="148" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="148" y="64"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="168" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="168" y="64"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="188" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="188" y="64"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="208" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="208" y="64"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="228" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="228" y="64"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="248" y="5"></rect>
+<rect fill="#fff" height="5" opacity=".95" rx="1" width="8" x="248" y="64"></rect>
+<rect fill="#8fd8ff" height="42" width="57.0" x="10.0" y="16"></rect>
+<rect fill="#2f7d39" height="18.9" opacity=".9" width="57.0" x="10.0" y="39.1"></rect>
+<path d="M14.0,42.0 L30.5,26.5 L45.3,42.0 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="56.7" cy="26.9" fill="#f5fbff" opacity=".9" r="5.1"></circle>
+<rect fill="none" height="42" stroke="#111827" stroke-width="2" width="57.0" x="10.0" y="16"></rect>
+<rect fill="#93d5f2" height="42" width="57.0" x="71.0" y="16"></rect>
+<rect fill="#2f7d39" height="18.9" opacity=".9" width="57.0" x="71.0" y="39.1"></rect>
+<path d="M75.0,42.0 L91.5,26.5 L106.3,42.0 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="117.7" cy="26.9" fill="#f5fbff" opacity=".9" r="5.1"></circle>
+<rect fill="none" height="42" stroke="#111827" stroke-width="2" width="57.0" x="71.0" y="16"></rect>
+<rect fill="#ffc979" height="42" width="57.0" x="132.0" y="16"></rect>
+<rect fill="#2f7d39" height="18.9" opacity=".9" width="57.0" x="132.0" y="39.1"></rect>
+<path d="M136.0,42.0 L152.5,26.5 L167.3,42.0 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="178.7" cy="26.9" fill="#f5fbff" opacity=".9" r="5.1"></circle>
+<rect fill="none" height="42" stroke="#111827" stroke-width="2" width="57.0" x="132.0" y="16"></rect>
+<rect fill="#83d2ef" height="42" width="57.0" x="193.0" y="16"></rect>
+<rect fill="#2f7d39" height="18.9" opacity=".9" width="57.0" x="193.0" y="39.1"></rect>
+<path d="M197.0,42.0 L213.5,26.5 L228.3,42.0 Z" fill="#245a82" opacity=".9"></path>
+<circle cx="239.7" cy="26.9" fill="#f5fbff" opacity=".9" r="5.1"></circle>
+<rect fill="none" height="42" stroke="#111827" stroke-width="2" width="57.0" x="193.0" y="16"></rect>
+</g><line marker-end="url(#wv-arrow)" stroke="#111827" stroke-linecap="round" stroke-width="3.2" x1="895" x2="955" y1="244" y2="244"></line><text class="wv-label" x="1060" y="190">Vision encoder</text><rect class="wv-enc" height="90" rx="14" width="130" x="1000" y="202"></rect><path class="wv-enc-page" d="M1020 216 L1055 227 V278 L1020 290 Z"></path><path class="wv-enc-page" d="M1047 225 L1082 236 V278 L1047 287 Z"></path><path class="wv-enc-page" d="M1074 234 L1105 243 V275 L1074 283 Z"></path><line marker-end="url(#wv-arrow)" stroke="#111827" stroke-linecap="round" stroke-width="3.2" x1="1150" x2="1205" y1="244" y2="244"></line><text class="wv-label" x="1300" y="190">Visual tokens</text><rect fill="#ccecb8" height="24" rx="5" stroke="#5cab00" stroke-width="2" width="24" x="1228" y="232"></rect><rect fill="#ccecb8" height="24" rx="5" stroke="#5cab00" stroke-width="2" width="24" x="1262" y="232"></rect><rect fill="#ccecb8" height="24" rx="5" stroke="#5cab00" stroke-width="2" width="24" x="1296" y="232"></rect><rect fill="#ccecb8" height="24" rx="5" stroke="#5cab00" stroke-width="2" width="24" x="1330" y="232"></rect><rect fill="#ccecb8" height="24" rx="5" stroke="#5cab00" stroke-width="2" width="24" x="1364" y="232"></rect><rect fill="#ccecb8" height="24" rx="5" stroke="#5cab00" stroke-width="2" width="24" x="1398" y="232"></rect><text fill="#111827" font-size="24" font-weight="850" x="1440" y="251">...</text><line marker-end="url(#wv-arrow)" stroke="#111827" stroke-linecap="round" stroke-width="3.2" x1="1465" x2="1502" y1="244" y2="244"></line><rect class="wv-llm" height="66" rx="8" width="58" x="1518" y="213"></rect><text class="wv-llm-t" x="1547" y="246">LLM</text><path class="wv-brace" d="M1000 307 C1000 322, 1130 322, 1130 307 M1130 307 C1130 322, 1518 322, 1518 307"></path><text class="wv-note" x="1260" y="333">balance encoding + token sharding</text>
+<rect class="wv-card" height="196" rx="18" width="1544" x="28" y="365"></rect><circle cx="110" cy="463" fill="#fff0d1" r="52"></circle><rect fill="#e87500" height="38" rx="5" width="58" x="82" y="454"></rect><polygon fill="#fff" points="104,463 104,484 124,474"></polygon><rect fill="#e87500" height="14" rx="3" transform="rotate(-12 111 445)" width="62" x="80" y="438"></rect><text class="wv-panel-o" x="210" y="445">Video generation:</text><text class="wv-panel-o" x="210" y="481">layout is the objective</text><text class="wv-label" x="720" y="413">Clean history</text><path class="wv-brace" d="M560 432 C560 416, 880 416, 880 432"></path><rect fill="#ccecb8" height="24" rx="5" stroke="#5cab00" stroke-width="2" width="24" x="560" y="448"></rect><rect fill="#ccecb8" height="24" rx="5" stroke="#5cab00" stroke-width="2" width="24" x="594" y="448"></rect><rect fill="#ccecb8" height="24" rx="5" stroke="#5cab00" stroke-width="2" width="24" x="628" y="448"></rect><rect fill="#ccecb8" height="24" rx="5" stroke="#5cab00" stroke-width="2" width="24" x="662" y="448"></rect><rect fill="#ccecb8" height="24" rx="5" stroke="#5cab00" stroke-width="2" width="24" x="696" y="448"></rect><rect fill="#ccecb8" height="24" rx="5" stroke="#5cab00" stroke-width="2" width="24" x="730" y="448"></rect><rect fill="#ccecb8" height="24" rx="5" stroke="#5cab00" stroke-width="2" width="24" x="764" y="448"></rect><rect fill="#ccecb8" height="24" rx="5" stroke="#5cab00" stroke-width="2" width="24" x="798" y="448"></rect><rect fill="#ccecb8" height="24" rx="5" stroke="#5cab00" stroke-width="2" width="24" x="832" y="448"></rect><text fill="#111827" font-size="24" font-weight="850" x="875" y="466">...</text><line visibility="hidden" x1="930" x2="505" y1="414" y2="505"></line><line class="wv-dash" x1="930" x2="930" y1="414" y2="505"></line><text class="wv-label" x="1168" y="413">Noisy target chunks</text><path class="wv-brace-o" d="M980 432 C980 416, 1350 416, 1350 432"></path><rect fill="#fff1c7" height="24" rx="5" stroke="#ef8f00" stroke-width="2" width="24" x="980" y="448"></rect><rect fill="#fff1c7" height="24" rx="5" stroke="#ef8f00" stroke-width="2" width="24" x="1014" y="448"></rect><rect fill="#fff1c7" height="24" rx="5" stroke="#ef8f00" stroke-width="2" width="24" x="1048" y="448"></rect><rect fill="#fff1c7" height="24" rx="5" stroke="#ef8f00" stroke-width="2" width="24" x="1082" y="448"></rect><rect fill="#fff1c7" height="24" rx="5" stroke="#ef8f00" stroke-width="2" width="24" x="1116" y="448"></rect><rect fill="#fff1c7" height="24" rx="5" stroke="#ef8f00" stroke-width="2" width="24" x="1150" y="448"></rect><rect fill="#fff1c7" height="24" rx="5" stroke="#ef8f00" stroke-width="2" width="24" x="1184" y="448"></rect><rect fill="#fff1c7" height="24" rx="5" stroke="#ef8f00" stroke-width="2" width="24" x="1218" y="448"></rect><rect fill="#fff1c7" height="24" rx="5" stroke="#ef8f00" stroke-width="2" width="24" x="1252" y="448"></rect><rect fill="#fff1c7" height="24" rx="5" stroke="#ef8f00" stroke-width="2" width="24" x="1286" y="448"></rect><text fill="#111827" font-size="24" font-weight="850" x="1340" y="466">...</text><path d="M1160 485 h20 v16 h14 l-24 28 -24,-28 h14z" fill="#b54800"></path><text class="wv-note-o" x="1172" y="544">loss on noisy side</text><line marker-end="url(#wv-arrow)" stroke="#111827" stroke-linecap="round" stroke-width="3.2" x1="1378" x2="1502" y1="460" y2="460"></line><rect class="wv-llm" height="66" rx="8" width="58" x="1518" y="429"></rect><text class="wv-llm-t" x="1547" y="462">LLM</text>
+<rect fill="url(#wv-grad)" height="44" rx="16" stroke="#cfd8c2" width="1544" x="28" y="585"></rect><rect fill="#76b900" height="44" rx="4" width="9" x="28" y="585"></rect><circle cx="92" cy="607" fill="#76b900" r="20"></circle><path d="M81 606 L90 615 L106 595" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"></path><text class="wv-final" x="154" y="617">Video SP must respect token origin and token meaning.</text></g></svg></figure>
+<h2 id="sec-3">3. LongVILA: Multi-Modal SP for long-video understanding</h2>
+<p>LongVILA is a long-context VLM system for long-video understanding. Algorithmically, it extends the VILA training recipe with context extension and long-video supervised fine-tuning. System-wise, its key idea is <strong>Multi-Modal Sequence Parallelism</strong>, or MM-SP <a href="#ref-1">[1]</a>.</p>
+<p>The headline numbers show the regime: LongVILA extends VILA from 8 video frames to 2048 frames and reports 99.8% accuracy in a 6000-frame needle-in-a-haystack evaluation, where the video can exceed 1M tokens <a href="#ref-1">[1]</a>.</p>
+<figure class="longvila-mmsp-figure">
+<svg aria-labelledby="lv-title lv-desc" class="longvila-mmsp-animation" height="700" role="img" viewBox="0 0 1200 700" width="1200" xmlns="http://www.w3.org/2000/svg">
+<title id="lv-title">LongVILA Multi-Modal Sequence Parallelism animation</title>
+<desc id="lv-desc">Animated diagram showing LongVILA MM-SP: baseline Ring SP, two-stage image then token sharding, and topology-aware communication.</desc>
+<style><![CDATA[
+    .lv-root { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; }
+    .lv-bg { fill:#fbfcfa; }
+    .lv-outer { fill:#ffffff; stroke:#d6dccd; stroke-width:1.4; }
+    .lv-panel { fill:#ffffff; stroke:#d6dccd; stroke-width:1.6; }
+    .lv-subpanel { fill:#f8fbf4; stroke:#d6dccd; stroke-width:1.2; }
+    .lv-title { font-size:30px; font-weight:800; fill:#111827; }
+    .lv-subtitle { font-size:16px; font-weight:500; fill:#667085; }
+    .lv-h2 { font-size:20px; font-weight:800; fill:#111827; }
+    .lv-small { font-size:13px; font-weight:650; fill:#667085; }
+    .lv-label { font-size:15px; font-weight:750; fill:#111827; }
+    .lv-note { font-size:14px; font-weight:600; fill:#667085; }
+    .lv-box-text-dark { font-size:15px; font-weight:760; fill:#111827; text-anchor:middle; dominant-baseline:middle; }
+    .lv-box-text-light { font-size:15px; font-weight:800; fill:#ffffff; text-anchor:middle; dominant-baseline:middle; }
+    .lv-box-text-mini { font-size:13px; font-weight:780; fill:#111827; text-anchor:middle; dominant-baseline:middle; }
+    .lv-dark { fill:#111827; stroke:#111827; stroke-width:1.2; }
+    .lv-green { fill:#76b900; stroke:#76b900; stroke-width:1.2; }
+    .lv-pale { fill:#eef8e4; stroke:#5cab00; stroke-width:2; }
+    .lv-imgtok { fill:#d9d9d9; stroke:#111827; stroke-width:2; }
+    .lv-texttok { fill:#f4bd3f; stroke:#111827; stroke-width:2; }
+    .lv-gpu { fill:#11aeb7; stroke:#111827; stroke-width:2.2; }
+    .lv-node { fill:none; stroke:#7a7f88; stroke-width:2; stroke-dasharray:7 6; }
+    .lv-arrow { stroke:#111827; stroke-width:2.0; fill:none; marker-end:url(#lv-arrowhead); stroke-linecap:round; stroke-linejoin:round; }
+    .lv-arrow-red { stroke:#c53f5c; stroke-width:2.0; fill:none; marker-end:url(#lv-redhead); stroke-linecap:round; stroke-linejoin:round; }
+    .lv-arrow-red-bidir { stroke:#c53f5c; stroke-width:2.0; fill:none; marker-end:url(#lv-redhead); marker-start:url(#lv-redhead); stroke-linecap:round; stroke-linejoin:round; }
+    .lv-arrow-red-mini-bidir { stroke:#c53f5c; stroke-width:1.8; fill:none; marker-end:url(#lv-redhead-mini); marker-start:url(#lv-redhead-mini); stroke-linecap:round; stroke-linejoin:round; }
+    .lv-arrow-dash { stroke:#c53f5c; stroke-width:1.9; stroke-dasharray:5 5; fill:none; marker-end:url(#lv-redhead); stroke-linecap:round; stroke-linejoin:round; }
+    .lv-reveal { opacity:0; }
+    .lv-ring_label { animation: lv-ring_label-reveal 18s ease-in-out infinite; }
+@keyframes lv-ring_label-reveal { 0%, 3.0% { opacity:0; } 5.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-ring_gpu0 { animation: lv-ring_gpu0-reveal 18s ease-in-out infinite; }
+@keyframes lv-ring_gpu0-reveal { 0%, 5.0% { opacity:0; } 7.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-ring_gpu1 { animation: lv-ring_gpu1-reveal 18s ease-in-out infinite; }
+@keyframes lv-ring_gpu1-reveal { 0%, 7.0% { opacity:0; } 9.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-ring_p2p { animation: lv-ring_p2p-reveal 18s ease-in-out infinite; }
+@keyframes lv-ring_p2p-reveal { 0%, 9.0% { opacity:0; } 11.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-comm_ring_label { animation: lv-comm_ring_label-reveal 18s ease-in-out infinite; }
+@keyframes lv-comm_ring_label-reveal { 0%, 11.0% { opacity:0; } 13.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-comm_ring_node0 { animation: lv-comm_ring_node0-reveal 18s ease-in-out infinite; }
+@keyframes lv-comm_ring_node0-reveal { 0%, 12.5% { opacity:0; } 14.7%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-comm_ring_node1 { animation: lv-comm_ring_node1-reveal 18s ease-in-out infinite; }
+@keyframes lv-comm_ring_node1-reveal { 0%, 14.5% { opacity:0; } 16.7%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-comm_ring_arrows { animation: lv-comm_ring_arrows-reveal 18s ease-in-out infinite; }
+@keyframes lv-comm_ring_arrows-reveal { 0%, 16.5% { opacity:0; } 18.7%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-mm_label { animation: lv-mm_label-reveal 18s ease-in-out infinite; }
+@keyframes lv-mm_label-reveal { 0%, 21.0% { opacity:0; } 23.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-raw_gpu0 { animation: lv-raw_gpu0-reveal 18s ease-in-out infinite; }
+@keyframes lv-raw_gpu0-reveal { 0%, 23.0% { opacity:0; } 25.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-raw_i0 { animation: lv-raw_i0-reveal 18s ease-in-out infinite; }
+@keyframes lv-raw_i0-reveal { 0%, 24.5% { opacity:0; } 26.7%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-raw_i1 { animation: lv-raw_i1-reveal 18s ease-in-out infinite; }
+@keyframes lv-raw_i1-reveal { 0%, 26.0% { opacity:0; } 28.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-raw_gpu1 { animation: lv-raw_gpu1-reveal 18s ease-in-out infinite; }
+@keyframes lv-raw_gpu1-reveal { 0%, 27.5% { opacity:0; } 29.7%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-raw_i2 { animation: lv-raw_i2-reveal 18s ease-in-out infinite; }
+@keyframes lv-raw_i2-reveal { 0%, 29.0% { opacity:0; } 31.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-raw_i3 { animation: lv-raw_i3-reveal 18s ease-in-out infinite; }
+@keyframes lv-raw_i3-reveal { 0%, 30.5% { opacity:0; } 32.7%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-raw_text { animation: lv-raw_text-reveal 18s ease-in-out infinite; }
+@keyframes lv-raw_text-reveal { 0%, 32.0% { opacity:0; } 34.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s1_label { animation: lv-s1_label-reveal 18s ease-in-out infinite; }
+@keyframes lv-s1_label-reveal { 0%, 35.0% { opacity:0; } 37.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s1_arrow0 { animation: lv-s1_arrow0-reveal 18s ease-in-out infinite; }
+@keyframes lv-s1_arrow0-reveal { 0%, 36.5% { opacity:0; } 38.7%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s1_img0 { animation: lv-s1_img0-reveal 18s ease-in-out infinite; }
+@keyframes lv-s1_img0-reveal { 0%, 38.0% { opacity:0; } 40.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s1_arrow1 { animation: lv-s1_arrow1-reveal 18s ease-in-out infinite; }
+@keyframes lv-s1_arrow1-reveal { 0%, 39.5% { opacity:0; } 41.7%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s1_img1 { animation: lv-s1_img1-reveal 18s ease-in-out infinite; }
+@keyframes lv-s1_img1-reveal { 0%, 41.0% { opacity:0; } 43.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s1_arrow2 { animation: lv-s1_arrow2-reveal 18s ease-in-out infinite; }
+@keyframes lv-s1_arrow2-reveal { 0%, 42.5% { opacity:0; } 44.7%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s1_img2 { animation: lv-s1_img2-reveal 18s ease-in-out infinite; }
+@keyframes lv-s1_img2-reveal { 0%, 44.0% { opacity:0; } 46.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s1_arrow3 { animation: lv-s1_arrow3-reveal 18s ease-in-out infinite; }
+@keyframes lv-s1_arrow3-reveal { 0%, 45.5% { opacity:0; } 47.7%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s1_img3 { animation: lv-s1_img3-reveal 18s ease-in-out infinite; }
+@keyframes lv-s1_img3-reveal { 0%, 47.0% { opacity:0; } 49.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s1_text { animation: lv-s1_text-reveal 18s ease-in-out infinite; }
+@keyframes lv-s1_text-reveal { 0%, 49.0% { opacity:0; } 51.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s2_label { animation: lv-s2_label-reveal 18s ease-in-out infinite; }
+@keyframes lv-s2_label-reveal { 0%, 53.0% { opacity:0; } 55.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s2_arrow0 { animation: lv-s2_arrow0-reveal 18s ease-in-out infinite; }
+@keyframes lv-s2_arrow0-reveal { 0%, 54.5% { opacity:0; } 56.7%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s2_g0 { animation: lv-s2_g0-reveal 18s ease-in-out infinite; }
+@keyframes lv-s2_g0-reveal { 0%, 56.0% { opacity:0; } 58.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s2_b0 { animation: lv-s2_b0-reveal 18s ease-in-out infinite; }
+@keyframes lv-s2_b0-reveal { 0%, 57.5% { opacity:0; } 59.7%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s2_b1 { animation: lv-s2_b1-reveal 18s ease-in-out infinite; }
+@keyframes lv-s2_b1-reveal { 0%, 59.0% { opacity:0; } 61.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s2_b2 { animation: lv-s2_b2-reveal 18s ease-in-out infinite; }
+@keyframes lv-s2_b2-reveal { 0%, 60.5% { opacity:0; } 62.7%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s2_b3 { animation: lv-s2_b3-reveal 18s ease-in-out infinite; }
+@keyframes lv-s2_b3-reveal { 0%, 62.0% { opacity:0; } 64.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s2_g1 { animation: lv-s2_g1-reveal 18s ease-in-out infinite; }
+@keyframes lv-s2_g1-reveal { 0%, 63.5% { opacity:0; } 65.7%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s2_b4 { animation: lv-s2_b4-reveal 18s ease-in-out infinite; }
+@keyframes lv-s2_b4-reveal { 0%, 65.0% { opacity:0; } 67.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-s2_b5 { animation: lv-s2_b5-reveal 18s ease-in-out infinite; }
+@keyframes lv-s2_b5-reveal { 0%, 66.5% { opacity:0; } 68.7%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-comm_mm_label { animation: lv-comm_mm_label-reveal 18s ease-in-out infinite; }
+@keyframes lv-comm_mm_label-reveal { 0%, 70.0% { opacity:0; } 72.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-comm_mm_node0 { animation: lv-comm_mm_node0-reveal 18s ease-in-out infinite; }
+@keyframes lv-comm_mm_node0-reveal { 0%, 72.0% { opacity:0; } 74.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-comm_mm_node1 { animation: lv-comm_mm_node1-reveal 18s ease-in-out infinite; }
+@keyframes lv-comm_mm_node1-reveal { 0%, 74.0% { opacity:0; } 76.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-comm_a2a0 { animation: lv-comm_a2a0-reveal 18s ease-in-out infinite; }
+@keyframes lv-comm_a2a0-reveal { 0%, 76.0% { opacity:0; } 78.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-comm_a2a1 { animation: lv-comm_a2a1-reveal 18s ease-in-out infinite; }
+@keyframes lv-comm_a2a1-reveal { 0%, 78.0% { opacity:0; } 80.2%, 94% { opacity:1; } 100% { opacity:0; } }
+.lv-comm_p2p { animation: lv-comm_p2p-reveal 18s ease-in-out infinite; }
+@keyframes lv-comm_p2p-reveal { 0%, 80.0% { opacity:0; } 82.2%, 94% { opacity:1; } 100% { opacity:0; } }
+    @media (prefers-reduced-motion: reduce) {
+      .lv-reveal { opacity:1 !important; animation:none !important; }
+    }
+  ]]></style>
+<defs>
+<marker id="lv-arrowhead" markerheight="6" markerunits="userSpaceOnUse" markerwidth="6" orient="auto-start-reverse" refx="8.4" refy="5" viewBox="0 0 10 10"><path d="M 0 0 L 10 5 L 0 10 z" fill="#111827"></path></marker>
+<marker id="lv-redhead" markerheight="6" markerunits="userSpaceOnUse" markerwidth="6" orient="auto-start-reverse" refx="8.4" refy="5" viewBox="0 0 10 10"><path d="M 0 0 L 10 5 L 0 10 z" fill="#c53f5c"></path></marker>
+<marker id="lv-redhead-mini" markerheight="4.5" markerunits="userSpaceOnUse" markerwidth="4.5" orient="auto-start-reverse" refx="8.4" refy="5" viewBox="0 0 10 10"><path d="M 0 0 L 10 5 L 0 10 z" fill="#c53f5c"></path></marker>
+</defs>
+<g class="lv-root">
+<rect class="lv-bg" height="740" width="1200"></rect>
+<rect class="lv-outer" height="678" rx="18" width="1168" x="16" y="18"></rect>
+<text class="lv-title" x="54" y="66">LongVILA MM-SP: two-stage sharding</text>
+<text class="lv-subtitle" x="54" y="102">MM-SP first balances image/frame work, then re-shards visual and text tokens for the LLM.</text>
+<!-- Legend -->
+<g transform="translate(828,42)">
+<rect class="lv-subpanel" height="70" rx="13" width="300" x="0" y="0"></rect>
+<rect class="lv-imgtok" height="24" rx="5" width="44" x="18" y="16"></rect><text class="lv-small" x="74" y="33">image tokens</text>
+<rect class="lv-texttok" height="24" rx="5" width="44" x="170" y="16"></rect><text class="lv-small" x="226" y="33">text tokens</text>
+<line class="lv-arrow" x1="20" x2="62" y1="54" y2="54"></line><text class="lv-small" x="74" y="59">P2P</text>
+<line class="lv-arrow-red-bidir" x1="169" x2="211" y1="54" y2="54"></line><text class="lv-small" x="226" y="59">All-to-All</text>
+</g>
+<!-- Left: sharding pipeline -->
+<g transform="translate(54,135)">
+<rect class="lv-panel" height="560" rx="18" width="650" x="0" y="0"></rect>
+<text class="lv-h2" x="24" y="38">Two-stage sharding strategy</text>
+<!-- Ring baseline -->
+<g class="lv-reveal lv-ring_label"><text class="lv-label" x="24" y="84">Baseline: Ring SP</text><text class="lv-note" x="24" y="107">Tokens are split, but the vision encoder workload is not balanced.</text></g>
+<g class="lv-reveal lv-ring_gpu0">
+<text class="lv-small" text-anchor="middle" x="170" y="139">GPU 0</text>
+<rect class="lv-texttok" height="42" rx="8" width="166" x="87" y="151"></rect>
+<text class="lv-box-text-dark" x="170" y="173">350 text</text>
+</g>
+<g class="lv-reveal lv-ring_gpu1">
+<text class="lv-small" text-anchor="middle" x="426" y="139">GPU 1</text>
+<rect class="lv-texttok" height="42" rx="8" width="166" x="343" y="151"></rect>
+<text class="lv-box-text-dark" x="426" y="173">350 text</text>
+</g>
+<g class="lv-reveal lv-ring_p2p"><line class="lv-arrow" x1="263" x2="333" y1="172" y2="172"></line><text class="lv-small" text-anchor="middle" x="298" y="158">P2P KV</text></g>
+<line stroke="#d6dccd" stroke-width="1.2" x1="24" x2="626" y1="218" y2="218"></line>
+<!-- MM-SP -->
+<g class="lv-reveal lv-mm_label"><text class="lv-label" x="24" y="260">MM-SP: shard by images, then by tokens</text></g>
+<!-- raw placeholders -->
+<g class="lv-reveal lv-raw_gpu0"><text class="lv-small" text-anchor="middle" x="160" y="292">GPU 0 input</text></g>
+<g class="lv-reveal lv-raw_i0"><rect class="lv-imgtok" height="40" rx="8" width="78" x="76" y="306"></rect><text class="lv-box-text-mini" x="115" y="327">&lt;img&gt;</text></g>
+<g class="lv-reveal lv-raw_i1"><rect class="lv-imgtok" height="40" rx="8" width="78" x="164" y="306"></rect><text class="lv-box-text-mini" x="203" y="327">&lt;img&gt;</text></g>
+<g class="lv-reveal lv-raw_gpu1"><text class="lv-small" text-anchor="middle" x="420" y="292">GPU 1 input</text></g>
+<g class="lv-reveal lv-raw_i2"><rect class="lv-imgtok" height="40" rx="8" width="78" x="312" y="306"></rect><text class="lv-box-text-mini" x="351" y="327">&lt;img&gt;</text></g>
+<g class="lv-reveal lv-raw_i3"><rect class="lv-imgtok" height="40" rx="8" width="78" x="400" y="306"></rect><text class="lv-box-text-mini" x="439" y="327">&lt;img&gt;</text></g>
+<g class="lv-reveal lv-raw_text"><rect class="lv-texttok" height="40" rx="8" width="92" x="488" y="306"></rect><text class="lv-box-text-dark" x="534" y="327">300 text</text></g>
+<!-- stage 1 -->
+<g class="lv-reveal lv-s1_label"><rect fill="#ffffff" height="22" opacity="0.92" rx="5" width="118" x="468" y="361"></rect><text class="lv-small" text-anchor="middle" x="527" y="378">Stage 1: by images</text></g>
+<g class="lv-reveal lv-s1_arrow0"><path class="lv-arrow-dash" d="M115 349 L115 388"></path></g>
+<g class="lv-reveal lv-s1_img0"><rect class="lv-imgtok" height="40" rx="8" width="74" x="78" y="395"></rect><text class="lv-box-text-dark" x="115" y="416">100</text></g>
+<g class="lv-reveal lv-s1_arrow1"><path class="lv-arrow-dash" d="M203 349 L203 388"></path></g>
+<g class="lv-reveal lv-s1_img1"><rect class="lv-imgtok" height="40" rx="8" width="74" x="166" y="395"></rect><text class="lv-box-text-dark" x="203" y="416">100</text></g>
+<g class="lv-reveal lv-s1_arrow2"><path class="lv-arrow-dash" d="M351 349 L351 388"></path></g>
+<g class="lv-reveal lv-s1_img2"><rect class="lv-imgtok" height="40" rx="8" width="74" x="314" y="395"></rect><text class="lv-box-text-dark" x="351" y="416">100</text></g>
+<g class="lv-reveal lv-s1_arrow3"><path class="lv-arrow-dash" d="M439 349 L439 388"></path></g>
+<g class="lv-reveal lv-s1_img3"><rect class="lv-imgtok" height="40" rx="8" width="74" x="402" y="395"></rect><text class="lv-box-text-dark" x="439" y="416">100</text></g>
+<g class="lv-reveal lv-s1_text"><rect class="lv-texttok" height="40" rx="8" width="92" x="488" y="395"></rect><text class="lv-box-text-dark" x="534" y="416">300 text</text></g>
+<!-- stage 2 -->
+<g class="lv-reveal lv-s2_label"><rect fill="#ffffff" height="22" opacity="0.92" rx="5" width="118" x="476" y="449"></rect><text class="lv-small" text-anchor="middle" x="535" y="466">Stage 2: by tokens</text></g>
+<g class="lv-reveal lv-s2_arrow0"><path class="lv-arrow" d="M314 443 C300 460 292 478 286 504"></path><path class="lv-arrow" d="M402 443 C388 463 384 484 396 504"></path></g>
+<g class="lv-reveal lv-s2_g0"><rect fill="#ffffff" height="22" opacity="0.92" rx="5" width="138" x="141" y="475"></rect><text class="lv-small" text-anchor="middle" x="210" y="492">GPU 0 final shard</text></g>
+<g class="lv-reveal lv-s2_b0"><rect class="lv-imgtok" height="38" rx="7" width="58" x="66" y="510"></rect><text class="lv-box-text-mini" x="95" y="530">100</text></g>
+<g class="lv-reveal lv-s2_b1"><rect class="lv-imgtok" height="38" rx="7" width="58" x="130" y="510"></rect><text class="lv-box-text-mini" x="159" y="530">100</text></g>
+<g class="lv-reveal lv-s2_b2"><rect class="lv-imgtok" height="38" rx="7" width="58" x="194" y="510"></rect><text class="lv-box-text-mini" x="223" y="530">100</text></g>
+<g class="lv-reveal lv-s2_b3"><rect class="lv-imgtok" height="38" rx="7" width="58" x="258" y="510"></rect><text class="lv-box-text-mini" x="287" y="530">50</text></g>
+<g class="lv-reveal lv-s2_g1"><rect fill="#ffffff" height="22" opacity="0.92" rx="5" width="122" x="430" y="475"></rect><text class="lv-small" text-anchor="middle" x="491" y="492">GPU 1 final shard</text></g>
+<g class="lv-reveal lv-s2_b4"><rect class="lv-imgtok" height="38" rx="7" width="58" x="366" y="510"></rect><text class="lv-box-text-mini" x="395" y="530">50</text></g>
+<g class="lv-reveal lv-s2_b5"><rect class="lv-texttok" height="38" rx="7" width="118" x="430" y="510"></rect><text class="lv-box-text-dark" x="489" y="530">300 text</text></g>
+</g>
+<!-- Right: communication topology -->
+<g transform="translate(730,135)">
+<rect class="lv-panel" height="505" rx="18" width="414" x="0" y="0"></rect>
+<text class="lv-h2" x="24" y="38">Topology-aware communication</text>
+<!-- Ring communication -->
+<g class="lv-reveal lv-comm_ring_label"><text class="lv-label" x="24" y="78">Ring SP: P2P everywhere</text></g>
+<g class="lv-reveal lv-comm_ring_node0">
+<rect class="lv-node" height="142" rx="12" width="150" x="30" y="96"></rect>
+<text class="lv-small" text-anchor="middle" x="105" y="256">node 0</text>
+<rect class="lv-gpu" height="44" rx="8" width="48" x="50" y="115"></rect><text class="lv-box-text-dark" x="74" y="138">GPU</text>
+<rect class="lv-gpu" height="44" rx="8" width="48" x="112" y="115"></rect><text class="lv-box-text-dark" x="136" y="138">GPU</text>
+<rect class="lv-gpu" height="44" rx="8" width="48" x="50" y="174"></rect><text class="lv-box-text-dark" x="74" y="197">GPU</text>
+<rect class="lv-gpu" height="44" rx="8" width="48" x="112" y="174"></rect><text class="lv-box-text-dark" x="136" y="197">GPU</text>
+</g>
+<g class="lv-reveal lv-comm_ring_node1">
+<rect class="lv-node" height="142" rx="12" width="150" x="234" y="96"></rect>
+<text class="lv-small" text-anchor="middle" x="309" y="256">node 1</text>
+<rect class="lv-gpu" height="44" rx="8" width="48" x="254" y="115"></rect><text class="lv-box-text-dark" x="278" y="138">GPU</text>
+<rect class="lv-gpu" height="44" rx="8" width="48" x="316" y="115"></rect><text class="lv-box-text-dark" x="340" y="138">GPU</text>
+<rect class="lv-gpu" height="44" rx="8" width="48" x="254" y="174"></rect><text class="lv-box-text-dark" x="278" y="197">GPU</text>
+<rect class="lv-gpu" height="44" rx="8" width="48" x="316" y="174"></rect><text class="lv-box-text-dark" x="340" y="197">GPU</text>
+</g>
+<g class="lv-reveal lv-comm_ring_arrows">
+<path class="lv-arrow" d="M98 137 H112"></path><path class="lv-arrow" d="M136 159 V174"></path><path class="lv-arrow" d="M112 196 H98"></path><path class="lv-arrow" d="M74 174 V159"></path>
+<path class="lv-arrow" d="M302 137 H316"></path><path class="lv-arrow" d="M340 159 V174"></path><path class="lv-arrow" d="M316 196 H302"></path><path class="lv-arrow" d="M278 174 V159"></path>
+<path class="lv-arrow" d="M160 196 H254"></path><path class="lv-arrow" d="M254 137 H164"></path>
+<text class="lv-small" text-anchor="middle" x="207" y="183">P2P</text>
+</g>
+<line stroke="#d6dccd" stroke-width="1.2" x1="24" x2="390" y1="286" y2="286"></line>
+<!-- MM-SP 2D Attention communication -->
+<g class="lv-reveal lv-comm_mm_label"><text class="lv-label" x="24" y="330">MM-SP: 2D-Attention</text><text class="lv-note" x="24" y="353">All-to-All inside each node, P2P across nodes.</text></g>
+<g class="lv-reveal lv-comm_mm_node0">
+<rect class="lv-node" height="104" rx="12" width="150" x="30" y="372"></rect>
+<rect class="lv-gpu" height="32" rx="8" width="48" x="50" y="389"></rect><text class="lv-box-text-mini" x="74" y="406">GPU</text>
+<rect class="lv-gpu" height="32" rx="8" width="48" x="112" y="389"></rect><text class="lv-box-text-mini" x="136" y="406">GPU</text>
+<rect class="lv-gpu" height="32" rx="8" width="48" x="50" y="431"></rect><text class="lv-box-text-mini" x="74" y="448">GPU</text>
+<rect class="lv-gpu" height="32" rx="8" width="48" x="112" y="431"></rect><text class="lv-box-text-mini" x="136" y="448">GPU</text>
+</g>
+<g class="lv-reveal lv-comm_mm_node1">
+<rect class="lv-node" height="104" rx="12" width="150" x="234" y="372"></rect>
+<rect class="lv-gpu" height="32" rx="8" width="48" x="254" y="389"></rect><text class="lv-box-text-mini" x="278" y="406">GPU</text>
+<rect class="lv-gpu" height="32" rx="8" width="48" x="316" y="389"></rect><text class="lv-box-text-mini" x="340" y="406">GPU</text>
+<rect class="lv-gpu" height="32" rx="8" width="48" x="254" y="431"></rect><text class="lv-box-text-mini" x="278" y="448">GPU</text>
+<rect class="lv-gpu" height="32" rx="8" width="48" x="316" y="431"></rect><text class="lv-box-text-mini" x="340" y="448">GPU</text>
+</g>
+<g class="lv-reveal lv-comm_a2a0">
+<path class="lv-arrow-red-mini-bidir" d="M98 405 H112"></path><path class="lv-arrow-red-mini-bidir" d="M74 421 V431"></path><path class="lv-arrow-red-mini-bidir" d="M136 421 V431"></path><path class="lv-arrow-red-mini-bidir" d="M98 447 H112"></path><path class="lv-arrow-red-mini-bidir" d="M94 418 L116 432"></path><path class="lv-arrow-red-mini-bidir" d="M116 418 L94 432"></path>
+<text class="lv-small" text-anchor="middle" x="105" y="488">intra-node A2A</text>
+</g>
+<g class="lv-reveal lv-comm_a2a1">
+<path class="lv-arrow-red-mini-bidir" d="M302 405 H316"></path><path class="lv-arrow-red-mini-bidir" d="M278 421 V431"></path><path class="lv-arrow-red-mini-bidir" d="M340 421 V431"></path><path class="lv-arrow-red-mini-bidir" d="M302 447 H316"></path><path class="lv-arrow-red-mini-bidir" d="M298 418 L320 432"></path><path class="lv-arrow-red-mini-bidir" d="M320 418 L298 432"></path>
+<text class="lv-small" text-anchor="middle" x="309" y="488">intra-node A2A</text>
+</g>
+<g class="lv-reveal lv-comm_p2p"><rect fill="#ffffff" height="20" opacity="0.92" rx="5" width="98" x="158" y="394"></rect><text class="lv-small" text-anchor="middle" x="207" y="409">inter-node P2P</text><path class="lv-arrow" d="M180 429 H234"></path></g>
+</g>
+</g>
+</svg>
+<figcaption>Figure 2. Generated animated diagram based on LongVILA. MM-SP first balances the image/frame workload and then balances token workload; its 2D-Attention communication uses intra-node All-to-All and inter-node P2P. Source: LongVILA <a href="#ref-1">[1]</a>.</figcaption>
+</figure>
+<h3>Why text-only SP is not enough</h3>
+<p>Ring-style or text-centric SP can shard a token sequence. But in a VLM, the model does not begin with a clean token sequence. It begins with frames/images and text, then uses the vision encoder to manufacture visual tokens. If the system only shards after this point, the vision tower can remain imbalanced.</p>
+<p>LongVILA’s MM-SP therefore uses a two-stage sharding strategy:</p>
+<ol>
+<li><strong>Stage 1: shard by images or frames.</strong> Frames are distributed across SP ranks to balance the vision tower workload.</li>
+<li><strong>Stage 2: shard by tokens.</strong> After visual embeddings and text are assembled, the resulting sequence is balanced across ranks for the LLM.</li>
+</ol>
+<p>This is a small but important shift in perspective. The SP boundary moves earlier in the pipeline. The system does not wait until the LLM sees a long token sequence; it starts balancing from the moment video becomes visual work.</p>
+<h3>Communication should match the hardware topology</h3>
+<p>LongVILA also shows that SP is not only about slicing tensors. It is about choosing a communication pattern that matches the machine. The paper contrasts Ring-style SP, which relies on point-to-point communication, with MM-SP’s 2D-Attention design: intra-node All-to-All uses fast NVLink bandwidth, while inter-node P2P handles the slower cross-node path <a href="#ref-1">[1]</a>.</p>
+<div class="problem-box"><strong>LongVILA takeaway:</strong> for long-video understanding, SP has to become multi-modal SP. The system must know where visual tokens come from, not only where transformer tokens go.</div>
+<h2 id="sec-4">4. LongLive-2.0: Balanced SP for long-video generation</h2>
+<p>LongLive-2.0 attacks a different problem: long-video generation infrastructure. The full system includes NVFP4 training and inference, KV-cache compression, parallel dequantization, and asynchronous VAE decoding. For this post, the key training-side idea is <strong>Balanced SP</strong> <a href="#ref-2">[2]</a>.</p>
+<p>The difference from LongVILA is important. In understanding, the challenge is multi-modal token production and long-context VLM execution. In generation, the challenge is that the physical sequence layout encodes the training objective.</p>
+<figure><img alt="Animated Traditional SP diagram for LongLive-2.0 AR training" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNDAwIiBoZWlnaHQ9Ijk3MCIgdmlld0JveD0iMCAwIDE0MDAgOTcwIj48ZGVmcz48cGF0dGVybiBpZD0ibm9pc3kiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgcGF0dGVyblRyYW5zZm9ybT0icm90YXRlKDQ1KSI+PHJlY3Qgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiBmaWxsPSIjZmZmM2M0Ii8+PGxpbmUgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEyIiBzdHJva2U9IiNkY2FlMmEiIHN0cm9rZS13aWR0aD0iMy4yIi8+PC9wYXR0ZXJuPjxwYXR0ZXJuIGlkPSJoYWxvIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0iI2RmZjdmYyIvPjxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMCIgc3Ryb2tlPSIjMjBhYWM4IiBzdHJva2Utd2lkdGg9IjIuNiIvPjwvcGF0dGVybj48bWFya2VyIGlkPSJhcnIiIG1hcmtlcldpZHRoPSI1IiBtYXJrZXJIZWlnaHQ9IjUiIHJlZlg9IjQuNSIgcmVmWT0iMi41IiBvcmllbnQ9ImF1dG8iIG1hcmtlclVuaXRzPSJzdHJva2VXaWR0aCI+PHBhdGggZD0iTTAsMCBMNSwyLjUgTDAsNSBaIiBmaWxsPSIjMTExODI3Ii8+PC9tYXJrZXI+PG1hcmtlciBpZD0iYXJyX2ciIG1hcmtlcldpZHRoPSI1IiBtYXJrZXJIZWlnaHQ9IjUiIHJlZlg9IjQuNSIgcmVmWT0iMi41IiBvcmllbnQ9ImF1dG8iIG1hcmtlclVuaXRzPSJzdHJva2VXaWR0aCI+PHBhdGggZD0iTTAsMCBMNSwyLjUgTDAsNSBaIiBmaWxsPSIjOWNhM2FmIi8+PC9tYXJrZXI+PHN0eWxlPjwhW0NEQVRBW3RleHQge2ZvbnQtZmFtaWx5OiBJbnRlciwgdWktc2Fucy1zZXJpZiwgLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCAiU2Vnb2UgVUkiLCBBcmlhbCwgc2Fucy1zZXJpZjt9XV0+PC9zdHlsZT48L2RlZnM+PHJlY3QgeD0iMTgiIHk9IjE4IiB3aWR0aD0iMTM2NCIgaGVpZ2h0PSI5MzQiIHJ4PSIyOCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjZDdkZWNmIiBzdHJva2Utd2lkdGg9IjIiIC8+PHRleHQgeD0iNjAiIHk9Ijc4IiBmb250LXNpemU9IjQwIiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiID5BUiBUcmFpbmluZyArIFRyYWRpdGlvbmFsIFNQPC90ZXh0Pjx0ZXh0IHg9IjYwIiB5PSIxMTgiIGZvbnQtc2l6ZT0iMjIiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJzdGFydCI+PHRzcGFuIHg9IjYwIiBkeT0iMCI+Q2VudHJhbGl6ZWQgVkFFIHdvcmsgaXMgZm9sbG93ZWQgYnkgYSBsYXRlIHNoYXJkLjwvdHNwYW4+PHRzcGFuIHg9IjYwIiBkeT0iMzAiPk9ubHkgdGhlIG5vaXN5IHRhcmdldCByYW5rIGNhcnJpZXMgbG9zcy48L3RzcGFuPjwvdGV4dD48bGluZSB4MT0iNjAiIHkxPSIxNzQiIHgyPSIxMzQwIiB5Mj0iMTc0IiBzdHJva2U9IiNkN2RlY2YiIHN0cm9rZS13aWR0aD0iMiIvPjxyZWN0IHg9IjU1IiB5PSIyMDUiIHdpZHRoPSIzOTAiIGhlaWdodD0iNjgwIiByeD0iMjIiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2Q3ZGVjZiIgc3Ryb2tlLXdpZHRoPSIyIiAvPjxyZWN0IHg9IjUwNSIgeT0iMjA1IiB3aWR0aD0iNDA1IiBoZWlnaHQ9IjY4MCIgcng9IjIyIiBmaWxsPSIjZmZmIiBzdHJva2U9IiNkN2RlY2YiIHN0cm9rZS13aWR0aD0iMiIgLz48cmVjdCB4PSI5NzAiIHk9IjIwNSIgd2lkdGg9IjM3MCIgaGVpZ2h0PSI2ODAiIHJ4PSIyMiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjZDdkZWNmIiBzdHJva2Utd2lkdGg9IjIiIC8+PGcgb3BhY2l0eT0iMCI+PGFuaW1hdGUgYXR0cmlidXRlTmFtZT0ib3BhY2l0eSIgdmFsdWVzPSIwOzA7MTsxOzAiIGtleVRpbWVzPSIwOzAuMDQyOTswLjA2Nzk7MC45NTcxOzEiIGR1cj0iMTQuMHMiIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIi8+PHRleHQgeD0iODUiIHk9IjI1MCIgZm9udC1zaXplPSIyNiIgZm9udC13ZWlnaHQ9IjkwMCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9InN0YXJ0IiA+MS4gVkFFIHByZXBhcmF0aW9uPC90ZXh0Pjx0ZXh0IHg9Ijg1IiB5PSIyODIiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJzdGFydCI+PHRzcGFuIHg9Ijg1IiBkeT0iMCI+R1BVIDAgZW5jb2RlcyB0aGUgZnVsbCB2aWRlby48L3RzcGFuPjwvdGV4dD48dGV4dCB4PSIyNTAiIHk9IjMzMyIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzY2NzA4NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgPkdQVSAwPC90ZXh0PjxyZWN0IHg9IjEzNSIgeT0iMzUyIiB3aWR0aD0iMjMwIiBoZWlnaHQ9IjU2IiByeD0iMTAiIGZpbGw9IiNhN2U3ZjYiIHN0cm9rZT0iIzIwYWFjOCIgc3Ryb2tlLXdpZHRoPSIyLjQiIC8+PHRleHQgeD0iMjUwIiB5PSIzODciIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI4NTAiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiID54MCwgeDEsIHgyLCB4MzwvdGV4dD48bGluZSB4MT0iMjUwIiB5MT0iNDEwIiB4Mj0iMjUwIiB5Mj0iNDQ1IiBzdHJva2U9IiM5Y2EzYWYiIHN0cm9rZS13aWR0aD0iMi4yIiBzdHJva2UtbGluZWNhcD0icm91bmQiIG1hcmtlci1lbmQ9InVybCgjYXJyX2cpIi8+PHJlY3QgeD0iMjAyIiB5PSI0NTQiIHdpZHRoPSI5NiIgaGVpZ2h0PSI1MCIgcng9IjEwIiBmaWxsPSIjZmZmIiBzdHJva2U9IiMyMmI4ZDgiIHN0cm9rZS13aWR0aD0iMi40IiAvPjx0ZXh0IHg9IjI1MCIgeT0iNDg2IiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iODUwIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiA+VkFFPC90ZXh0PjxsaW5lIHgxPSIyNTAiIHkxPSI1MDQiIHgyPSIyNTAiIHkyPSI1MzgiIHN0cm9rZT0iIzljYTNhZiIgc3Ryb2tlLXdpZHRoPSIyLjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgbWFya2VyLWVuZD0idXJsKCNhcnJfZykiLz48cmVjdCB4PSIxMjAiIHk9IjU0OCIgd2lkdGg9IjI2MCIgaGVpZ2h0PSI1NiIgcng9IjEwIiBmaWxsPSIjZjdjNjRhIiBzdHJva2U9IiNkY2FlMmEiIHN0cm9rZS13aWR0aD0iMi40IiAvPjx0ZXh0IHg9IjI1MCIgeT0iNTgzIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iODUwIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiA+Y2xlYW4gejAsIHoxLCB6MiwgejM8L3RleHQ+PC9nPjxnIG9wYWNpdHk9IjAiPjxhbmltYXRlIGF0dHJpYnV0ZU5hbWU9Im9wYWNpdHkiIHZhbHVlcz0iMDswOzE7MTswIiBrZXlUaW1lcz0iMDswLjEyMTQ7MC4xNDY0OzAuOTU3MTsxIiBkdXI9IjE0LjBzIiByZXBlYXRDb3VudD0iaW5kZWZpbml0ZSIvPjx0ZXh0IHg9IjUzNSIgeT0iMjUwIiBmb250LXNpemU9IjI2IiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiID4yLiBMYXRlIHNlcXVlbmNlIHNoYXJkPC90ZXh0Pjx0ZXh0IHg9IjUzNSIgeT0iMjgyIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjx0c3BhbiB4PSI1MzUiIGR5PSIwIj5DbGVhbiBjb250ZXh0IGlzIHNwcmVhZCBhY3Jvc3MgcmFua3MuPC90c3Bhbj48dHNwYW4geD0iNTM1IiBkeT0iMjQiPlRoZSBub2lzeSB0YXJnZXQgc2l0cyBvbiBvbmUgcmFuay48L3RzcGFuPjwvdGV4dD48cmVjdCB4PSI2MjUiIHk9IjMzOCIgd2lkdGg9IjE2MCIgaGVpZ2h0PSI1MiIgcng9IjE0IiBmaWxsPSIjZjRmYWVjIiBzdHJva2U9IiNkN2RlY2YiIHN0cm9rZS13aWR0aD0iMiIgLz48dGV4dCB4PSI3MDUiIHk9IjM3MSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjkwMCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgPnNwbGl0PC90ZXh0PjxwYXRoIGQ9Ik03MDUgMzkwIEM3MDUgNDE2LCA1NzEuMCA0MTYsIDU3MS4wIDQ0MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOWNhM2FmIiBzdHJva2Utd2lkdGg9IjIuMSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBtYXJrZXItZW5kPSJ1cmwoI2Fycl9nKSIvPjxwYXRoIGQ9Ik03MDUgMzkwIEM3MDUgNDE2LCA2NjMuMCA0MTYsIDY2My4wIDQ0MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOWNhM2FmIiBzdHJva2Utd2lkdGg9IjIuMSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBtYXJrZXItZW5kPSJ1cmwoI2Fycl9nKSIvPjxwYXRoIGQ9Ik03MDUgMzkwIEM3MDUgNDE2LCA3NTUuMCA0MTYsIDc1NS4wIDQ0MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOWNhM2FmIiBzdHJva2Utd2lkdGg9IjIuMSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBtYXJrZXItZW5kPSJ1cmwoI2Fycl9nKSIvPjxwYXRoIGQ9Ik03MDUgMzkwIEM3MDUgNDE2LCA4NDcuMCA0MTYsIDg0Ny4wIDQ0MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOWNhM2FmIiBzdHJva2Utd2lkdGg9IjIuMSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBtYXJrZXItZW5kPSJ1cmwoI2Fycl9nKSIvPjxyZWN0IHg9IjUzMCIgeT0iNDQ4IiB3aWR0aD0iODIiIGhlaWdodD0iNzAiIHJ4PSIxMCIgZmlsbD0iI2Y3YzY0YSIgc3Ryb2tlPSIjZGNhZTJhIiBzdHJva2Utd2lkdGg9IjIuMiIgLz48dGV4dCB4PSI1NzEuMCIgeT0iNDcwIiBmb250LXNpemU9IjEzIiBmb250LXdlaWdodD0iODUwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiA+R1BVIDA8L3RleHQ+PHRleHQgeD0iNTcxLjAiIHk9IjQ5NiIgZm9udC1zaXplPSIxNSIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgPmNsZWFuIHowPC90ZXh0PjxyZWN0IHg9IjYyMiIgeT0iNDQ4IiB3aWR0aD0iODIiIGhlaWdodD0iNzAiIHJ4PSIxMCIgZmlsbD0iI2Y3YzY0YSIgc3Ryb2tlPSIjZGNhZTJhIiBzdHJva2Utd2lkdGg9IjIuMiIgLz48dGV4dCB4PSI2NjMuMCIgeT0iNDcwIiBmb250LXNpemU9IjEzIiBmb250LXdlaWdodD0iODUwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiA+R1BVIDE8L3RleHQ+PHRleHQgeD0iNjYzLjAiIHk9IjQ5NiIgZm9udC1zaXplPSIxNSIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgPmNsZWFuIHoxPC90ZXh0PjxyZWN0IHg9IjcxNCIgeT0iNDQ4IiB3aWR0aD0iODIiIGhlaWdodD0iNzAiIHJ4PSIxMCIgZmlsbD0iI2Y3YzY0YSIgc3Ryb2tlPSIjZGNhZTJhIiBzdHJva2Utd2lkdGg9IjIuMiIgLz48dGV4dCB4PSI3NTUuMCIgeT0iNDcwIiBmb250LXNpemU9IjEzIiBmb250LXdlaWdodD0iODUwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiA+R1BVIDI8L3RleHQ+PHRleHQgeD0iNzU1LjAiIHk9IjQ5NiIgZm9udC1zaXplPSIxNSIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgPmNsZWFuIHoyPC90ZXh0PjxyZWN0IHg9IjgwNiIgeT0iNDQ4IiB3aWR0aD0iODIiIGhlaWdodD0iNzAiIHJ4PSIxMCIgZmlsbD0idXJsKCNub2lzeSkiIHN0cm9rZT0iI2RjYWUyYSIgc3Ryb2tlLXdpZHRoPSIyLjIiIC8+PHRleHQgeD0iODQ3LjAiIHk9IjQ3MCIgZm9udC1zaXplPSIxMyIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzY2NzA4NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgPkdQVSAzPC90ZXh0Pjx0ZXh0IHg9Ijg0Ny4wIiB5PSI0OTYiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI4NTAiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiID5ub2lzeSB6MzwvdGV4dD48dGV4dCB4PSI4NDcuMCIgeT0iNTQwIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiA+KyBub2lzZTwvdGV4dD48cmVjdCB4PSI1NTIiIHk9IjY1MCIgd2lkdGg9IjMwNiIgaGVpZ2h0PSI4NiIgcng9IjE0IiBmaWxsPSIjZjRmYWVjIiBzdHJva2U9IiNkN2RlY2YiIHN0cm9rZS13aWR0aD0iMiIgLz48dGV4dCB4PSI3MDUiIHk9IjY4NCIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjkwMCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgPk9iamVjdGl2ZSBvd25lcnNoaXA8L3RleHQ+PHRleHQgeD0iNzA1IiB5PSI3MTAiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI5MDAiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiID5pcyBubyBsb25nZXIgYmFsYW5jZWQuPC90ZXh0PjwvZz48ZyBvcGFjaXR5PSIwIj48YW5pbWF0ZSBhdHRyaWJ1dGVOYW1lPSJvcGFjaXR5IiB2YWx1ZXM9IjA7MDsxOzE7MCIga2V5VGltZXM9IjA7MC4yMTQzOzAuMjM5MzswLjk1NzE7MSIgZHVyPSIxNC4wcyIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiLz48dGV4dCB4PSIxMDAwIiB5PSIyNTAiIGZvbnQtc2l6ZT0iMjYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJzdGFydCIgPjMuIE1hc2sgYW5kIGxvY2FsIGxvc3M8L3RleHQ+PHRleHQgeD0iMTAwMCIgeT0iMjgyIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjx0c3BhbiB4PSIxMDAwIiBkeT0iMCI+T25seSBHUFUgMyBoYXMgdGFyZ2V0IGxvc3MuPC90c3Bhbj48L3RleHQ+PHRleHQgeD0iMTE0MSIgeT0iMzE4IiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiA+Y2F1c2FsIG1hc2s8L3RleHQ+PHRleHQgeD0iMTA2OS4wIiB5PSIzMzQiIGZvbnQtc2l6ZT0iMTMiIGZvbnQtd2VpZ2h0PSI4MDAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiID56MDwvdGV4dD48dGV4dCB4PSIxMTE3LjAiIHk9IjMzNCIgZm9udC1zaXplPSIxMyIgZm9udC13ZWlnaHQ9IjgwMCIgZmlsbD0iIzY2NzA4NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgPnoxPC90ZXh0Pjx0ZXh0IHg9IjExNjUuMCIgeT0iMzM0IiBmb250LXNpemU9IjEzIiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiA+ejI8L3RleHQ+PHRleHQgeD0iMTIxMy4wIiB5PSIzMzQiIGZvbnQtc2l6ZT0iMTMiIGZvbnQtd2VpZ2h0PSI4MDAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiID56MzwvdGV4dD48dGV4dCB4PSIxMDI3IiB5PSIzNzEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI4MDAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJlbmQiID5HMDwvdGV4dD48cmVjdCB4PSIxMDQ1IiB5PSIzNDAiIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgZmlsbD0iI2Y3YzY0YSIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuNSIvPjxyZWN0IHg9IjEwOTMiIHk9IjM0MCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS41Ii8+PHJlY3QgeD0iMTE0MSIgeT0iMzQwIiB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48cmVjdCB4PSIxMTg5IiB5PSIzNDAiIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuNSIvPjx0ZXh0IHg9IjEwMjciIHk9IjQxOSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjgwMCIgZmlsbD0iIzY2NzA4NSIgdGV4dC1hbmNob3I9ImVuZCIgPkcxPC90ZXh0PjxyZWN0IHg9IjEwNDUiIHk9IjM4OCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjZjdjNjRhIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS41Ii8+PHJlY3QgeD0iMTA5MyIgeT0iMzg4IiB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiNmN2M2NGEiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48cmVjdCB4PSIxMTQxIiB5PSIzODgiIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuNSIvPjxyZWN0IHg9IjExODkiIHk9IjM4OCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS41Ii8+PHRleHQgeD0iMTAyNyIgeT0iNDY3IiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0iZW5kIiA+RzI8L3RleHQ+PHJlY3QgeD0iMTA0NSIgeT0iNDM2IiB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiNmN2M2NGEiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48cmVjdCB4PSIxMDkzIiB5PSI0MzYiIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgZmlsbD0iI2Y3YzY0YSIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuNSIvPjxyZWN0IHg9IjExNDEiIHk9IjQzNiIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjZjdjNjRhIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS41Ii8+PHJlY3QgeD0iMTE4OSIgeT0iNDM2IiB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48dGV4dCB4PSIxMDI3IiB5PSI1MTUiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI4MDAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJlbmQiID5HMzwvdGV4dD48cmVjdCB4PSIxMDQ1IiB5PSI0ODQiIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgZmlsbD0iI2Y3YzY0YSIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuNSIvPjxyZWN0IHg9IjEwOTMiIHk9IjQ4NCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjZjdjNjRhIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS41Ii8+PHJlY3QgeD0iMTE0MSIgeT0iNDg0IiB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiNmN2M2NGEiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48cmVjdCB4PSIxMTg5IiB5PSI0ODQiIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgZmlsbD0idXJsKCNub2lzeSkiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48cmVjdCB4PSI5OTQiIHk9IjYxMCIgd2lkdGg9Ijc1IiBoZWlnaHQ9IjY4IiByeD0iMTAiIGZpbGw9IiNmN2M2NGEiIHN0cm9rZT0iI2RjYWUyYSIgc3Ryb2tlLXdpZHRoPSIyLjIiIC8+PHRleHQgeD0iMTAzMS41IiB5PSI2MzIiIGZvbnQtc2l6ZT0iMTMiIGZvbnQtd2VpZ2h0PSI4NTAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiID5HUFUgMDwvdGV4dD48dGV4dCB4PSIxMDMxLjUiIHk9IjY1OCIgZm9udC1zaXplPSIxNSIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgPmNsZWFuIHowPC90ZXh0PjxyZWN0IHg9IjEwODIiIHk9IjYxMCIgd2lkdGg9Ijc1IiBoZWlnaHQ9IjY4IiByeD0iMTAiIGZpbGw9IiNmN2M2NGEiIHN0cm9rZT0iI2RjYWUyYSIgc3Ryb2tlLXdpZHRoPSIyLjIiIC8+PHRleHQgeD0iMTExOS41IiB5PSI2MzIiIGZvbnQtc2l6ZT0iMTMiIGZvbnQtd2VpZ2h0PSI4NTAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiID5HUFUgMTwvdGV4dD48dGV4dCB4PSIxMTE5LjUiIHk9IjY1OCIgZm9udC1zaXplPSIxNSIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgPmNsZWFuIHoxPC90ZXh0PjxyZWN0IHg9IjExNzAiIHk9IjYxMCIgd2lkdGg9Ijc1IiBoZWlnaHQ9IjY4IiByeD0iMTAiIGZpbGw9IiNmN2M2NGEiIHN0cm9rZT0iI2RjYWUyYSIgc3Ryb2tlLXdpZHRoPSIyLjIiIC8+PHRleHQgeD0iMTIwNy41IiB5PSI2MzIiIGZvbnQtc2l6ZT0iMTMiIGZvbnQtd2VpZ2h0PSI4NTAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiID5HUFUgMjwvdGV4dD48dGV4dCB4PSIxMjA3LjUiIHk9IjY1OCIgZm9udC1zaXplPSIxNSIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgPmNsZWFuIHoyPC90ZXh0PjxyZWN0IHg9IjEyNTgiIHk9IjYxMCIgd2lkdGg9Ijc1IiBoZWlnaHQ9IjY4IiByeD0iMTAiIGZpbGw9InVybCgjbm9pc3kpIiBzdHJva2U9IiNkY2FlMmEiIHN0cm9rZS13aWR0aD0iMi4yIiAvPjx0ZXh0IHg9IjEyOTUuNSIgeT0iNjMyIiBmb250LXNpemU9IjEzIiBmb250LXdlaWdodD0iODUwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiA+R1BVIDM8L3RleHQ+PHRleHQgeD0iMTI5NS41IiB5PSI2NTgiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI4NTAiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiID5ub2lzeSB6MzwvdGV4dD48bGluZSB4MT0iMTI5NS41IiB5MT0iNjgyIiB4Mj0iMTI5NS41IiB5Mj0iNzM1IiBzdHJva2U9IiM5Y2EzYWYiIHN0cm9rZS13aWR0aD0iMi4yIiBzdHJva2UtbGluZWNhcD0icm91bmQiIG1hcmtlci1lbmQ9InVybCgjYXJyX2cpIi8+PHRleHQgeD0iMTI5NS41IiB5PSI3NjQiIGZvbnQtc2l6ZT0iMTciIGZvbnQtd2VpZ2h0PSI5MDAiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiID5Mb3NzPC90ZXh0Pjx0ZXh0IHg9IjExNTUiIHk9Ijg0MCIgZm9udC1zaXplPSIyMiIgZm9udC13ZWlnaHQ9IjkwMCIgZmlsbD0iIzY2NzA4NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgPkxvYWQgaW1iYWxhbmNlPC90ZXh0PjwvZz48L3N2Zz4="/><figcaption>Figure 3a. Generated animated diagram based on LongLive-2.0. In traditional SP, VAE preparation is centralized and sharding over the concatenated clean/noisy sequence can concentrate the target loss on one rank. Source: LongLive-2.0 <a href="#ref-2">[2]</a>.</figcaption></figure>
+<figure><img alt="Animated Balanced SP diagram for LongLive-2.0 AR training" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNDAwIiBoZWlnaHQ9IjExMzAiIHZpZXdCb3g9IjAgMCAxNDAwIDExMzAiPjxkZWZzPgo8cGF0dGVybiBpZD0ibm9pc3kiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgcGF0dGVyblRyYW5zZm9ybT0icm90YXRlKDQ1KSI+PHJlY3Qgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiBmaWxsPSIjZmZmM2M0Ii8+PGxpbmUgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEyIiBzdHJva2U9IiNkY2FlMmEiIHN0cm9rZS13aWR0aD0iNCIvPjwvcGF0dGVybj4KPHBhdHRlcm4gaWQ9ImhhbG8iIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgcGF0dGVyblRyYW5zZm9ybT0icm90YXRlKDQ1KSI+PHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSIjZGZmN2ZjIi8+PGxpbmUgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEwIiBzdHJva2U9IiMyMGFhYzgiIHN0cm9rZS13aWR0aD0iMyIvPjwvcGF0dGVybj4KPG1hcmtlciBpZD0iYXJyIiBtYXJrZXJXaWR0aD0iNyIgbWFya2VySGVpZ2h0PSI3IiByZWZYPSI2LjIiIHJlZlk9IjMuNSIgb3JpZW50PSJhdXRvIiBtYXJrZXJVbml0cz0ic3Ryb2tlV2lkdGgiPjxwYXRoIGQ9Ik0wLDAgTDcsMy41IEwwLDcgWiIgZmlsbD0iIzExMTgyNyIvPjwvbWFya2VyPgo8bWFya2VyIGlkPSJhcnJfZyIgbWFya2VyV2lkdGg9IjciIG1hcmtlckhlaWdodD0iNyIgcmVmWD0iNi4yIiByZWZZPSIzLjUiIG9yaWVudD0iYXV0byIgbWFya2VyVW5pdHM9InN0cm9rZVdpZHRoIj48cGF0aCBkPSJNMCwwIEw3LDMuNSBMMCw3IFoiIGZpbGw9IiM5Y2EzYWYiLz48L21hcmtlcj4KPHN0eWxlPjwhW0NEQVRBW3RleHQge2ZvbnQtZmFtaWx5OiBJbnRlciwgdWktc2Fucy1zZXJpZiwgLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCAiU2Vnb2UgVUkiLCBBcmlhbCwgc2Fucy1zZXJpZjt9XV0+PC9zdHlsZT4KPC9kZWZzPjxyZWN0IHg9IjE4IiB5PSIxOCIgd2lkdGg9IjEzNjQiIGhlaWdodD0iMTA5NCIgcng9IjI4IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNkN2RlY2YiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjYwIiB5PSI3OCIgZm9udC1zaXplPSI0MCIgZm9udC13ZWlnaHQ9IjkwMCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9InN0YXJ0Ij5BUiBUcmFpbmluZyArIEJhbGFuY2VkIFNQPC90ZXh0Pjx0ZXh0IHg9IjYwIiB5PSIxMTgiIGZvbnQtc2l6ZT0iMjIiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJzdGFydCI+PHRzcGFuIHg9IjYwIiBkeT0iMCI+RWFjaCBHUFUgb3ducyBhIHRlbXBvcmFsIGNodW5rOiBsb2NhbCByYXcgZnJhbWVzLCBsZWZ0IGhhbG8sIFZBRSB3b3JrLDwvdHNwYW4+PHRzcGFuIHg9IjYwIiBkeT0iMzAiPmNsZWFuL25vaXN5IGxhdGVudCBwYWlyLCBtYXNrIHJvdywgYW5kIGxvc3MuPC90c3Bhbj48L3RleHQ+PGxpbmUgeDE9IjYwIiB5MT0iMTg0IiB4Mj0iMTM0MCIgeTI9IjE4NCIgc3Ryb2tlPSIjZDdkZWNmIiBzdHJva2Utd2lkdGg9IjIiLz48cmVjdCB4PSIxMDQwIiB5PSI0OCIgd2lkdGg9IjI4NSIgaGVpZ2h0PSI5MiIgcng9IjE2IiBmaWxsPSIjZjRmYWVjIiBzdHJva2U9IiNkN2RlY2YiIHN0cm9rZS13aWR0aD0iMiIvPjxyZWN0IHg9IjEwNjAiIHk9IjcwIiB3aWR0aD0iNTIiIGhlaWdodD0iMzAiIHJ4PSIxMCIgZmlsbD0iI2E3ZTdmNiIgc3Ryb2tlPSIjMjBhYWM4IiBzdHJva2Utd2lkdGg9IjIuNCIvPjx0ZXh0IHg9IjEwODYuMCIgeT0iOTIuMCIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+PC90ZXh0Pjx0ZXh0IHg9IjExMjMiIHk9IjkxIiBmb250LXNpemU9IjE1IiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0ic3RhcnQiPnZpZGVvPC90ZXh0PjxyZWN0IHg9IjExOTAiIHk9IjcwIiB3aWR0aD0iNTIiIGhlaWdodD0iMzAiIHJ4PSIxMCIgZmlsbD0iI2Y3YzY0YSIgc3Ryb2tlPSIjZGNhZTJhIiBzdHJva2Utd2lkdGg9IjIuNCIvPjx0ZXh0IHg9IjEyMTYuMCIgeT0iOTIuMCIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+PC90ZXh0Pjx0ZXh0IHg9IjEyNTIiIHk9IjkxIiBmb250LXNpemU9IjE1IiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0ic3RhcnQiPmNsZWFuPC90ZXh0PjxyZWN0IHg9IjEwNjAiIHk9IjEwNiIgd2lkdGg9IjUyIiBoZWlnaHQ9IjI4IiByeD0iNyIgZmlsbD0idXJsKCNoYWxvKSIgc3Ryb2tlPSIjMjBhYWM4IiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSIxMTIzIiB5PSIxMjciIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSI4MDAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJzdGFydCI+aGFsbzwvdGV4dD48cmVjdCB4PSIxMTkwIiB5PSIxMDYiIHdpZHRoPSI1MiIgaGVpZ2h0PSIyOCIgcng9IjciIGZpbGw9InVybCgjbm9pc3kpIiBzdHJva2U9IiNkY2FlMmEiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjEyNTIiIHk9IjEyNyIgZm9udC1zaXplPSIxNSIgZm9udC13ZWlnaHQ9IjgwMCIgZmlsbD0iIzY2NzA4NSIgdGV4dC1hbmNob3I9InN0YXJ0Ij5ub2lzeTwvdGV4dD48cmVjdCB4PSI1NSIgeT0iMjEwIiB3aWR0aD0iMTI5MCIgaGVpZ2h0PSI0MTUiIHJ4PSIyMiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjZDdkZWNmIiBzdHJva2Utd2lkdGg9IjIiLz48cmVjdCB4PSI1NSIgeT0iNjU1IiB3aWR0aD0iMTI5MCIgaGVpZ2h0PSIyNjUiIHJ4PSIyMiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjZDdkZWNmIiBzdHJva2Utd2lkdGg9IjIiLz48cmVjdCB4PSI1NSIgeT0iOTUwIiB3aWR0aD0iMTI5MCIgaGVpZ2h0PSIxNDUiIHJ4PSIyMiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjZDdkZWNmIiBzdHJva2Utd2lkdGg9IjIiLz48ZyBvcGFjaXR5PSIwIj48YW5pbWF0ZSBhdHRyaWJ1dGVOYW1lPSJvcGFjaXR5IiB2YWx1ZXM9IjA7MDsxOzE7MCIga2V5VGltZXM9IjA7MC4wNTAwOzAuMDc1MDswLjk1NzE7MSIgZHVyPSIxNC4wcyIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiLz48dGV4dCB4PSI4NSIgeT0iMjU1IiBmb250LXNpemU9IjI2IiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjEuIFNQLWF3YXJlIGNodW5rZWQgVkFFIGVuY29kaW5nPC90ZXh0Pjx0ZXh0IHg9Ijg1IiB5PSIyODciIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJzdGFydCI+PHRzcGFuIHg9Ijg1IiBkeT0iMCI+RWFjaCByYW5rIGVuY29kZXMgb25lIGNodW5rLCBwbHVzIGEgc21hbGwgbGVmdCBoYWxvIHdoZW4gbmVlZGVkLjwvdHNwYW4+PC90ZXh0PjxyZWN0IHg9IjEyNSIgeT0iMzMwIiB3aWR0aD0iMzQiIGhlaWdodD0iMzQiIHJ4PSI3IiBmaWxsPSIjZmZmIiBzdHJva2U9IiMxMTE4MjciIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjE0MiIgeT0iMzUyIiBmb250LXNpemU9IjEzIiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjZTExZDQ4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5XNDwvdGV4dD48cGF0aCBkPSJNMTIxLDMzOWg0IE0xMjEsMzQ3aDQgTTEyMSwzNTVoNCBNMTU5LDMzOWg0IE0xNTksMzQ3aDQgTTE1OSwzNTVoNCIgc3Ryb2tlPSIjMTExODI3IiBzdHJva2Utd2lkdGg9IjEuNSIvPjx0ZXh0IHg9IjIyNSIgeT0iMzU0IiBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iODUwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5HUFUgMDwvdGV4dD48cmVjdCB4PSIxNjUiIHk9IjM4MiIgd2lkdGg9IjEyMCIgaGVpZ2h0PSI0OCIgcng9IjEwIiBmaWxsPSIjYTdlN2Y2IiBzdHJva2U9IiMyMGFhYzgiIHN0cm9rZS13aWR0aD0iMi40Ii8+PHRleHQgeD0iMjI1LjAiIHk9IjQxMy4wIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iODUwIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj54MDwvdGV4dD48bGluZSB4MT0iMjI1IiB5MT0iNDMyIiB4Mj0iMjI1IiB5Mj0iNDYwIiBzdHJva2U9IiM5Y2EzYWYiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG1hcmtlci1lbmQ9InVybCgjYXJyX2cpIi8+PHJlY3QgeD0iMTc3IiB5PSI0NjgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI1MCIgcng9IjEwIiBmaWxsPSIjZmZmIiBzdHJva2U9IiMyMmI4ZDgiIHN0cm9rZS13aWR0aD0iMi40Ii8+PHRleHQgeD0iMjI1LjAiIHk9IjUwMC4wIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iODUwIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5WQUU8L3RleHQ+PGxpbmUgeDE9IjIyNSIgeTE9IjUxOCIgeDI9IjIyNSIgeTI9IjU0NSIgc3Ryb2tlPSIjOWNhM2FmIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBtYXJrZXItZW5kPSJ1cmwoI2Fycl9nKSIvPjxyZWN0IHg9IjE0NSIgeT0iNTU1IiB3aWR0aD0iODYiIGhlaWdodD0iNDYiIHJ4PSIxMCIgZmlsbD0iI2Y3YzY0YSIgc3Ryb2tlPSIjZGNhZTJhIiBzdHJva2Utd2lkdGg9IjIuNCIvPjx0ZXh0IHg9IjE4OC4wIiB5PSI1ODUuMCIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Y2xlYW4gejA8L3RleHQ+PHJlY3QgeD0iMjQxIiB5PSI1NTUiIHdpZHRoPSI4NiIgaGVpZ2h0PSI0NiIgcng9IjEwIiBmaWxsPSJ1cmwoI25vaXN5KSIgc3Ryb2tlPSIjZGNhZTJhIiBzdHJva2Utd2lkdGg9IjIuNCIvPjx0ZXh0IHg9IjI4NC4wIiB5PSI1ODUuMCIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+bm9pc3kgejA8L3RleHQ+PHJlY3QgeD0iNDM1IiB5PSIzMzAiIHdpZHRoPSIzNCIgaGVpZ2h0PSIzNCIgcng9IjciIGZpbGw9IiNmZmYiIHN0cm9rZT0iIzExMTgyNyIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iNDUyIiB5PSIzNTIiIGZvbnQtc2l6ZT0iMTMiIGZvbnQtd2VpZ2h0PSI5MDAiIGZpbGw9IiNlMTFkNDgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlc0PC90ZXh0PjxwYXRoIGQ9Ik00MzEsMzM5aDQgTTQzMSwzNDdoNCBNNDMxLDM1NWg0IE00NjksMzM5aDQgTTQ2OSwzNDdoNCBNNDY5LDM1NWg0IiBzdHJva2U9IiMxMTE4MjciIHN0cm9rZS13aWR0aD0iMS41Ii8+PHRleHQgeD0iNTM1IiB5PSIzNTQiIGZvbnQtc2l6ZT0iMTciIGZvbnQtd2VpZ2h0PSI4NTAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkdQVSAxPC90ZXh0PjxyZWN0IHg9IjQ2OSIgeT0iMzgyIiB3aWR0aD0iMzYiIGhlaWdodD0iNDgiIHJ4PSI4IiBmaWxsPSJ1cmwoI2hhbG8pIiBzdHJva2U9IiMyMGFhYzgiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjQ4NyIgeT0iNDEzIiBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iODUwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5oPC90ZXh0PjxyZWN0IHg9IjUwOSIgeT0iMzgyIiB3aWR0aD0iODYiIGhlaWdodD0iNDgiIHJ4PSIxMCIgZmlsbD0iI2E3ZTdmNiIgc3Ryb2tlPSIjMjBhYWM4IiBzdHJva2Utd2lkdGg9IjIuNCIvPjx0ZXh0IHg9IjU1Mi4wIiB5PSI0MTMuMCIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+eDE8L3RleHQ+PGxpbmUgeDE9IjUzNSIgeTE9IjQzMiIgeDI9IjUzNSIgeTI9IjQ2MCIgc3Ryb2tlPSIjOWNhM2FmIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBtYXJrZXItZW5kPSJ1cmwoI2Fycl9nKSIvPjxyZWN0IHg9IjQ4NyIgeT0iNDY4IiB3aWR0aD0iOTYiIGhlaWdodD0iNTAiIHJ4PSIxMCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMjJiOGQ4IiBzdHJva2Utd2lkdGg9IjIuNCIvPjx0ZXh0IHg9IjUzNS4wIiB5PSI1MDAuMCIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+VkFFPC90ZXh0PjxsaW5lIHgxPSI1MzUiIHkxPSI1MTgiIHgyPSI1MzUiIHkyPSI1NDUiIHN0cm9rZT0iIzljYTNhZiIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgbWFya2VyLWVuZD0idXJsKCNhcnJfZykiLz48cmVjdCB4PSI0NTUiIHk9IjU1NSIgd2lkdGg9Ijg2IiBoZWlnaHQ9IjQ2IiByeD0iMTAiIGZpbGw9IiNmN2M2NGEiIHN0cm9rZT0iI2RjYWUyYSIgc3Ryb2tlLXdpZHRoPSIyLjQiLz48dGV4dCB4PSI0OTguMCIgeT0iNTg1LjAiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSI4NTAiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPmNsZWFuIHoxPC90ZXh0PjxyZWN0IHg9IjU1MSIgeT0iNTU1IiB3aWR0aD0iODYiIGhlaWdodD0iNDYiIHJ4PSIxMCIgZmlsbD0idXJsKCNub2lzeSkiIHN0cm9rZT0iI2RjYWUyYSIgc3Ryb2tlLXdpZHRoPSIyLjQiLz48dGV4dCB4PSI1OTQuMCIgeT0iNTg1LjAiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSI4NTAiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPm5vaXN5IHoxPC90ZXh0PjxyZWN0IHg9Ijc0NSIgeT0iMzMwIiB3aWR0aD0iMzQiIGhlaWdodD0iMzQiIHJ4PSI3IiBmaWxsPSIjZmZmIiBzdHJva2U9IiMxMTE4MjciIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9Ijc2MiIgeT0iMzUyIiBmb250LXNpemU9IjEzIiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjZTExZDQ4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5XNDwvdGV4dD48cGF0aCBkPSJNNzQxLDMzOWg0IE03NDEsMzQ3aDQgTTc0MSwzNTVoNCBNNzc5LDMzOWg0IE03NzksMzQ3aDQgTTc3OSwzNTVoNCIgc3Ryb2tlPSIjMTExODI3IiBzdHJva2Utd2lkdGg9IjEuNSIvPjx0ZXh0IHg9Ijg0NSIgeT0iMzU0IiBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iODUwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5HUFUgMjwvdGV4dD48cmVjdCB4PSI3NzkiIHk9IjM4MiIgd2lkdGg9IjM2IiBoZWlnaHQ9IjQ4IiByeD0iOCIgZmlsbD0idXJsKCNoYWxvKSIgc3Ryb2tlPSIjMjBhYWM4IiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSI3OTciIHk9IjQxMyIgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzY2NzA4NSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+aDwvdGV4dD48cmVjdCB4PSI4MTkiIHk9IjM4MiIgd2lkdGg9Ijg2IiBoZWlnaHQ9IjQ4IiByeD0iMTAiIGZpbGw9IiNhN2U3ZjYiIHN0cm9rZT0iIzIwYWFjOCIgc3Ryb2tlLXdpZHRoPSIyLjQiLz48dGV4dCB4PSI4NjIuMCIgeT0iNDEzLjAiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI4NTAiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPngyPC90ZXh0PjxsaW5lIHgxPSI4NDUiIHkxPSI0MzIiIHgyPSI4NDUiIHkyPSI0NjAiIHN0cm9rZT0iIzljYTNhZiIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgbWFya2VyLWVuZD0idXJsKCNhcnJfZykiLz48cmVjdCB4PSI3OTciIHk9IjQ2OCIgd2lkdGg9Ijk2IiBoZWlnaHQ9IjUwIiByeD0iMTAiIGZpbGw9IiNmZmYiIHN0cm9rZT0iIzIyYjhkOCIgc3Ryb2tlLXdpZHRoPSIyLjQiLz48dGV4dCB4PSI4NDUuMCIgeT0iNTAwLjAiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI4NTAiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPlZBRTwvdGV4dD48bGluZSB4MT0iODQ1IiB5MT0iNTE4IiB4Mj0iODQ1IiB5Mj0iNTQ1IiBzdHJva2U9IiM5Y2EzYWYiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG1hcmtlci1lbmQ9InVybCgjYXJyX2cpIi8+PHJlY3QgeD0iNzY1IiB5PSI1NTUiIHdpZHRoPSI4NiIgaGVpZ2h0PSI0NiIgcng9IjEwIiBmaWxsPSIjZjdjNjRhIiBzdHJva2U9IiNkY2FlMmEiIHN0cm9rZS13aWR0aD0iMi40Ii8+PHRleHQgeD0iODA4LjAiIHk9IjU4NS4wIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iODUwIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5jbGVhbiB6MjwvdGV4dD48cmVjdCB4PSI4NjEiIHk9IjU1NSIgd2lkdGg9Ijg2IiBoZWlnaHQ9IjQ2IiByeD0iMTAiIGZpbGw9InVybCgjbm9pc3kpIiBzdHJva2U9IiNkY2FlMmEiIHN0cm9rZS13aWR0aD0iMi40Ii8+PHRleHQgeD0iOTA0LjAiIHk9IjU4NS4wIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iODUwIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5ub2lzeSB6MjwvdGV4dD48cmVjdCB4PSIxMDU1IiB5PSIzMzAiIHdpZHRoPSIzNCIgaGVpZ2h0PSIzNCIgcng9IjciIGZpbGw9IiNmZmYiIHN0cm9rZT0iIzExMTgyNyIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iMTA3MiIgeT0iMzUyIiBmb250LXNpemU9IjEzIiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjZTExZDQ4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5XNDwvdGV4dD48cGF0aCBkPSJNMTA1MSwzMzloNCBNMTA1MSwzNDdoNCBNMTA1MSwzNTVoNCBNMTA4OSwzMzloNCBNMTA4OSwzNDdoNCBNMTA4OSwzNTVoNCIgc3Ryb2tlPSIjMTExODI3IiBzdHJva2Utd2lkdGg9IjEuNSIvPjx0ZXh0IHg9IjExNTUiIHk9IjM1NCIgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzY2NzA4NSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+R1BVIDM8L3RleHQ+PHJlY3QgeD0iMTA4OSIgeT0iMzgyIiB3aWR0aD0iMzYiIGhlaWdodD0iNDgiIHJ4PSI4IiBmaWxsPSJ1cmwoI2hhbG8pIiBzdHJva2U9IiMyMGFhYzgiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjExMDciIHk9IjQxMyIgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzY2NzA4NSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+aDwvdGV4dD48cmVjdCB4PSIxMTI5IiB5PSIzODIiIHdpZHRoPSI4NiIgaGVpZ2h0PSI0OCIgcng9IjEwIiBmaWxsPSIjYTdlN2Y2IiBzdHJva2U9IiMyMGFhYzgiIHN0cm9rZS13aWR0aD0iMi40Ii8+PHRleHQgeD0iMTE3Mi4wIiB5PSI0MTMuMCIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+eDM8L3RleHQ+PGxpbmUgeDE9IjExNTUiIHkxPSI0MzIiIHgyPSIxMTU1IiB5Mj0iNDYwIiBzdHJva2U9IiM5Y2EzYWYiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG1hcmtlci1lbmQ9InVybCgjYXJyX2cpIi8+PHJlY3QgeD0iMTEwNyIgeT0iNDY4IiB3aWR0aD0iOTYiIGhlaWdodD0iNTAiIHJ4PSIxMCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMjJiOGQ4IiBzdHJva2Utd2lkdGg9IjIuNCIvPjx0ZXh0IHg9IjExNTUuMCIgeT0iNTAwLjAiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI4NTAiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPlZBRTwvdGV4dD48bGluZSB4MT0iMTE1NSIgeTE9IjUxOCIgeDI9IjExNTUiIHkyPSI1NDUiIHN0cm9rZT0iIzljYTNhZiIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgbWFya2VyLWVuZD0idXJsKCNhcnJfZykiLz48cmVjdCB4PSIxMDc1IiB5PSI1NTUiIHdpZHRoPSI4NiIgaGVpZ2h0PSI0NiIgcng9IjEwIiBmaWxsPSIjZjdjNjRhIiBzdHJva2U9IiNkY2FlMmEiIHN0cm9rZS13aWR0aD0iMi40Ii8+PHRleHQgeD0iMTExOC4wIiB5PSI1ODUuMCIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Y2xlYW4gejM8L3RleHQ+PHJlY3QgeD0iMTE3MSIgeT0iNTU1IiB3aWR0aD0iODYiIGhlaWdodD0iNDYiIHJ4PSIxMCIgZmlsbD0idXJsKCNub2lzeSkiIHN0cm9rZT0iI2RjYWUyYSIgc3Ryb2tlLXdpZHRoPSIyLjQiLz48dGV4dCB4PSIxMjE0LjAiIHk9IjU4NS4wIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iODUwIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5ub2lzeSB6MzwvdGV4dD48L2c+PGcgb3BhY2l0eT0iMCI+PGFuaW1hdGUgYXR0cmlidXRlTmFtZT0ib3BhY2l0eSIgdmFsdWVzPSIwOzA7MTsxOzAiIGtleVRpbWVzPSIwOzAuMTU3MTswLjE4MjE7MC45NTcxOzEiIGR1cj0iMTQuMHMiIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIi8+PHRleHQgeD0iODUiIHk9IjcwMCIgZm9udC1zaXplPSIyNiIgZm9udC13ZWlnaHQ9IjkwMCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9InN0YXJ0Ij4yLiBNYXNrIGFuZCBsb3NzIGZvbGxvdyB0aGUgb3duZXI8L3RleHQ+PHRleHQgeD0iODUiIHk9IjczMiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzY2NzA4NSIgdGV4dC1hbmNob3I9InN0YXJ0Ij48dHNwYW4geD0iODUiIGR5PSIwIj5DbGVhbi9ub2lzeSBsYXRlbnRzIGFyZSBwYWlyZWQgYnkgdGltZSBjaHVuaywgc28gdGFyZ2V0IHdvcmsgaXMgc3ByZWFkIGFjcm9zcyByYW5rcy48L3RzcGFuPjwvdGV4dD48dGV4dCB4PSIxMDQiIHk9Ijc4MSIgZm9udC1zaXplPSIxMSIgZm9udC13ZWlnaHQ9IjgwMCIgZmlsbD0iIzY2NzA4NSIgdGV4dC1hbmNob3I9ImVuZCI+R1BVIDA8L3RleHQ+PHRleHQgeD0iMTA0IiB5PSI4MTUiIGZvbnQtc2l6ZT0iMTEiIGZvbnQtd2VpZ2h0PSI4MDAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJlbmQiPkdQVSAxPC90ZXh0Pjx0ZXh0IHg9IjEwNCIgeT0iODQ5IiBmb250LXNpemU9IjExIiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0iZW5kIj5HUFUgMjwvdGV4dD48dGV4dCB4PSIxMDQiIHk9Ijg4MyIgZm9udC1zaXplPSIxMSIgZm9udC13ZWlnaHQ9IjgwMCIgZmlsbD0iIzY2NzA4NSIgdGV4dC1hbmNob3I9ImVuZCI+R1BVIDM8L3RleHQ+PHJlY3QgeD0iMTEyIiB5PSI3NjAiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2Y3YzY0YSIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIxMjkiIHk9Ijc2MCIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjE0NiIgeT0iNzYwIiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMTYzIiB5PSI3NjAiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIxODAiIHk9Ijc2MCIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjE5NyIgeT0iNzYwIiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMjE0IiB5PSI3NjAiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIyMzEiIHk9Ijc2MCIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjExMiIgeT0iNzc3IiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMTI5IiB5PSI3NzciIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0idXJsKCNub2lzeSkiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMTQ2IiB5PSI3NzciIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIxNjMiIHk9Ijc3NyIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjE4MCIgeT0iNzc3IiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMTk3IiB5PSI3NzciIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIyMTQiIHk9Ijc3NyIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjIzMSIgeT0iNzc3IiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMTEyIiB5PSI3OTQiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2Y3YzY0YSIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIxMjkiIHk9Ijc5NCIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjE0NiIgeT0iNzk0IiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmN2M2NGEiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMTYzIiB5PSI3OTQiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIxODAiIHk9Ijc5NCIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjE5NyIgeT0iNzk0IiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMjE0IiB5PSI3OTQiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIyMzEiIHk9Ijc5NCIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjExMiIgeT0iODExIiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmN2M2NGEiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMTI5IiB5PSI4MTEiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIxNDYiIHk9IjgxMSIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjE2MyIgeT0iODExIiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9InVybCgjbm9pc3kpIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjE4MCIgeT0iODExIiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMTk3IiB5PSI4MTEiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIyMTQiIHk9IjgxMSIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjIzMSIgeT0iODExIiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMTEyIiB5PSI4MjgiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2Y3YzY0YSIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIxMjkiIHk9IjgyOCIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjE0NiIgeT0iODI4IiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmN2M2NGEiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMTYzIiB5PSI4MjgiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIxODAiIHk9IjgyOCIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZjdjNjRhIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjE5NyIgeT0iODI4IiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMjE0IiB5PSI4MjgiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIyMzEiIHk9IjgyOCIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjExMiIgeT0iODQ1IiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmN2M2NGEiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMTI5IiB5PSI4NDUiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIxNDYiIHk9Ijg0NSIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZjdjNjRhIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjE2MyIgeT0iODQ1IiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMTgwIiB5PSI4NDUiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIxOTciIHk9Ijg0NSIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSJ1cmwoI25vaXN5KSIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIyMTQiIHk9Ijg0NSIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjIzMSIgeT0iODQ1IiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMTEyIiB5PSI4NjIiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2Y3YzY0YSIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIxMjkiIHk9Ijg2MiIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjE0NiIgeT0iODYyIiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmN2M2NGEiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMTYzIiB5PSI4NjIiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIxODAiIHk9Ijg2MiIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZjdjNjRhIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjE5NyIgeT0iODYyIiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMjE0IiB5PSI4NjIiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2Y3YzY0YSIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIyMzEiIHk9Ijg2MiIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjExMiIgeT0iODc5IiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmN2M2NGEiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMTI5IiB5PSI4NzkiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIxNDYiIHk9Ijg3OSIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZjdjNjRhIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjE2MyIgeT0iODc5IiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMTgwIiB5PSI4NzkiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0iI2Y3YzY0YSIgc3Ryb2tlPSIjYjhiZmM3IiBzdHJva2Utd2lkdGg9IjEuMDUiLz48cmVjdCB4PSIxOTciIHk9Ijg3OSIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiOGJmYzciIHN0cm9rZS13aWR0aD0iMS4wNSIvPjxyZWN0IHg9IjIxNCIgeT0iODc5IiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHJlY3QgeD0iMjMxIiB5PSI4NzkiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgZmlsbD0idXJsKCNub2lzeSkiIHN0cm9rZT0iI2I4YmZjNyIgc3Ryb2tlLXdpZHRoPSIxLjA1Ii8+PHBhdGggZD0iTTY2LDc2MCBoNSBNNjYsNzYwIHYzNCBNNjYsNzk0IGg1IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NjcwODUiIHN0cm9rZS13aWR0aD0iMS4yIiBvcGFjaXR5PSIwLjgiLz48cGF0aCBkPSJNNjYsNzk0IGg1IE02Niw3OTQgdjM0IE02Niw4MjggaDUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzY2NzA4NSIgc3Ryb2tlLXdpZHRoPSIxLjIiIG9wYWNpdHk9IjAuOCIvPjxwYXRoIGQ9Ik02Niw4MjggaDUgTTY2LDgyOCB2MzQgTTY2LDg2MiBoNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNjY3MDg1IiBzdHJva2Utd2lkdGg9IjEuMiIgb3BhY2l0eT0iMC44Ii8+PHBhdGggZD0iTTY2LDg2MiBoNSBNNjYsODYyIHYzNCBNNjYsODk2IGg1IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NjcwODUiIHN0cm9rZS13aWR0aD0iMS4yIiBvcGFjaXR5PSIwLjgiLz48cmVjdCB4PSIzOTAiIHk9Ijc4MCIgd2lkdGg9IjE3OCIgaGVpZ2h0PSIxMDAiIHJ4PSIxNiIgZmlsbD0iI2Y0ZmFlYyIgc3Ryb2tlPSIjZDdkZWNmIiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSI0NzkiIHk9IjgxMiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjkwMCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+R1BVIDA8L3RleHQ+PHRleHQgeD0iNDc5IiB5PSI4MzkiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSI4MDAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPmNsZWFuIHowPC90ZXh0Pjx0ZXh0IHg9IjQ3OSIgeT0iODYzIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5ub2lzeSB6MCArIGxvc3M8L3RleHQ+PHJlY3QgeD0iNTk1IiB5PSI3ODAiIHdpZHRoPSIxNzgiIGhlaWdodD0iMTAwIiByeD0iMTYiIGZpbGw9IiNmNGZhZWMiIHN0cm9rZT0iI2Q3ZGVjZiIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iNjg0IiB5PSI4MTIiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI5MDAiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPkdQVSAxPC90ZXh0Pjx0ZXh0IHg9IjY4NCIgeT0iODM5IiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5jbGVhbiB6MTwvdGV4dD48dGV4dCB4PSI2ODQiIHk9Ijg2MyIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9IjgwMCIgZmlsbD0iIzY2NzA4NSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+bm9pc3kgejEgKyBsb3NzPC90ZXh0PjxyZWN0IHg9IjgxMCIgeT0iNzgwIiB3aWR0aD0iMTc4IiBoZWlnaHQ9IjEwMCIgcng9IjE2IiBmaWxsPSIjZjRmYWVjIiBzdHJva2U9IiNkN2RlY2YiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9Ijg5OSIgeT0iODEyIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5HUFUgMjwvdGV4dD48dGV4dCB4PSI4OTkiIHk9IjgzOSIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9IjgwMCIgZmlsbD0iIzY2NzA4NSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Y2xlYW4gejI8L3RleHQ+PHRleHQgeD0iODk5IiB5PSI4NjMiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSI4MDAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPm5vaXN5IHoyICsgbG9zczwvdGV4dD48cmVjdCB4PSIxMDI1IiB5PSI3ODAiIHdpZHRoPSIxNzgiIGhlaWdodD0iMTAwIiByeD0iMTYiIGZpbGw9IiNmNGZhZWMiIHN0cm9rZT0iI2Q3ZGVjZiIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iMTExNCIgeT0iODEyIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5HUFUgMzwvdGV4dD48dGV4dCB4PSIxMTE0IiB5PSI4MzkiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSI4MDAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPmNsZWFuIHozPC90ZXh0Pjx0ZXh0IHg9IjExMTQiIHk9Ijg2MyIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9IjgwMCIgZmlsbD0iIzY2NzA4NSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+bm9pc3kgejMgKyBsb3NzPC90ZXh0PjwvZz48ZyBvcGFjaXR5PSIwIj48YW5pbWF0ZSBhdHRyaWJ1dGVOYW1lPSJvcGFjaXR5IiB2YWx1ZXM9IjA7MDsxOzE7MCIga2V5VGltZXM9IjA7MC4yNjQzOzAuMjg5MzswLjk1NzE7MSIgZHVyPSIxNC4wcyIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiLz48dGV4dCB4PSI4NSIgeT0iOTk1IiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiPjMuIEJhbGFuY2VkIGxvY2FsIGxvc3NlczwvdGV4dD48dGV4dCB4PSI0MjIiIHk9Ijk5MCIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzY2NzA4NSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+R1BVIDA8L3RleHQ+PHJlY3QgeD0iMzQwIiB5PSIxMDA1IiB3aWR0aD0iNzgiIGhlaWdodD0iNDIiIHJ4PSIxMCIgZmlsbD0iI2Y3YzY0YSIgc3Ryb2tlPSIjZGNhZTJhIiBzdHJva2Utd2lkdGg9IjIuNCIvPjx0ZXh0IHg9IjM3OS4wIiB5PSIxMDMzLjAiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSI4NTAiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPmNsZWFuIHowPC90ZXh0PjxyZWN0IHg9IjQyOCIgeT0iMTAwNSIgd2lkdGg9Ijc4IiBoZWlnaHQ9IjQyIiByeD0iMTAiIGZpbGw9InVybCgjbm9pc3kpIiBzdHJva2U9IiNkY2FlMmEiIHN0cm9rZS13aWR0aD0iMi40Ii8+PHRleHQgeD0iNDY3LjAiIHk9IjEwMzMuMCIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+bm9pc3kgejA8L3RleHQ+PGxpbmUgeDE9IjQyMiIgeTE9IjEwNDgiIHgyPSI0MjIiIHkyPSIxMDY4IiBzdHJva2U9IiM5Y2EzYWYiIHN0cm9rZS13aWR0aD0iMi4zIiBzdHJva2UtbGluZWNhcD0icm91bmQiIG1hcmtlci1lbmQ9InVybCgjYXJyX2cpIi8+PHRleHQgeD0iNDIyIiB5PSIxMDkwIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Mb3NzPC90ZXh0Pjx0ZXh0IHg9IjY0MiIgeT0iOTkwIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iODUwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5HUFUgMTwvdGV4dD48cmVjdCB4PSI1NjAiIHk9IjEwMDUiIHdpZHRoPSI3OCIgaGVpZ2h0PSI0MiIgcng9IjEwIiBmaWxsPSIjZjdjNjRhIiBzdHJva2U9IiNkY2FlMmEiIHN0cm9rZS13aWR0aD0iMi40Ii8+PHRleHQgeD0iNTk5LjAiIHk9IjEwMzMuMCIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9Ijg1MCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Y2xlYW4gejE8L3RleHQ+PHJlY3QgeD0iNjQ4IiB5PSIxMDA1IiB3aWR0aD0iNzgiIGhlaWdodD0iNDIiIHJ4PSIxMCIgZmlsbD0idXJsKCNub2lzeSkiIHN0cm9rZT0iI2RjYWUyYSIgc3Ryb2tlLXdpZHRoPSIyLjQiLz48dGV4dCB4PSI2ODcuMCIgeT0iMTAzMy4wIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iODUwIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5ub2lzeSB6MTwvdGV4dD48bGluZSB4MT0iNjQyIiB5MT0iMTA0OCIgeDI9IjY0MiIgeTI9IjEwNjgiIHN0cm9rZT0iIzljYTNhZiIgc3Ryb2tlLXdpZHRoPSIyLjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgbWFya2VyLWVuZD0idXJsKCNhcnJfZykiLz48dGV4dCB4PSI2NDIiIHk9IjEwOTAiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPkxvc3M8L3RleHQ+PHRleHQgeD0iODYyIiB5PSI5OTAiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSI4NTAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkdQVSAyPC90ZXh0PjxyZWN0IHg9Ijc4MCIgeT0iMTAwNSIgd2lkdGg9Ijc4IiBoZWlnaHQ9IjQyIiByeD0iMTAiIGZpbGw9IiNmN2M2NGEiIHN0cm9rZT0iI2RjYWUyYSIgc3Ryb2tlLXdpZHRoPSIyLjQiLz48dGV4dCB4PSI4MTkuMCIgeT0iMTAzMy4wIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iODUwIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5jbGVhbiB6MjwvdGV4dD48cmVjdCB4PSI4NjgiIHk9IjEwMDUiIHdpZHRoPSI3OCIgaGVpZ2h0PSI0MiIgcng9IjEwIiBmaWxsPSJ1cmwoI25vaXN5KSIgc3Ryb2tlPSIjZGNhZTJhIiBzdHJva2Utd2lkdGg9IjIuNCIvPjx0ZXh0IHg9IjkwNy4wIiB5PSIxMDMzLjAiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSI4NTAiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPm5vaXN5IHoyPC90ZXh0PjxsaW5lIHgxPSI4NjIiIHkxPSIxMDQ4IiB4Mj0iODYyIiB5Mj0iMTA2OCIgc3Ryb2tlPSIjOWNhM2FmIiBzdHJva2Utd2lkdGg9IjIuMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBtYXJrZXItZW5kPSJ1cmwoI2Fycl9nKSIvPjx0ZXh0IHg9Ijg2MiIgeT0iMTA5MCIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9IjkwMCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TG9zczwvdGV4dD48dGV4dCB4PSIxMDgyIiB5PSI5OTAiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSI4NTAiIGZpbGw9IiM2NjcwODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkdQVSAzPC90ZXh0PjxyZWN0IHg9IjEwMDAiIHk9IjEwMDUiIHdpZHRoPSI3OCIgaGVpZ2h0PSI0MiIgcng9IjEwIiBmaWxsPSIjZjdjNjRhIiBzdHJva2U9IiNkY2FlMmEiIHN0cm9rZS13aWR0aD0iMi40Ii8+PHRleHQgeD0iMTAzOS4wIiB5PSIxMDMzLjAiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSI4NTAiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPmNsZWFuIHozPC90ZXh0PjxyZWN0IHg9IjEwODgiIHk9IjEwMDUiIHdpZHRoPSI3OCIgaGVpZ2h0PSI0MiIgcng9IjEwIiBmaWxsPSJ1cmwoI25vaXN5KSIgc3Ryb2tlPSIjZGNhZTJhIiBzdHJva2Utd2lkdGg9IjIuNCIvPjx0ZXh0IHg9IjExMjcuMCIgeT0iMTAzMy4wIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iODUwIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5ub2lzeSB6MzwvdGV4dD48bGluZSB4MT0iMTA4MiIgeTE9IjEwNDgiIHgyPSIxMDgyIiB5Mj0iMTA2OCIgc3Ryb2tlPSIjOWNhM2FmIiBzdHJva2Utd2lkdGg9IjIuMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBtYXJrZXItZW5kPSJ1cmwoI2Fycl9nKSIvPjx0ZXh0IHg9IjEwODIiIHk9IjEwOTAiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPkxvc3M8L3RleHQ+PHRleHQgeD0iMTI2MCIgeT0iMTAyMCIgZm9udC1zaXplPSIyMSIgZm9udC13ZWlnaHQ9IjkwMCIgZmlsbD0iIzY2NzA4NSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TG9hZDwvdGV4dD48dGV4dCB4PSIxMjYwIiB5PSIxMDQ2IiBmb250LXNpemU9IjIxIiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjNjY3MDg1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5iYWxhbmNlPC90ZXh0PjwvZz48L3N2Zz4="/><figcaption>Figure 3b. Generated animated diagram based on LongLive-2.0. Balanced SP assigns each GPU a temporal clean/noisy pair, so VAE work, attention-mask ownership, and loss are distributed across ranks. Source: LongLive-2.0 <a href="#ref-2">[2]</a>.</figcaption></figure>
+<h3>The naive layout: clean everywhere, loss somewhere</h3>
+<p>The efficient teacher-forcing formulation builds a sequence like:</p>
+<pre><code>[ clean history latents ; noisy target latents ]</code></pre>
+<p>If ordinary SP slices this concatenated sequence without understanding the AR objective, some ranks may contain mostly clean context while another rank contains noisy target tokens that carry the loss. The sequence is partitioned, but the training work is not balanced.</p>
+<h3>The Balanced SP answer: same temporal chunk, same rank</h3>
+<p>Balanced SP changes the data layout. Each SP rank owns the clean latents and noisy latents from the same temporal chunk. That gives every rank both context tokens and target/loss tokens, and it lets the teacher-forcing attention mask be built naturally after the Ulysses-style All-to-All layout <a href="#ref-2">[2]</a>.</p>
+<pre><code>Traditional SP:
+GPU0: clean z0
+GPU1: clean z1
+GPU2: clean z2
+GPU3: noisy z3 + loss
+
+Balanced SP:
+GPU0: clean z0 + noisy z0 + local loss
+GPU1: clean z1 + noisy z1 + local loss
+GPU2: clean z2 + noisy z2 + local loss
+GPU3: clean z3 + noisy z3 + local loss</code></pre>
+<h3>SP starts before the transformer</h3>
+<p>The most interesting detail is that Balanced SP reaches before the DiT. Each rank VAE-encodes only its local raw-video chunk plus a left halo covering the VAE temporal receptive field, then discards the halo latent and keeps the local latent chunk <a href="#ref-2">[2]</a>.</p>
+<p>This is a video-specific lesson. If the transformer is sharded but the VAE pipeline is replicated, the system has not actually made long-video training scale. SP must begin where the expensive sequence is created.</p>
+<h3>The performance lesson</h3>
+<p>LongLive-2.0 reports that NVFP4 plus Balanced SP is the fastest training configuration: for 16s, 32s, and 64s videos, iteration time is 40.1s, 119.3s, and 639.5s, giving 1.3×, 1.4×, and 2.1× speedups over the BF16+SP baseline. The paper also reports up to 2.15× training speedup, 1.84× inference speedup, and 45.7 FPS inference <a href="#ref-2">[2]</a>.</p>
+<div class="problem-box"><strong>LongLive-2.0 takeaway:</strong> for long-video generation, the right SP unit is not just tokens. It is a temporal chunk that owns clean history, noisy target, VAE work, attention mask, and loss.</div>
+<h2 id="sec-5">5. Differences between long video understanding and generation system</h2>
+<p>LongVILA and LongLive-2.0 both split inside a sample, but they assign ownership to different semantic units: multimodal tokens for understanding, and clean/noisy latent chunks for generation.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Dimension</th><th>LongVILA</th><th>LongLive-2.0</th></tr></thead>
+<tbody>
+<tr><td>Task</td><td>Long-video understanding / VLM</td><td>Long-video generation / AR diffusion infrastructure</td></tr>
+<tr><td>Sequence unit</td><td>Visual tokens plus text tokens</td><td>Video latent chunks</td></tr>
+<tr><td>Main bottleneck</td><td>Vision encoder workload, LLM context length, attention communication</td><td>Clean/noisy layout, loss imbalance, VAE latent preparation, DiT activation</td></tr>
+<tr><td>Why naive SP fails</td><td>Text-only token sharding ignores where visual tokens come from</td><td>Concatenated clean/noisy sharding can concentrate target/loss work</td></tr>
+<tr><td>Core design</td><td>MM-SP: shard by frames/images, then by tokens</td><td>Balanced SP: each rank owns clean and noisy latents from the same temporal chunk</td></tr>
+<tr><td>General lesson</td><td>Modality-aware ownership</td><td>Objective-aware temporal ownership</td></tr>
+</tbody>
+</table></div>
+<figure><img alt="Animated diagram comparing semantic ownership in LongVILA and LongLive-2.0" loading="lazy" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAwIDY1MCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsbGVkYnk9ImZpZ3RpdGxlIGZpZ2Rlc2MiPgo8dGl0bGUgaWQ9ImZpZ3RpdGxlIj5TYW1lIFNQIHByaW5jaXBsZSwgZGlmZmVyZW50IHNlbWFudGljIG93bmVyc2hpcDwvdGl0bGU+CjxkZXNjIGlkPSJmaWdkZXNjIj5BbmltYXRlZCBkaWFncmFtIGNvbXBhcmluZyBMb25nVklMQSBtdWx0aW1vZGFsIG93bmVyc2hpcCBhbmQgTG9uZ0xpdmUtMi4wIHRlbXBvcmFsIG93bmVyc2hpcC4gVGhlIGxhYmVscywgdG9rZW4gYm94ZXMsIGFuZCBhcnJvd3MgYXBwZWFyIHNlcXVlbnRpYWxseS48L2Rlc2M+CjxzdHlsZT48IVtDREFUQVsKCjpyb290IHsgY29sb3Itc2NoZW1lOiBsaWdodDsgfQoqIHsgYm94LXNpemluZzogYm9yZGVyLWJveDsgfQouYmcgeyBmaWxsOiAjZmJmY2ZhOyB9Ci5vdXRlciB7IGZpbGw6ICNmZmY7IHN0cm9rZTogI2Q3ZGVjZDsgc3Ryb2tlLXdpZHRoOiAxLjI7IH0KLnBhbmVsIHsgZmlsbDogI2ZmZjsgc3Ryb2tlOiAjY2ZkOGMyOyBzdHJva2Utd2lkdGg6IDIuMTsgfQoucGFuZWwtaGVhZCB7IGZpbGw6ICNlOWY2ZDg7IH0KLnRpdGxlIHsgZm9udDogODAwIDMycHggLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCAiU2Vnb2UgVUkiLCBBcmlhbCwgc2Fucy1zZXJpZjsgZmlsbDogIzExMTgyNzsgfQouc3VidGl0bGUgeyBmb250OiAxOHB4IC1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgIlNlZ29lIFVJIiwgQXJpYWwsIHNhbnMtc2VyaWY7IGZpbGw6ICM2NjcwODU7IH0KLnBhbmVsLXRpdGxlIHsgZm9udDogODAwIDIzcHggLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCAiU2Vnb2UgVUkiLCBBcmlhbCwgc2Fucy1zZXJpZjsgZmlsbDogIzExMTgyNzsgfQouYm9keSB7IGZvbnQ6IDE2cHggLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCAiU2Vnb2UgVUkiLCBBcmlhbCwgc2Fucy1zZXJpZjsgZmlsbDogIzI2MzEyYjsgfQoubm90ZSB7IGZvbnQ6IDE1cHggLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCAiU2Vnb2UgVUkiLCBBcmlhbCwgc2Fucy1zZXJpZjsgZmlsbDogIzY2NzA4NTsgfQouYm94LWxpZ2h0LXRleHQgeyBmb250OiA4MDAgMTVweCAtYXBwbGUtc3lzdGVtLCBCbGlua01hY1N5c3RlbUZvbnQsICJTZWdvZSBVSSIsIEFyaWFsLCBzYW5zLXNlcmlmOyBmaWxsOiAjZmZmOyB0ZXh0LWFuY2hvcjogbWlkZGxlOyBkb21pbmFudC1iYXNlbGluZTogbWlkZGxlOyB9Ci5ib3gtZGFyay10ZXh0IHsgZm9udDogODAwIDE1cHggLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCAiU2Vnb2UgVUkiLCBBcmlhbCwgc2Fucy1zZXJpZjsgZmlsbDogIzExMTgyNzsgdGV4dC1hbmNob3I6IG1pZGRsZTsgZG9taW5hbnQtYmFzZWxpbmU6IG1pZGRsZTsgfQouYm94LXNtYWxsLXRleHQgeyBmb250OiA4MDAgMTRweCAtYXBwbGUtc3lzdGVtLCBCbGlua01hY1N5c3RlbUZvbnQsICJTZWdvZSBVSSIsIEFyaWFsLCBzYW5zLXNlcmlmOyBmaWxsOiAjZmZmOyB0ZXh0LWFuY2hvcjogbWlkZGxlOyBkb21pbmFudC1iYXNlbGluZTogbWlkZGxlOyB9Ci5kYXJrIHsgZmlsbDogIzExMTgyNzsgfQouZ3JlZW4geyBmaWxsOiAjNzZiOTAwOyB9Ci5wYWxlIHsgZmlsbDogI2U5ZjZkODsgc3Ryb2tlOiAjNzZiOTAwOyBzdHJva2Utd2lkdGg6IDIuMjsgfQouYXJyb3cgeyBzdHJva2U6ICM3NmI5MDA7IHN0cm9rZS13aWR0aDogMzsgc3Ryb2tlLWxpbmVjYXA6IHJvdW5kOyB9Ci5yZXZlYWwgeyBvcGFjaXR5OiAwOyB9CkBtZWRpYSAocHJlZmVycy1yZWR1Y2VkLW1vdGlvbjogcmVkdWNlKSB7IC5yZXZlYWwgeyBvcGFjaXR5OiAxICFpbXBvcnRhbnQ7IGFuaW1hdGlvbjogbm9uZSAhaW1wb3J0YW50OyB9IH0KCi5sX3MxIHsgYW5pbWF0aW9uOiBsX3MxX3JldmVhbCAxNnMgZWFzZS1pbi1vdXQgaW5maW5pdGU7IH0KQGtleWZyYW1lcyBsX3MxX3JldmVhbCB7CiAgMCUsIDUuMCUgeyBvcGFjaXR5OiAwOyB9CiAgNi43JSwgOTYlIHsgb3BhY2l0eTogMTsgfQogIDEwMCUgeyBvcGFjaXR5OiAwOyB9Cn0KCi5sX2YwIHsgYW5pbWF0aW9uOiBsX2YwX3JldmVhbCAxNnMgZWFzZS1pbi1vdXQgaW5maW5pdGU7IH0KQGtleWZyYW1lcyBsX2YwX3JldmVhbCB7CiAgMCUsIDkuMCUgeyBvcGFjaXR5OiAwOyB9CiAgMTAuNyUsIDk2JSB7IG9wYWNpdHk6IDE7IH0KICAxMDAlIHsgb3BhY2l0eTogMDsgfQp9CgoubF9mMSB7IGFuaW1hdGlvbjogbF9mMV9yZXZlYWwgMTZzIGVhc2UtaW4tb3V0IGluZmluaXRlOyB9CkBrZXlmcmFtZXMgbF9mMV9yZXZlYWwgewogIDAlLCAxMi4wJSB7IG9wYWNpdHk6IDA7IH0KICAxMy43JSwgOTYlIHsgb3BhY2l0eTogMTsgfQogIDEwMCUgeyBvcGFjaXR5OiAwOyB9Cn0KCi5sX2YyIHsgYW5pbWF0aW9uOiBsX2YyX3JldmVhbCAxNnMgZWFzZS1pbi1vdXQgaW5maW5pdGU7IH0KQGtleWZyYW1lcyBsX2YyX3JldmVhbCB7CiAgMCUsIDE1LjAlIHsgb3BhY2l0eTogMDsgfQogIDE2LjclLCA5NiUgeyBvcGFjaXR5OiAxOyB9CiAgMTAwJSB7IG9wYWNpdHk6IDA7IH0KfQoKLmxfZjMgeyBhbmltYXRpb246IGxfZjNfcmV2ZWFsIDE2cyBlYXNlLWluLW91dCBpbmZpbml0ZTsgfQpAa2V5ZnJhbWVzIGxfZjNfcmV2ZWFsIHsKICAwJSwgMTguMCUgeyBvcGFjaXR5OiAwOyB9CiAgMTkuNyUsIDk2JSB7IG9wYWNpdHk6IDE7IH0KICAxMDAlIHsgb3BhY2l0eTogMDsgfQp9CgoubF9hcnJvdyB7IGFuaW1hdGlvbjogbF9hcnJvd19yZXZlYWwgMTZzIGVhc2UtaW4tb3V0IGluZmluaXRlOyB9CkBrZXlmcmFtZXMgbF9hcnJvd19yZXZlYWwgewogIDAlLCAyMy4wJSB7IG9wYWNpdHk6IDA7IH0KICAyNC43JSwgOTYlIHsgb3BhY2l0eTogMTsgfQogIDEwMCUgeyBvcGFjaXR5OiAwOyB9Cn0KCi5sX3MyIHsgYW5pbWF0aW9uOiBsX3MyX3JldmVhbCAxNnMgZWFzZS1pbi1vdXQgaW5maW5pdGU7IH0KQGtleWZyYW1lcyBsX3MyX3JldmVhbCB7CiAgMCUsIDI4LjAlIHsgb3BhY2l0eTogMDsgfQogIDI5LjclLCA5NiUgeyBvcGFjaXR5OiAxOyB9CiAgMTAwJSB7IG9wYWNpdHk6IDA7IH0KfQoKLmxfdDAgeyBhbmltYXRpb246IGxfdDBfcmV2ZWFsIDE2cyBlYXNlLWluLW91dCBpbmZpbml0ZTsgfQpAa2V5ZnJhbWVzIGxfdDBfcmV2ZWFsIHsKICAwJSwgMzIuMCUgeyBvcGFjaXR5OiAwOyB9CiAgMzMuNyUsIDk2JSB7IG9wYWNpdHk6IDE7IH0KICAxMDAlIHsgb3BhY2l0eTogMDsgfQp9CgoubF90MSB7IGFuaW1hdGlvbjogbF90MV9yZXZlYWwgMTZzIGVhc2UtaW4tb3V0IGluZmluaXRlOyB9CkBrZXlmcmFtZXMgbF90MV9yZXZlYWwgewogIDAlLCAzNS4wJSB7IG9wYWNpdHk6IDA7IH0KICAzNi43JSwgOTYlIHsgb3BhY2l0eTogMTsgfQogIDEwMCUgeyBvcGFjaXR5OiAwOyB9Cn0KCi5sX3QyIHsgYW5pbWF0aW9uOiBsX3QyX3JldmVhbCAxNnMgZWFzZS1pbi1vdXQgaW5maW5pdGU7IH0KQGtleWZyYW1lcyBsX3QyX3JldmVhbCB7CiAgMCUsIDM4LjAlIHsgb3BhY2l0eTogMDsgfQogIDM5LjclLCA5NiUgeyBvcGFjaXR5OiAxOyB9CiAgMTAwJSB7IG9wYWNpdHk6IDA7IH0KfQoKLmxfdDMgeyBhbmltYXRpb246IGxfdDNfcmV2ZWFsIDE2cyBlYXNlLWluLW91dCBpbmZpbml0ZTsgfQpAa2V5ZnJhbWVzIGxfdDNfcmV2ZWFsIHsKICAwJSwgNDEuMCUgeyBvcGFjaXR5OiAwOyB9CiAgNDIuNyUsIDk2JSB7IG9wYWNpdHk6IDE7IH0KICAxMDAlIHsgb3BhY2l0eTogMDsgfQp9CgoubF9ub3RlIHsgYW5pbWF0aW9uOiBsX25vdGVfcmV2ZWFsIDE2cyBlYXNlLWluLW91dCBpbmZpbml0ZTsgfQpAa2V5ZnJhbWVzIGxfbm90ZV9yZXZlYWwgewogIDAlLCA0Ni4wJSB7IG9wYWNpdHk6IDA7IH0KICA0Ny43JSwgOTYlIHsgb3BhY2l0eTogMTsgfQogIDEwMCUgeyBvcGFjaXR5OiAwOyB9Cn0KCi5yX24geyBhbmltYXRpb246IHJfbl9yZXZlYWwgMTZzIGVhc2UtaW4tb3V0IGluZmluaXRlOyB9CkBrZXlmcmFtZXMgcl9uX3JldmVhbCB7CiAgMCUsIDUyLjAlIHsgb3BhY2l0eTogMDsgfQogIDUzLjclLCA5NiUgeyBvcGFjaXR5OiAxOyB9CiAgMTAwJSB7IG9wYWNpdHk6IDA7IH0KfQoKLnJfYzAgeyBhbmltYXRpb246IHJfYzBfcmV2ZWFsIDE2cyBlYXNlLWluLW91dCBpbmZpbml0ZTsgfQpAa2V5ZnJhbWVzIHJfYzBfcmV2ZWFsIHsKICAwJSwgNTYuMCUgeyBvcGFjaXR5OiAwOyB9CiAgNTcuNyUsIDk2JSB7IG9wYWNpdHk6IDE7IH0KICAxMDAlIHsgb3BhY2l0eTogMDsgfQp9Cgoucl9jMSB7IGFuaW1hdGlvbjogcl9jMV9yZXZlYWwgMTZzIGVhc2UtaW4tb3V0IGluZmluaXRlOyB9CkBrZXlmcmFtZXMgcl9jMV9yZXZlYWwgewogIDAlLCA1OS4wJSB7IG9wYWNpdHk6IDA7IH0KICA2MC43JSwgOTYlIHsgb3BhY2l0eTogMTsgfQogIDEwMCUgeyBvcGFjaXR5OiAwOyB9Cn0KCi5yX2MyIHsgYW5pbWF0aW9uOiByX2MyX3JldmVhbCAxNnMgZWFzZS1pbi1vdXQgaW5maW5pdGU7IH0KQGtleWZyYW1lcyByX2MyX3JldmVhbCB7CiAgMCUsIDYyLjAlIHsgb3BhY2l0eTogMDsgfQogIDYzLjclLCA5NiUgeyBvcGFjaXR5OiAxOyB9CiAgMTAwJSB7IG9wYWNpdHk6IDA7IH0KfQoKLnJfbm9pc3kgeyBhbmltYXRpb246IHJfbm9pc3lfcmV2ZWFsIDE2cyBlYXNlLWluLW91dCBpbmZpbml0ZTsgfQpAa2V5ZnJhbWVzIHJfbm9pc3lfcmV2ZWFsIHsKICAwJSwgNjUuMCUgeyBvcGFjaXR5OiAwOyB9CiAgNjYuNyUsIDk2JSB7IG9wYWNpdHk6IDE7IH0KICAxMDAlIHsgb3BhY2l0eTogMDsgfQp9Cgoucl9hcnJvdyB7IGFuaW1hdGlvbjogcl9hcnJvd19yZXZlYWwgMTZzIGVhc2UtaW4tb3V0IGluZmluaXRlOyB9CkBrZXlmcmFtZXMgcl9hcnJvd19yZXZlYWwgewogIDAlLCA3MC4wJSB7IG9wYWNpdHk6IDA7IH0KICA3MS43JSwgOTYlIHsgb3BhY2l0eTogMTsgfQogIDEwMCUgeyBvcGFjaXR5OiAwOyB9Cn0KCi5yX2IgeyBhbmltYXRpb246IHJfYl9yZXZlYWwgMTZzIGVhc2UtaW4tb3V0IGluZmluaXRlOyB9CkBrZXlmcmFtZXMgcl9iX3JldmVhbCB7CiAgMCUsIDc0LjAlIHsgb3BhY2l0eTogMDsgfQogIDc1LjclLCA5NiUgeyBvcGFjaXR5OiAxOyB9CiAgMTAwJSB7IG9wYWNpdHk6IDA7IH0KfQoKLnJfcDAgeyBhbmltYXRpb246IHJfcDBfcmV2ZWFsIDE2cyBlYXNlLWluLW91dCBpbmZpbml0ZTsgfQpAa2V5ZnJhbWVzIHJfcDBfcmV2ZWFsIHsKICAwJSwgNzguMCUgeyBvcGFjaXR5OiAwOyB9CiAgNzkuNyUsIDk2JSB7IG9wYWNpdHk6IDE7IH0KICAxMDAlIHsgb3BhY2l0eTogMDsgfQp9Cgoucl9wMSB7IGFuaW1hdGlvbjogcl9wMV9yZXZlYWwgMTZzIGVhc2UtaW4tb3V0IGluZmluaXRlOyB9CkBrZXlmcmFtZXMgcl9wMV9yZXZlYWwgewogIDAlLCA4MS4wJSB7IG9wYWNpdHk6IDA7IH0KICA4Mi43JSwgOTYlIHsgb3BhY2l0eTogMTsgfQogIDEwMCUgeyBvcGFjaXR5OiAwOyB9Cn0KCi5yX3AyIHsgYW5pbWF0aW9uOiByX3AyX3JldmVhbCAxNnMgZWFzZS1pbi1vdXQgaW5maW5pdGU7IH0KQGtleWZyYW1lcyByX3AyX3JldmVhbCB7CiAgMCUsIDg0LjAlIHsgb3BhY2l0eTogMDsgfQogIDg1LjclLCA5NiUgeyBvcGFjaXR5OiAxOyB9CiAgMTAwJSB7IG9wYWNpdHk6IDA7IH0KfQoKLnJfcDMgeyBhbmltYXRpb246IHJfcDNfcmV2ZWFsIDE2cyBlYXNlLWluLW91dCBpbmZpbml0ZTsgfQpAa2V5ZnJhbWVzIHJfcDNfcmV2ZWFsIHsKICAwJSwgODcuMCUgeyBvcGFjaXR5OiAwOyB9CiAgODguNyUsIDk2JSB7IG9wYWNpdHk6IDE7IH0KICAxMDAlIHsgb3BhY2l0eTogMDsgfQp9Cgoucl9ub3RlIHsgYW5pbWF0aW9uOiByX25vdGVfcmV2ZWFsIDE2cyBlYXNlLWluLW91dCBpbmZpbml0ZTsgfQpAa2V5ZnJhbWVzIHJfbm90ZV9yZXZlYWwgewogIDAlLCA5Mi4wJSB7IG9wYWNpdHk6IDA7IH0KICA5My43JSwgOTYlIHsgb3BhY2l0eTogMTsgfQogIDEwMCUgeyBvcGFjaXR5OiAwOyB9Cn0KCl1dPjwvc3R5bGU+CjxkZWZzPgogIDxmaWx0ZXIgaWQ9InNvZnRTaGFkb3ciIHg9Ii01JSIgeT0iLTUlIiB3aWR0aD0iMTEwJSIgaGVpZ2h0PSIxMTAlIj48ZmVEcm9wU2hhZG93IGR4PSIwIiBkeT0iNyIgc3RkRGV2aWF0aW9uPSIxMCIgZmxvb2QtY29sb3I9IiMxMTE4MjciIGZsb29kLW9wYWNpdHk9IjAuMDU1Ii8+PC9maWx0ZXI+CiAgPG1hcmtlciBpZD0iYXJyb3doZWFkIiB2aWV3Qm94PSIwIDAgMTAgMTAiIHJlZlg9IjgiIHJlZlk9IjUiIG1hcmtlcldpZHRoPSI4IiBtYXJrZXJIZWlnaHQ9IjgiIG1hcmtlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgb3JpZW50PSJhdXRvLXN0YXJ0LXJldmVyc2UiPjxwYXRoIGQ9Ik0gMCAwIEwgMTAgNSBMIDAgMTAgeiIgZmlsbD0iIzc2YjkwMCIvPjwvbWFya2VyPgo8L2RlZnM+CjxyZWN0IHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjY1MCIgY2xhc3M9ImJnIi8+CjxyZWN0IHg9IjE2IiB5PSIxOCIgd2lkdGg9IjExNjgiIGhlaWdodD0iNjE0IiByeD0iMTgiIGNsYXNzPSJvdXRlciIgZmlsdGVyPSJ1cmwoI3NvZnRTaGFkb3cpIi8+Cjx0ZXh0IHg9IjU0IiB5PSI3NiIgY2xhc3M9InRpdGxlIj5TYW1lIFNQIHByaW5jaXBsZSwgZGlmZmVyZW50IHNlbWFudGljIG93bmVyc2hpcDwvdGV4dD4KPHRleHQgeD0iNTQiIHk9IjExNiIgY2xhc3M9InN1YnRpdGxlIj5Mb25nVklMQSBhbmQgTG9uZ0xpdmUtMi4wIGJvdGggc3BsaXQgaW5zaWRlIGEgc2FtcGxlLiBUaGV5IGRpc2FncmVlIG9uIHRoZSByaWdodCB1bml0IHRvIG93bi48L3RleHQ+Cgo8IS0tIExvbmdWSUxBIHBhbmVsIC0tPgo8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg2MCwxNjUpIj4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNTIwIiBoZWlnaHQ9IjQxMCIgcng9IjIyIiBjbGFzcz0icGFuZWwiLz4KICA8cGF0aCBkPSJNMjIgMCBINDk4IFE1MjAgMCA1MjAgMjIgVjQ2IFE1MjAgNjggNDk4IDY4IEgyMiBRMCA2OCAwIDQ2IFYyMiBRMCAwIDIyIDAgWiIgY2xhc3M9InBhbmVsLWhlYWQiLz4KICA8dGV4dCB4PSIyOCIgeT0iNDMiIGNsYXNzPSJwYW5lbC10aXRsZSI+TG9uZ1ZJTEE6IG11bHRpbW9kYWwgb3duZXJzaGlwPC90ZXh0PgogIDxnIGNsYXNzPSJyZXZlYWwgbF9zMSI+PHRleHQgeD0iMjgiIHk9IjEwMyIgY2xhc3M9ImJvZHkiPjx0c3BhbiB4PSIyOCIgZHk9IjAiPlN0YWdlIDEgYmFsYW5jZXMgZnJhbWVzL2ltYWdlczwvdHNwYW4+PHRzcGFuIHg9IjI4IiBkeT0iMjIiPmJlZm9yZSB0aGUgdmlzaW9uIGVuY29kZXIuPC90c3Bhbj48L3RleHQ+PC9nPgogIDxnIGNsYXNzPSJyZXZlYWwgbF9mMCI+PHJlY3QgeD0iNDYiIHk9IjE0NSIgd2lkdGg9IjgyIiBoZWlnaHQ9IjUyIiByeD0iMTAiIGNsYXNzPSJkYXJrIi8+PHRleHQgeD0iODcuMCIgeT0iMTcyLjAiIGNsYXNzPSJib3gtbGlnaHQtdGV4dCI+RjA8L3RleHQ+PC9nPgogIDxnIGNsYXNzPSJyZXZlYWwgbF9mMSI+PHJlY3QgeD0iMTYwIiB5PSIxNDUiIHdpZHRoPSI4MiIgaGVpZ2h0PSI1MiIgcng9IjEwIiBjbGFzcz0iZ3JlZW4iLz48dGV4dCB4PSIyMDEuMCIgeT0iMTcyLjAiIGNsYXNzPSJib3gtbGlnaHQtdGV4dCI+RjE8L3RleHQ+PC9nPgogIDxnIGNsYXNzPSJyZXZlYWwgbF9mMiI+PHJlY3QgeD0iMjc0IiB5PSIxNDUiIHdpZHRoPSI4MiIgaGVpZ2h0PSI1MiIgcng9IjEwIiBjbGFzcz0iZGFyayIvPjx0ZXh0IHg9IjMxNS4wIiB5PSIxNzIuMCIgY2xhc3M9ImJveC1saWdodC10ZXh0Ij5GMjwvdGV4dD48L2c+CiAgPGcgY2xhc3M9InJldmVhbCBsX2YzIj48cmVjdCB4PSIzODgiIHk9IjE0NSIgd2lkdGg9IjgyIiBoZWlnaHQ9IjUyIiByeD0iMTAiIGNsYXNzPSJncmVlbiIvPjx0ZXh0IHg9IjQyOS4wIiB5PSIxNzIuMCIgY2xhc3M9ImJveC1saWdodC10ZXh0Ij5GMzwvdGV4dD48L2c+CiAgPGcgY2xhc3M9InJldmVhbCBsX2Fycm93Ij48bGluZSB4MT0iMjYwIiB5MT0iMjI0IiB4Mj0iMjYwIiB5Mj0iMjQ4IiBjbGFzcz0iYXJyb3ciIG1hcmtlci1lbmQ9InVybCgjYXJyb3doZWFkKSIvPjwvZz4KICA8ZyBjbGFzcz0icmV2ZWFsIGxfczIiPjx0ZXh0IHg9IjI4IiB5PSIyODAiIGNsYXNzPSJib2R5Ij48dHNwYW4geD0iMjgiIGR5PSIwIj5TdGFnZSAyIGJhbGFuY2VzIHZpc3VhbC90ZXh0IHRva2VuczwvdHNwYW4+PHRzcGFuIHg9IjI4IiBkeT0iMjIiPmZvciB0aGUgTExNIHNlcXVlbmNlLjwvdHNwYW4+PC90ZXh0PjwvZz4KICA8ZyBjbGFzcz0icmV2ZWFsIGxfdDAiPjxyZWN0IHg9IjQ2IiB5PSIzMTgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI1MiIgcng9IjEwIiBjbGFzcz0iZGFyayIvPjx0ZXh0IHg9Ijk0LjAiIHk9IjM0NS4wIiBjbGFzcz0iYm94LXNtYWxsLXRleHQiPnZpcyB0b2s8L3RleHQ+PC9nPgogIDxnIGNsYXNzPSJyZXZlYWwgbF90MSI+PHJlY3QgeD0iMTU4IiB5PSIzMTgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI1MiIgcng9IjEwIiBjbGFzcz0iZGFyayIvPjx0ZXh0IHg9IjIwNi4wIiB5PSIzNDUuMCIgY2xhc3M9ImJveC1zbWFsbC10ZXh0Ij52aXMgdG9rPC90ZXh0PjwvZz4KICA8ZyBjbGFzcz0icmV2ZWFsIGxfdDIiPjxyZWN0IHg9IjI3MCIgeT0iMzE4IiB3aWR0aD0iOTYiIGhlaWdodD0iNTIiIHJ4PSIxMCIgY2xhc3M9ImdyZWVuIi8+PHRleHQgeD0iMzE4LjAiIHk9IjM0NS4wIiBjbGFzcz0iYm94LWxpZ2h0LXRleHQiPnRleHQ8L3RleHQ+PC9nPgogIDxnIGNsYXNzPSJyZXZlYWwgbF90MyI+PHJlY3QgeD0iMzgyIiB5PSIzMTgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI1MiIgcng9IjEwIiBjbGFzcz0iZGFyayIvPjx0ZXh0IHg9IjQzMC4wIiB5PSIzNDUuMCIgY2xhc3M9ImJveC1zbWFsbC10ZXh0Ij52aXMgdG9rPC90ZXh0PjwvZz4KICA8ZyBjbGFzcz0icmV2ZWFsIGxfbm90ZSI+PHRleHQgeD0iMjgiIHk9IjM5MyIgY2xhc3M9Im5vdGUiPlNoYXJkIGJvdW5kYXJ5IGZvbGxvd3MgdGhlIG11bHRpbW9kYWwgdG9rZW4tcHJvZHVjdGlvbiBwaXBlbGluZS48L3RleHQ+PC9nPgo8L2c+Cgo8IS0tIExvbmdMaXZlLTIuMCBwYW5lbCAtLT4KPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNjIwLDE2NSkiPgogIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSI1MjAiIGhlaWdodD0iNDEwIiByeD0iMjIiIGNsYXNzPSJwYW5lbCIvPgogIDxwYXRoIGQ9Ik0yMiAwIEg0OTggUTUyMCAwIDUyMCAyMiBWNDYgUTUyMCA2OCA0OTggNjggSDIyIFEwIDY4IDAgNDYgVjIyIFEwIDAgMjIgMCBaIiBjbGFzcz0icGFuZWwtaGVhZCIvPgogIDx0ZXh0IHg9IjI4IiB5PSI0MyIgY2xhc3M9InBhbmVsLXRpdGxlIj5Mb25nTGl2ZS0yLjA6IHRlbXBvcmFsIG93bmVyc2hpcDwvdGV4dD4KICA8ZyBjbGFzcz0icmV2ZWFsIHJfbiI+PHRleHQgeD0iMjgiIHk9IjEwMyIgY2xhc3M9ImJvZHkiPjx0c3BhbiB4PSIyOCIgZHk9IjAiPk5haXZlIFNQIGNhbiBjb25jZW50cmF0ZSB0YXJnZXQvbG9zczwvdHNwYW4+PHRzcGFuIHg9IjI4IiBkeT0iMjIiPnRva2VucyBvbiBvbmx5IGEgZmV3IHJhbmtzLjwvdHNwYW4+PC90ZXh0PjwvZz4KICA8ZyBjbGFzcz0icmV2ZWFsIHJfYzAiPjxyZWN0IHg9IjQ2IiB5PSIxNDUiIHdpZHRoPSI5NiIgaGVpZ2h0PSI1MiIgcng9IjEwIiBjbGFzcz0icGFsZSIvPjx0ZXh0IHg9Ijk0LjAiIHk9IjE3Mi4wIiBjbGFzcz0iYm94LWRhcmstdGV4dCI+Y2xlYW48L3RleHQ+PC9nPgogIDxnIGNsYXNzPSJyZXZlYWwgcl9jMSI+PHJlY3QgeD0iMTU4IiB5PSIxNDUiIHdpZHRoPSI5NiIgaGVpZ2h0PSI1MiIgcng9IjEwIiBjbGFzcz0icGFsZSIvPjx0ZXh0IHg9IjIwNi4wIiB5PSIxNzIuMCIgY2xhc3M9ImJveC1kYXJrLXRleHQiPmNsZWFuPC90ZXh0PjwvZz4KICA8ZyBjbGFzcz0icmV2ZWFsIHJfYzIiPjxyZWN0IHg9IjI3MCIgeT0iMTQ1IiB3aWR0aD0iOTYiIGhlaWdodD0iNTIiIHJ4PSIxMCIgY2xhc3M9InBhbGUiLz48dGV4dCB4PSIzMTguMCIgeT0iMTcyLjAiIGNsYXNzPSJib3gtZGFyay10ZXh0Ij5jbGVhbjwvdGV4dD48L2c+CiAgPGcgY2xhc3M9InJldmVhbCByX25vaXN5Ij48cmVjdCB4PSIzODIiIHk9IjE0NSIgd2lkdGg9Ijk2IiBoZWlnaHQ9IjUyIiByeD0iMTAiIGNsYXNzPSJkYXJrIi8+PHRleHQgeD0iNDMwLjAiIHk9IjE3Mi4wIiBjbGFzcz0iYm94LWxpZ2h0LXRleHQiPm5vaXN5PC90ZXh0PjwvZz4KICA8ZyBjbGFzcz0icmV2ZWFsIHJfYXJyb3ciPjxsaW5lIHgxPSIyNjAiIHkxPSIyMjQiIHgyPSIyNjAiIHkyPSIyNDgiIGNsYXNzPSJhcnJvdyIgbWFya2VyLWVuZD0idXJsKCNhcnJvd2hlYWQpIi8+PC9nPgogIDxnIGNsYXNzPSJyZXZlYWwgcl9iIj48dGV4dCB4PSIyOCIgeT0iMjgwIiBjbGFzcz0iYm9keSI+PHRzcGFuIHg9IjI4IiBkeT0iMCI+QmFsYW5jZWQgU1AgcGFpcnMgY2xlYW4gKyBub2lzeSBsYXRlbnRzPC90c3Bhbj48dHNwYW4geD0iMjgiIGR5PSIyMiI+ZnJvbSB0aGUgc2FtZSB0aW1lIGNodW5rLjwvdHNwYW4+PC90ZXh0PjwvZz4KICA8ZyBjbGFzcz0icmV2ZWFsIHJfcDAiPjxyZWN0IHg9IjQ2IiB5PSIzMTgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI1MiIgcng9IjEwIiBjbGFzcz0iZGFyayIvPjx0ZXh0IHg9Ijk0LjAiIHk9IjM0NS4wIiBjbGFzcz0iYm94LXNtYWxsLXRleHQiPmMwK24wPC90ZXh0PjwvZz4KICA8ZyBjbGFzcz0icmV2ZWFsIHJfcDEiPjxyZWN0IHg9IjE1OCIgeT0iMzE4IiB3aWR0aD0iOTYiIGhlaWdodD0iNTIiIHJ4PSIxMCIgY2xhc3M9ImdyZWVuIi8+PHRleHQgeD0iMjA2LjAiIHk9IjM0NS4wIiBjbGFzcz0iYm94LXNtYWxsLXRleHQiPmMxK24xPC90ZXh0PjwvZz4KICA8ZyBjbGFzcz0icmV2ZWFsIHJfcDIiPjxyZWN0IHg9IjI3MCIgeT0iMzE4IiB3aWR0aD0iOTYiIGhlaWdodD0iNTIiIHJ4PSIxMCIgY2xhc3M9ImRhcmsiLz48dGV4dCB4PSIzMTguMCIgeT0iMzQ1LjAiIGNsYXNzPSJib3gtc21hbGwtdGV4dCI+YzIrbjI8L3RleHQ+PC9nPgogIDxnIGNsYXNzPSJyZXZlYWwgcl9wMyI+PHJlY3QgeD0iMzgyIiB5PSIzMTgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI1MiIgcng9IjEwIiBjbGFzcz0iZ3JlZW4iLz48dGV4dCB4PSI0MzAuMCIgeT0iMzQ1LjAiIGNsYXNzPSJib3gtc21hbGwtdGV4dCI+YzMrbjM8L3RleHQ+PC9nPgogIDxnIGNsYXNzPSJyZXZlYWwgcl9ub3RlIj48dGV4dCB4PSIyOCIgeT0iMzkzIiBjbGFzcz0ibm90ZSI+U2hhcmQgb3ducyBjb250ZXh0LCB0YXJnZXQsIFZBRSB3b3JrLCBtYXNrLCBhbmQgbG9zcy48L3RleHQ+PC9nPgo8L2c+Cjwvc3ZnPg=="/><figcaption>Figure 4. Generated animated diagram. The shared SP principle is to split inside a sample; the video-specific question is which semantic unit becomes the owner of a shard.</figcaption></figure>
+<p>The common abstraction is <strong>semantic ownership</strong>. A rank should not merely own a contiguous slice of a tensor. It should own a slice that makes the upstream encoder, the attention communication, the loss, and the hardware topology behave well together.</p>
+<h2 id="sec-6">6. Design principles for long-video training system</h2><h3>Principle 1: Shard the real bottleneck</h3><p>Do not split the easiest tensor; split the work that actually limits scale. For LongVILA, that includes frame/image encoding. For LongLive-2.0, it includes VAE preparation and target-loss ownership.</p><h3>Principle 2: Preserve objective semantics</h3><p>SP should not change temporal order, position identity, attention visibility, loss masks, or target ownership. The distributed layout must remain equivalent to the unsharded objective.</p><h3>Principle 3: Match the hardware topology</h3><p>Ring, Ulysses, 2D-Attention, USP, and LoongTrain differ mainly in how they communicate. A good video system chooses All-to-All, P2P, intra-node traffic, and inter-node traffic deliberately.</p><h3>Principle 4: Start before the transformer</h3><p>Video sequence construction begins before attention: frame loading, vision encoding, VAE encoding, latent chunking, and mask construction. If SP starts only inside transformer blocks, imbalance may already be baked in.</p><h3>Principle 5: Check what each rank owns</h3><pre><code>Across samples?                         -&gt; DP / FSDP / ZeRO
+Inside one long sample?                 -&gt; SP / context parallelism
+Mostly text and enough attention heads? -&gt; Ulysses-style SP
+Need many nodes or beyond head limits?  -&gt; Ring / USP / 2D-Attention / LoongTrain-style SP
+Heavy multimodal encoder work?          -&gt; MM-SP-style two-stage sharding
+Clean/noisy AR video streams?           -&gt; Balanced-SP-style temporal ownership</code></pre><p>The final diagnostic is simple: after sharding, every rank should have meaningful work. If one rank owns the loss, every rank re-encodes the same video, or communication ignores the hardware topology, the layout is probably wrong.</p><h2 id="closing-sp-scaling-training-for-long-videos">Closing: The timeline is the new batch dimension</h2>
+<p>Long-video training breaks a basic assumption: one sample does not necessarily belong to one GPU. Once a sample becomes hundreds or thousands of frames, the system has to distribute work inside the sample itself.</p>
+<p>But video also shows the limit of a generic SP story. LongVILA needs SP that understands modality and visual token production. LongLive-2.0 needs SP that understands clean/noisy latent streams, teacher forcing, VAE halos, and loss ownership.</p>
+<blockquote><p>In long-video training, the timeline is the new batch dimension. Sequence parallelism is how we scale it.</p></blockquote>
+<p>That is why SP belongs in the infrastructure stack for long video. A beautiful long-video demo proves capability. A well-designed SP system makes that capability trainable.</p>
+<section class="references" id="references">
+<h2>References</h2>
+<ol>
+<li id="ref-1"><strong>LongVILA: Scaling Long-Context Visual Language Models for Long Videos.</strong> Yukang Chen, Fuzhao Xue, Dacheng Li, Qinghao Hu, Ligeng Zhu, Xiuyu Li, Yunhao Fang, Haotian Tang, Shang Yang, Zhijian Liu, Ethan He, Hongxu Yin, Pavlo Molchanov, Jan Kautz, Linxi Fan, Yuke Zhu, Yao Lu, Song Han. <em>arXiv preprint</em>, 2024. <a href="https://arxiv.org/abs/2408.10188" rel="noopener noreferrer" target="_blank">arXiv:2408.10188</a></li>
+<li id="ref-2"><strong>LongLive-2.0: An NVFP4 Parallel Infrastructure for Long Video Generation.</strong> Yukang Chen, Luozhou Wang, Wei Huang, Shuai Yang, Bohan Zhang, Yicheng Xiao, Ruihang Chu, Weian Mao, Qixin Hu, Shaoteng Liu, Yuyang Zhao, Huizi Mao, Ying-Cong Chen, Enze Xie, Xiaojuan Qi, Song Han. <em>arXiv preprint</em>, 2026. <a href="https://arxiv.org/abs/2605.18739" rel="noopener noreferrer" target="_blank">arXiv:2605.18739</a></li>
+<li id="ref-3"><strong>Sequence Parallelism: Long Sequence Training from System Perspective.</strong> Shenggui Li, Fuzhao Xue, Chaitanya Baranwal, Yongbin Li, Yang You. <em>Annual Meeting of the Association for Computational Linguistics (ACL)</em>, 2023 / <em>arXiv preprint</em>, 2021. <a href="https://arxiv.org/abs/2105.13120" rel="noopener noreferrer" target="_blank">arXiv:2105.13120</a></li>
+<li id="ref-4"><strong>Reducing Activation Recomputation in Large Transformer Models.</strong> Vijay Korthikanti, Jared Casper, Sangkug Lym, Lawrence McAfee, Michael Andersch, Mohammad Shoeybi, Bryan Catanzaro. <em>MLSys</em>, 2023 / <em>arXiv preprint</em>, 2022. <a href="https://arxiv.org/abs/2205.05198" rel="noopener noreferrer" target="_blank">arXiv:2205.05198</a></li>
+<li id="ref-5"><strong>DeepSpeed Ulysses: System Optimizations for Enabling Training of Extreme Long Sequence Transformer Models.</strong> Sam Ade Jacobs, Masahiro Tanaka, Chengming Zhang, Minjia Zhang, Shuaiwen Leon Song, Samyam Rajbhandari, Yuxiong He. <em>arXiv preprint</em>, 2023. <a href="https://arxiv.org/abs/2309.14509" rel="noopener noreferrer" target="_blank">arXiv:2309.14509</a></li>
+<li id="ref-6"><strong>Ring Attention with Blockwise Transformers for Near-Infinite Context.</strong> Hao Liu, Matei Zaharia, Pieter Abbeel. <em>arXiv preprint</em>, 2023. <a href="https://arxiv.org/abs/2310.01889" rel="noopener noreferrer" target="_blank">arXiv:2310.01889</a></li>
+<li id="ref-7"><strong>USP: A Unified Sequence Parallelism Approach for Long Context Generative AI.</strong> Jiarui Fang, Shangchun Zhao. <em>arXiv preprint</em>, 2024. <a href="https://arxiv.org/abs/2405.07719" rel="noopener noreferrer" target="_blank">arXiv:2405.07719</a></li>
+<li id="ref-8"><strong>LoongTrain: Efficient Training of Long-Sequence LLMs with Head-Context Parallelism.</strong> Diandian Gu, Peng Sun, Qinghao Hu, Ting Huang, Xun Chen, Yingtong Xiong, Guoteng Wang, Qiaoling Chen, Shangchun Zhao, Jiarui Fang, Yonggang Wen, Tianwei Zhang, Xin Jin, Xuanzhe Liu. <em>arXiv preprint</em>, 2024. <a href="https://arxiv.org/abs/2406.18485" rel="noopener noreferrer" target="_blank">arXiv:2406.18485</a></li>
+<li id="ref-9"><strong>Context Parallelism.</strong> NVIDIA Megatron Core Documentation. <a href="https://docs.nvidia.com/megatron-core/developer-guide/latest/user-guide/features/context_parallel.html" rel="noopener noreferrer" target="_blank">NVIDIA Docs</a></li>
+</ol>
+</section>
+</main>
+</body>
+</html>
