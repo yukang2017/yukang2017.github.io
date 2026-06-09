@@ -334,6 +334,12 @@ My research focuses on <strong>Long AI Systems</strong> through <strong>algorith
   <p class="yc-nv-blog-meta">A systems-oriented perspective on long video generation infrastructure, efficiency, and deployment.</p>
 </div>
 
+<div class="yc-nv-card yc-nv-blog-card">
+  <span class="yc-nv-tag">Research Blog</span>
+  <h3><a href="https://research.nvidia.com/labs/eai/blogs/scaling-video-training-with-parallelism/">Scaling Video Training with Parallelism</a></h3>
+  <p class="yc-nv-blog-meta">A practical view of sequence parallelism for long-video training, covering MM-SP, Balanced SP, and objective-aware temporal sharding.</p>
+</div>
+
 <h2 id="representative-systems-and-algorithms" class="yc-nv-section-title">🚀 Representative Systems & Algorithms</h2>
 
 <div class="yc-nv-grid">
