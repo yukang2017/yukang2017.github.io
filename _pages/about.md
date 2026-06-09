@@ -402,24 +402,6 @@ My research focuses on <strong>Long AI Systems</strong> through <strong>algorith
   <li><span class="yc-nv-date">2022.03</span><span class="yc-nv-news-label">Journal</span> <strong><a href="https://ieeexplore.ieee.org/document/9756374">Scale-aware AutoAug</a></strong> is accepted by <strong>T-PAMI</strong>!</li>
 </ul>
 
-
-
-<h2 id="invited-talks-and-reports" class="yc-nv-section-title">💬 Invited Talks and Reports</h2>
-
-<ul class="yc-nv-timeline-list">
-  <li><span class="yc-nv-date">2026.05</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/WeianMao/triattention">TriAttention</a></strong> was reported by <strong>新智元</strong> (see <strong><a href="https://mp.weixin.qq.com/s/iUQyNUnphYiJAacVKwViAg">link</a></strong>).</li>
-  <li><span class="yc-nv-date">2025.10</span><span class="yc-nv-news-label">Talk</span> Invited Talk at <strong><a href="https://higen-2025.github.io">ICCV 2025 HiGen Workshop</a></strong>.</li>
-  <li><span class="yc-nv-date">2025.10</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/NVlabs/LongLive">LongLive</a></strong> was reported by <strong>新智元</strong> (see <strong><a href="https://mp.weixin.qq.com/s/318DMk2thfpoSFT1oOzBXg">link</a></strong>).</li>
-  <li><span class="yc-nv-date">2025.07</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/NVlabs/Long-RL">Long-RL</a></strong> was reported by <strong>机器之心</strong> (see <strong><a href="https://www.jiqizhixin.com/articles/2025-07-14-2">link</a></strong>).</li>
-  <li><span class="yc-nv-date">2023.10</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/dvlab-research/LongLoRA">LongLoRA</a></strong> was reported by <strong>新智元</strong> (see <strong><a href="https://mp.weixin.qq.com/s/8QoKHgwjxv7fG_CCqouU8w">link</a></strong>).</li>
-  <li><span class="yc-nv-date">2023.08</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/dvlab-research/LISA">LISA</a></strong> was reported by <strong>量子位</strong> (see <strong><a href="https://mp.weixin.qq.com/s/ia7_55hfI-cs2wWalmk8yA">link</a></strong>).</li>
-  <li><span class="yc-nv-date">2023.06</span><span class="yc-nv-news-label">Talk</span> Invited Talk at <strong><a href="http://www.scan-net.org/cvpr2023workshop/">CVPR 2023 ScanNet Workshop</a></strong>.</li>
-  <li><span class="yc-nv-date">2023.06</span><span class="yc-nv-news-label">Talk</span> Invited Talk at <strong>VALSE 2023 Perception Workshop</strong> for <strong><a href="https://github.com/dvlab-research/VoxelNeXt">VoxelNeXt</a></strong>.</li>
-  <li><span class="yc-nv-date">2023.04</span><span class="yc-nv-news-label">Talk</span> Invited Talk and report by <strong>将门创投</strong> for <strong><a href="https://github.com/dvlab-research/VoxelNeXt">VoxelNeXt</a></strong> (see <strong><a href="https://mp.weixin.qq.com/s/ijj9Zy81_645mqCaRbRFAg">link</a></strong>).</li>
-  <li><span class="yc-nv-date">2022.06</span><span class="yc-nv-news-label">Talk</span> Invited Talk by <strong>深蓝学院</strong> for <strong><a href="https://github.com/dvlab-research/FocalsConv">Focal Sparse Conv</a></strong>.</li>
-</ul>
-
-
 <div class="yc-nv-section-head">
   <h2 id="publications" class="yc-nv-section-title">📝 Representative Publications</h2>
   <a class="yc-nv-section-link" href="https://scholar.google.com/citations?user=6p0ygKUAAAAJ">Full List</a>
@@ -575,6 +557,21 @@ Weian Mao, Xi Lin, Wei Huang, Yuxin Xie, Tianfu Fu, Bohan Zhuang, Song Han, **Yu
 </div>
 </div>
 </div>
+
+<h2 id="invited-talks-and-reports" class="yc-nv-section-title">💬 Invited Talks and Reports</h2>
+
+<ul class="yc-nv-timeline-list">
+  <li><span class="yc-nv-date">2026.05</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/WeianMao/triattention">TriAttention</a></strong> was reported by <strong>新智元</strong> (see <strong><a href="https://mp.weixin.qq.com/s/iUQyNUnphYiJAacVKwViAg">link</a></strong>).</li>
+  <li><span class="yc-nv-date">2025.10</span><span class="yc-nv-news-label">Talk</span> Invited Talk at <strong><a href="https://higen-2025.github.io">ICCV 2025 HiGen Workshop</a></strong>.</li>
+  <li><span class="yc-nv-date">2025.10</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/NVlabs/LongLive">LongLive</a></strong> was reported by <strong>新智元</strong> (see <strong><a href="https://mp.weixin.qq.com/s/318DMk2thfpoSFT1oOzBXg">link</a></strong>).</li>
+  <li><span class="yc-nv-date">2025.07</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/NVlabs/Long-RL">Long-RL</a></strong> was reported by <strong>机器之心</strong> (see <strong><a href="https://www.jiqizhixin.com/articles/2025-07-14-2">link</a></strong>).</li>
+  <li><span class="yc-nv-date">2023.10</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/dvlab-research/LongLoRA">LongLoRA</a></strong> was reported by <strong>新智元</strong> (see <strong><a href="https://mp.weixin.qq.com/s/8QoKHgwjxv7fG_CCqouU8w">link</a></strong>).</li>
+  <li><span class="yc-nv-date">2023.08</span><span class="yc-nv-news-label">Report</span> <strong><a href="https://github.com/dvlab-research/LISA">LISA</a></strong> was reported by <strong>量子位</strong> (see <strong><a href="https://mp.weixin.qq.com/s/ia7_55hfI-cs2wWalmk8yA">link</a></strong>).</li>
+  <li><span class="yc-nv-date">2023.06</span><span class="yc-nv-news-label">Talk</span> Invited Talk at <strong><a href="http://www.scan-net.org/cvpr2023workshop/">CVPR 2023 ScanNet Workshop</a></strong>.</li>
+  <li><span class="yc-nv-date">2023.06</span><span class="yc-nv-news-label">Talk</span> Invited Talk at <strong>VALSE 2023 Perception Workshop</strong> for <strong><a href="https://github.com/dvlab-research/VoxelNeXt">VoxelNeXt</a></strong>.</li>
+  <li><span class="yc-nv-date">2023.04</span><span class="yc-nv-news-label">Talk</span> Invited Talk and report by <strong>将门创投</strong> for <strong><a href="https://github.com/dvlab-research/VoxelNeXt">VoxelNeXt</a></strong> (see <strong><a href="https://mp.weixin.qq.com/s/ijj9Zy81_645mqCaRbRFAg">link</a></strong>).</li>
+  <li><span class="yc-nv-date">2022.06</span><span class="yc-nv-news-label">Talk</span> Invited Talk by <strong>深蓝学院</strong> for <strong><a href="https://github.com/dvlab-research/FocalsConv">Focal Sparse Conv</a></strong>.</li>
+</ul>
 
 <h2 id="academic-services" class="yc-nv-section-title">📋 Academic Services</h2>
 
