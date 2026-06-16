@@ -343,7 +343,7 @@ My research focuses on <strong>Long AI Systems</strong> through <strong>algorith
 <div class="yc-nv-card yc-nv-blog-card">
   <span class="yc-nv-tag">Research Blog</span>
   <h3><a href="https://research.nvidia.com/labs/eai/blogs/kv-cache-compression-and-its-infra-problems/">KV Cache Compression and Its Infra Problems</a></h3>
-  <p class="yc-nv-blog-meta">An infrastructure view of KV cache compression: why attention-score methods collide with FlashAttention and paged attention, and how TriAttention resolves both.</p>
+  <p class="yc-nv-blog-meta">An infrastructure view of KV cache compression: why methods collide with FlashAttention and paged attention, and solutions.</p>
 </div>
 
 <h2 id="representative-systems-and-algorithms" class="yc-nv-section-title">🚀 Representative Systems & Algorithms</h2>
