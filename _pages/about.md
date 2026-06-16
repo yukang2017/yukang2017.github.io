@@ -170,22 +170,6 @@ html { scroll-behavior: smooth; }
   font-weight: 700;
   white-space: nowrap;
 }
-.yc-gh-star {
-  display: inline-block;
-  margin-left: 4px;
-  padding: 1px 7px;
-  border: 1px solid #d0d7de !important;
-  border-radius: 6px;
-  background: #f6f8fa;
-  color: #24292f !important;
-  font-size: 0.76rem;
-  font-weight: 700;
-  line-height: 1.35;
-  text-decoration: none !important;
-}
-.yc-gh-star:hover {
-  background: #eef1f4;
-}
 .yc-nv-timeline-list {
   list-style: none;
   position: relative;
@@ -306,6 +290,55 @@ html { scroll-behavior: smooth; }
   margin-right: 6px;
 }
 
+
+.yc-gh-star-badge {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  margin-left: 6px;
+  line-height: 1;
+  text-decoration: none !important;
+  border-bottom: 0 !important;
+  color: #24292f !important;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.yc-gh-star-badge:hover {
+  background: transparent !important;
+  text-decoration: none !important;
+  border-bottom: 0 !important;
+}
+.yc-gh-star-left,
+.yc-gh-star-count {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  border: 1px solid #d0d7de;
+  box-sizing: border-box;
+}
+.yc-gh-star-left {
+  gap: 4px;
+  padding: 0 7px;
+  border-radius: 6px 0 0 6px;
+  background: linear-gradient(180deg, #fafbfc 0%, #eff3f6 100%);
+}
+.yc-gh-star-count {
+  min-width: 38px;
+  justify-content: center;
+  margin-left: -1px;
+  padding: 0 7px;
+  border-radius: 0 6px 6px 0;
+  background: #ffffff;
+  color: #24292f;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+.yc-gh-star-icon {
+  color: #57606a;
+  font-size: 12px;
+  line-height: 1;
+}
+
 @media (max-width: 760px) {
   .yc-nv-grid, .yc-nv-background, .yc-nv-service-grid, .yc-nv-awards { grid-template-columns: 1fr; }
   .yc-nv-hero { padding: 18px 18px; }
@@ -343,6 +376,12 @@ My research focuses on <strong>Long AI Systems</strong> through <strong>algorith
 </ul>
 
 <h2 id="blogs" class="yc-nv-section-title">✍️ Blogs</h2>
+
+<div class="yc-nv-card yc-nv-blog-card">
+  <span class="yc-nv-tag">Research Blog</span>
+  <h3><a href="https://research.nvidia.com/labs/eai/blogs/kv-cache-compression-and-its-infra-problems/">KV Cache Compression and Its Infra Problems</a></h3>
+  <p class="yc-nv-blog-meta">An infrastructure view of KV cache compression: why attention-score methods collide with FlashAttention and paged attention, and how TriAttention resolves both.</p>
+</div>
 
 <div class="yc-nv-card yc-nv-blog-card">
   <span class="yc-nv-tag">Research Blog</span>
@@ -437,7 +476,7 @@ My research focuses on <strong>Long AI Systems</strong> through <strong>algorith
     <div class="abstract"  style="overflow: hidden; display: none;">  
         <p> We present LongLive-2.0, an NVFP4-based parallel infrastructure throughout the full training and inference workflow of long video generation, addressing speed and memory bottlenecks. For training, we introduce sequence-parallel autoregressive (AR) training, instantiated as Balanced SP, which co-designs the efficient teacher-forcing layout with SP execution by pairing clean-history and noisy-target temporal chunks on each rank, enabling a natural teacher-forcing mask with SP-aware chunked VAE encoding. Combined with NVFP4 precision, it reduces GPU memory cost and accelerates GEMM computation during training, the proportion of which increases as video length grows. Moreover, we show that a high-quality infrastructure and dataset enable a remarkably clean training pipeline. Unlike existing Self-Forcing series methods that rely on ODE initialization and subsequent distribution matching distillation (DMD), LongLive-2.0 directly tunes a diffusion model into a long, multi-shot, interactive auto-regressive (AR) diffusion model. It can be further converted to real-time generation (4 to 2 denoising steps) with standalone LoRA weights. For inference on Blackwell GPUs, we enable W4A4 NVFP4 inference, quantize KV cache into NVFP4 for memory savings, and boost end-to-end throughput with asynchronous streaming VAE decoding. On non-Blackwell GPU architectures, we deploy SP inference to match the speed on Blackwell GPUs, while the quantized KV cache can lower inter-GPU communication of SP. Experiments show up to 2.15x speedup in training, and 1.84x in inference. LongLive-2.0-5B achieves 45.7 FPS inference while attaining strong performance on benchmarks. To our knowledge, LongLive-2.0 is the first NVFP4 training and inference system for long video generation. </p>
     </div>
-<a class="yc-gh-star" href="https://github.com/NVlabs/LongLive" target="_blank" rel="noopener noreferrer">★ Star</a>
+<a class="yc-gh-star-badge" href="https://github.com/NVlabs/LongLive" target="_blank" rel="noopener noreferrer" data-gh-repo="NVlabs/LongLive" aria-label="GitHub stars for NVlabs/LongLive" title="GitHub stars for NVlabs/LongLive"><span class="yc-gh-star-left"><span class="yc-gh-star-icon" aria-hidden="true">★</span><span>Star</span></span><span class="yc-gh-star-count" data-gh-count>...</span></a>
 </div>
 
 **Yukang Chen** *, Luozhou Wang*, Wei Huang*, Shuai Yang*, Bohan Zhang, Yicheng Xiao, Ruihang Chu, Weian Mao, Qixin Hu, Shaoteng Liu, Yuyang Zhao, Huizi Mao, Ying-Cong Chen, Enze Xie, Xiaojuan Qi, Song Han
@@ -463,7 +502,7 @@ My research focuses on <strong>Long AI Systems</strong> through <strong>algorith
     <div class="abstract"  style="overflow: hidden; display: none;">  
         <p> We present LongLive, a frame-level autoregressive (AR) framework for real-time and interactive long video generation. Long video generation presents challenges in both efficiency and quality. Diffusion and Diffusion-Forcing models can produce high-quality videos but suffer from low efficiency due to bidirectional attention. Causal attention AR models support KV caching for faster inference, but often degrade in quality on long videos due to memory challenges during long-video training. In addition, beyond static prompt-based generation, interactive capabilities, such as streaming prompt inputs, are critical for dynamic content creation, enabling users to guide narratives in real time. This interactive requirement significantly increases complexity, especially in ensuring visual consistency and semantic coherence during prompt transitions. To address these challenges, LongLive adopts a causal, frame-level AR design that integrates a KV-recache mechanism that refreshes cached states with new prompts for smooth, adherent switches; streaming long tuning to enable long video training and to align training and inference (train-long-test-long); and short window attention paired with a frame-level attention sink, shorten as frame sink, preserving long-range consistency while enabling faster generation. With these key designs, LongLive fine-tunes a 1.3B-parameter short-clip model to minute-long generation in just 32 GPU-days. At inference, LongLive sustains 20.7 FPS on a single NVIDIA H100, achieves strong performance on VBench in both short and long videos. LongLive supports up to 240-second videos on a single H100 GPU. LongLive further supports INT8-quantized inference with only marginal quality loss. </p>
     </div>
-<a class="yc-gh-star" href="https://github.com/NVlabs/LongLive" target="_blank" rel="noopener noreferrer">★ Star</a>
+<a class="yc-gh-star-badge" href="https://github.com/NVlabs/LongLive" target="_blank" rel="noopener noreferrer" data-gh-repo="NVlabs/LongLive" aria-label="GitHub stars for NVlabs/LongLive" title="GitHub stars for NVlabs/LongLive"><span class="yc-gh-star-left"><span class="yc-gh-star-icon" aria-hidden="true">★</span><span>Star</span></span><span class="yc-gh-star-count" data-gh-count>...</span></a>
 </div>
 
 Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Muyang Li, Enze Xie, Yingcong Chen, Yao Lu, Song Han, **Yukang Chen**
@@ -488,7 +527,7 @@ Shuai Yang, Wei Huang, Ruihang Chu, Yicheng Xiao, Yuyang Zhao, Xianbang Wang, Mu
     <div class="abstract"  style="overflow: hidden; display: none;">  
         <p> Extended reasoning in large language models (LLMs) creates severe KV cache memory bottlenecks. Leading KV cache compression methods estimate KV importance using attention scores from recent post-RoPE queries. However, queries rotate with position during RoPE, making representative queries very few, leading to poor top-key selection and unstable reasoning. To avoid this issue, we turn to the pre-RoPE space, where we observe that Q and K vectors are highly concentrated around fixed non-zero centers and remain stable across positions -- Q/K concentration. We show that this concentration causes queries to preferentially attend to keys at specific distances (e.g., nearest keys), with the centers determining which distances are preferred via a trigonometric series. Based on this, we propose TriAttention to estimate key importance by leveraging these centers. Via the trigonometric series, we use the distance preference characterized by these centers to score keys according to their positions, and also leverage Q/K norms as an additional signal for importance estimation. On AIME25 with 32K-token generation, TriAttention matches Full Attention reasoning accuracy while achieving 2.5x higher throughput or 10.7x KV memory reduction, whereas leading baselines achieve only about half the accuracy at the same efficiency. TriAttention enables OpenClaw deployment on a single consumer GPU, where long context would otherwise cause out-of-memory with Full Attention. </p>
     </div>
-<a class="yc-gh-star" href="https://github.com/WeianMao/triattention" target="_blank" rel="noopener noreferrer">★ Star</a>
+<a class="yc-gh-star-badge" href="https://github.com/WeianMao/triattention" target="_blank" rel="noopener noreferrer" data-gh-repo="WeianMao/triattention" aria-label="GitHub stars for WeianMao/triattention" title="GitHub stars for WeianMao/triattention"><span class="yc-gh-star-left"><span class="yc-gh-star-icon" aria-hidden="true">★</span><span>Star</span></span><span class="yc-gh-star-count" data-gh-count>...</span></a>
 </div>
 
 Weian Mao, Xi Lin, Wei Huang, Yuxin Xie, Tianfu Fu, Bohan Zhuang, Song Han, **Yukang Chen**
@@ -513,7 +552,7 @@ Weian Mao, Xi Lin, Wei Huang, Yuxin Xie, Tianfu Fu, Bohan Zhuang, Song Han, **Yu
     <div class="abstract"  style="overflow: hidden; display: none;">  
         <p> We introduce a full-stack framework that scales up reasoning in vision-language models (VLMs) to long videos, leveraging reinforcement learning. We address the unique challenges of long video reasoning by integrating three critical components: (1) a large-scale dataset, LongVideo-Reason, comprising 104K long video QA pairs with high-quality reasoning annotations across diverse domains such as sports, games, and vlogs; (2) a two-stage training pipeline that extends VLMs with chain-of-thought supervised fine-tuning (CoT-SFT) and reinforcement learning (RL); and (3) a training infrastructure for long video RL, named Multi-modal Reinforcement Sequence Parallelism (MR-SP), which incorporates sequence parallelism and a vLLM-based engine tailored for long video, using cached video embeddings for efficient rollout and prefilling. In our experiments, LongVILA-R1-7B achieves strong performance on video benchmarks, reaching 65.1% and 71.1% accuracy on VideoMME without and with subtitles, respectively, and consistently outperforming LongVILA-7B across multiple benchmarks. Moreover, LongVILA-R1-7B supports processing up to 8,192 video frames per video, and configurable FPS settings. Notably, our MR-SP system achieves up to 2.1x speedup on long video RL training. In addition, we release our training system for public availability that supports RL training on various modalities (video, text, and audio), various models (VILA and Qwen series), and even image and video generation models. On a single A100 node (8 GPUs), it supports RL training on hour-long videos (e.g., 3,600 frames). </p>
     </div>
-<a class="yc-gh-star" href="https://github.com/NVlabs/Long-RL" target="_blank" rel="noopener noreferrer">★ Star</a>
+<a class="yc-gh-star-badge" href="https://github.com/NVlabs/Long-RL" target="_blank" rel="noopener noreferrer" data-gh-repo="NVlabs/Long-RL" aria-label="GitHub stars for NVlabs/Long-RL" title="GitHub stars for NVlabs/Long-RL"><span class="yc-gh-star-left"><span class="yc-gh-star-icon" aria-hidden="true">★</span><span>Star</span></span><span class="yc-gh-star-count" data-gh-count>...</span></a>
 </div>
 
 **Yukang Chen**, Wei Huang, Baifeng Shi, Qinghao Hu, Hanrong Ye, Ligeng Zhu, Zhijian Liu, Pavlo Molchanov, Jan Kautz, Xiaojuan Qi, Sifei Liu, Hongxu Yin, Yao Lu, Song Han
@@ -537,7 +576,7 @@ Weian Mao, Xi Lin, Wei Huang, Yuxin Xie, Tianfu Fu, Bohan Zhuang, Song Han, **Yu
     <div class="abstract"  style="overflow: hidden; display: none;">  
         <p> Long-context capability is critical for multi-modal foundation models, especially for long video understanding. We introduce LongVILA, a full-stack solution for long-context visual-language models by co-designing the algorithm and system. For model training, we upgrade existing VLMs to support long video understanding by incorporating two additional stages, i.e., long context extension and long video supervised fine-tuning. However, training on long video is computationally and memory intensive. We introduce the long-context Multi-Modal Sequence Parallelism (MM-SP) system that efficiently parallelizes long video training and inference, enabling 2M context length training on 256 GPUs without any gradient checkpointing. LongVILA efficiently extends the number of video frames of VILA from 8 to 2048, achieving 99.8% accuracy in 6,000-frame (more than 1 million tokens) video needle-in-a-haystack. LongVILA-7B demonstrates strong accuracy on 9 popular video benchmarks, e.g., 65.1% VideoMME with subtitle. Besides, MM-SP is 2.1x - 5.7x faster than ring style sequence parallelism and 1.1x - 1.4x faster than Megatron with a hybrid context and tensor parallelism. Moreover, it seamlessly integrates with Hugging Face Transformers. </p>
     </div>
-<a class="yc-gh-star" href="https://github.com/NVlabs/VILA" target="_blank" rel="noopener noreferrer">★ Star</a>
+<a class="yc-gh-star-badge" href="https://github.com/NVlabs/VILA" target="_blank" rel="noopener noreferrer" data-gh-repo="NVlabs/VILA" aria-label="GitHub stars for NVlabs/VILA" title="GitHub stars for NVlabs/VILA"><span class="yc-gh-star-left"><span class="yc-gh-star-icon" aria-hidden="true">★</span><span>Star</span></span><span class="yc-gh-star-count" data-gh-count>...</span></a>
 </div>
 
 **Yukang Chen**, Fuzhao Xue, Dacheng Li, Qinghao Hu, Ligeng Zhu, Xiuyu Li, Yunhao Fang, Haotian Tang, Shang Yang, Zhijian Liu, Ethan He, Hongxu Yin, Pavlo Molchanov, Jan Kautz, Linxi Fan, Yuke Zhu, Yao Lu, Song Han
@@ -561,7 +600,7 @@ Weian Mao, Xi Lin, Wei Huang, Yuxin Xie, Tianfu Fu, Bohan Zhuang, Song Han, **Yu
     <div class="abstract"  style="overflow: hidden; display: none;">  
         <p> We present LongLoRA, an efficient fine-tuning approach that extends the context sizes of pre-trained large language models (LLMs), with limited computation cost. Typically, training LLMs with long context sizes is computationally expensive, requiring extensive training hours and GPU resources. For example, training on the context length of 8192 needs 16x computational costs in self-attention layers as that of 2048. In this paper, we speed up the context extension of LLMs in two aspects. On the one hand, although dense global attention is needed during inference, fine-tuning the model can be effectively and efficiently done by sparse local attention. The proposed shifted sparse attention effectively enables context extension, leading to non-trivial computation saving with similar performance to fine-tuning with vanilla attention. Particularly, it can be implemented with only two lines of code in training, while being optional in inference. On the other hand, we revisit the parameter-efficient fine-tuning regime for context expansion. Notably, we find that LoRA for context extension works well under the premise of trainable embedding and normalization. LongLoRA combines this improved LoRA with S^2-Attn. LongLoRA demonstrates strong empirical results on various tasks on Llama2 models from 7B/13B to 70B. LongLoRA extends Llama2 7B from 4k context to 100k, or Llama2 70B to 32k on a single 8x A100 machine. LongLoRA extends models' context while retaining their original architectures, and is compatible with most existing techniques, like Flash-Attention2. In addition, we further conduct supervised fine-tuning with LongLoRA and our long instruction-following LongAlpaca dataset. </p>
     </div>
-<a class="yc-gh-star" href="https://github.com/dvlab-research/LongLoRA" target="_blank" rel="noopener noreferrer">★ Star</a>
+<a class="yc-gh-star-badge" href="https://github.com/dvlab-research/LongLoRA" target="_blank" rel="noopener noreferrer" data-gh-repo="dvlab-research/LongLoRA" aria-label="GitHub stars for dvlab-research/LongLoRA" title="GitHub stars for dvlab-research/LongLoRA"><span class="yc-gh-star-left"><span class="yc-gh-star-icon" aria-hidden="true">★</span><span>Star</span></span><span class="yc-gh-star-count" data-gh-count>...</span></a>
 </div>
 
 **Yukang Chen**, Shengju Qian, Haotian Tang, Xin Lai, Zhijian Liu, Song Han, Jiaya Jia
@@ -609,3 +648,81 @@ Weian Mao, Xi Lin, Wei Huang, Yuxin Xie, Tianfu Fu, Bohan Zhuang, Song Han, **Yu
   <div class="yc-nv-award"><span class="yc-nv-award-year">2019</span>Winner of COCO Detection Challenge (ICCV 2019 COCO Workshop).</div>
 </div>
 
+<script>
+(function () {
+  var badges = Array.prototype.slice.call(document.querySelectorAll('.yc-gh-star-badge[data-gh-repo]'));
+  if (!badges.length) return;
+
+  function formatStars(n) {
+    n = Number(n);
+    if (!isFinite(n)) return '—';
+    if (n >= 1000000) return (n / 1000000).toFixed(n < 10000000 ? 1 : 0).replace(/\.0$/, '') + 'm';
+    if (n >= 1000) return (n / 1000).toFixed(n < 10000 ? 1 : 0).replace(/\.0$/, '') + 'k';
+    return String(n);
+  }
+
+  function setCount(repo, count) {
+    badges.forEach(function (badge) {
+      if (badge.getAttribute('data-gh-repo') !== repo) return;
+      var el = badge.querySelector('[data-gh-count]');
+      if (el) el.textContent = formatStars(count);
+    });
+  }
+
+  function setUnavailable(repo) {
+    badges.forEach(function (badge) {
+      if (badge.getAttribute('data-gh-repo') !== repo) return;
+      var el = badge.querySelector('[data-gh-count]');
+      if (el && el.textContent === '...') el.textContent = '—';
+    });
+  }
+
+  var cacheKey = 'yc-github-star-counts-v1';
+  var maxAgeMs = 6 * 60 * 60 * 1000;
+  var now = Date.now();
+  var cache = {};
+
+  try {
+    cache = JSON.parse(window.localStorage.getItem(cacheKey) || '{}') || {};
+  } catch (e) {
+    cache = {};
+  }
+
+  var repos = {};
+  badges.forEach(function (badge) {
+    var repo = badge.getAttribute('data-gh-repo');
+    if (!repo) return;
+    repos[repo] = true;
+    if (cache[repo] && cache[repo].count != null && now - cache[repo].time < maxAgeMs) {
+      setCount(repo, cache[repo].count);
+    }
+  });
+
+  Object.keys(repos).forEach(function (repo) {
+    if (cache[repo] && cache[repo].count != null && now - cache[repo].time < maxAgeMs) return;
+    if (!window.fetch) {
+      setUnavailable(repo);
+      return;
+    }
+
+    fetch('https://api.github.com/repos/' + repo, {
+      headers: { 'Accept': 'application/vnd.github+json' }
+    })
+      .then(function (response) {
+        if (!response.ok) throw new Error('GitHub API ' + response.status);
+        return response.json();
+      })
+      .then(function (data) {
+        if (typeof data.stargazers_count !== 'number') throw new Error('Missing stargazers_count');
+        cache[repo] = { count: data.stargazers_count, time: Date.now() };
+        try {
+          window.localStorage.setItem(cacheKey, JSON.stringify(cache));
+        } catch (e) {}
+        setCount(repo, data.stargazers_count);
+      })
+      .catch(function () {
+        setUnavailable(repo);
+      });
+  });
+})();
+</script>
